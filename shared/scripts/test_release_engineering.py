@@ -129,8 +129,21 @@ class PublicReleaseBuilderTests(unittest.TestCase):
             self.assertFalse((output / "shared" / "ui" / "config" / "ui_state.json").exists())
             self.assertFalse((output / "shared" / "templates" / "ai_math_learner_profile.txt").exists())
             public_readme = (output / "README.md").read_text(encoding="utf-8")
-            self.assertIn("净化后的公开发行视图", public_readme)
+            self.assertIn("sanitized public view", public_readme)
             self.assertNotIn("本仓库仍是私人开发工作区", public_readme)
+            for relative in (
+                "README.md",
+                "README.zh-CN.md",
+                "GETTING_STARTED.md",
+                "GETTING_STARTED.zh-CN.md",
+                "USER_GUIDE.md",
+                "USER_GUIDE.zh-CN.md",
+            ):
+                self.assertTrue((output / relative).is_file(), relative)
+            self.assertIn("README.zh-CN.md", public_readme)
+            self.assertIn("GETTING_STARTED.md", (output / "README.zh-CN.md").read_text(encoding="utf-8"))
+            self.assertIn("GETTING_STARTED.zh-CN.md", (output / "GETTING_STARTED.md").read_text(encoding="utf-8"))
+            self.assertIn("USER_GUIDE.zh-CN.md", (output / "USER_GUIDE.md").read_text(encoding="utf-8"))
             self.assertTrue((output / "LICENSE").is_file())
             self.assertTrue((output / "THIRD_PARTY_NOTICES.md").is_file())
             public_project = tomllib.loads(
