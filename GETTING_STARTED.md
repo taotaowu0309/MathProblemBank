@@ -1,26 +1,26 @@
-# MathProblemBank 从下载到第一次使用
+# Getting Started with MathProblemBank
 
-这是一份给完全不熟悉 MathProblemBank 的使用者的操作手册。当前公开版是 Windows 上的数学工作台，重点是结构化题库、学习项目、LaTeX/PDF 和本地 AI 辅助。物理、英语和部分网课功能在公开版中不是支持承诺。
+[English](GETTING_STARTED.md) | [简体中文](GETTING_STARTED.zh-CN.md)
 
-## 1. 下载什么
+This guide is for someone who has never used MathProblemBank. The public release is a Windows desktop workbench focused on structured mathematical problems, learning projects, LaTeX/PDF publishing, and optional local AI assistance. Physics, English, and parts of the lecture workflow are not support promises for math v0.1.
 
-1. 打开 GitHub 仓库的 [Releases](https://github.com/taotaowu0309/MathProblemBank/releases) 页面。
-2. 进入最新的版本条目。带有 `Pre-release` 的版本表示仍在持续测试；当前公开候选版本为 `v0.1.0-rc1`。
-3. 在 **Assets** 区下载名称以 `MathProblemBank-v...zip` 开头的发行压缩包。
-4. 不要下载页面自动生成的 `Source code (zip)` 或 `Source code (tar.gz)`，也不要下载 GitHub 仓库中的私人数据库、PDF 或开发目录。发行附件才是经过白名单和敏感信息检查的可运行公开视图。
-5. 下载后把 ZIP 解压到一个你有写入权限的普通目录。不要直接在 ZIP 压缩包内运行，也不要把用户数据库放回 GitHub 仓库。
+## 1. Download the right file
 
-如果你需要核对下载是否完整，可以在 Release 页面查看 SHA-256；PowerShell 命令示例：
+1. Open the repository's [Releases](https://github.com/taotaowu0309/MathProblemBank/releases) page.
+2. Open the newest release. A `Pre-release` label means that it is still being tested; the current candidate is `v0.1.0-rc1`.
+3. Under **Assets**, download the file whose name starts with `MathProblemBank-v` and ends in `.zip`.
+4. Do not use GitHub's automatically generated `Source code (zip)` or `Source code (tar.gz)`. The release asset is the allowlisted, sanitized, runnable public view.
+5. Extract it to a normal directory where you have write permission. Do not run files from inside the ZIP.
+
+For an integrity check, compare the SHA-256 shown in the release notes:
 
 ```powershell
 Get-FileHash .\MathProblemBank-v0.1.0-rc1.zip -Algorithm SHA256
 ```
 
-## 2. 安装运行环境
+## 2. Install Python and dependencies
 
-公开版要求 Windows 10/11 和 Python 3.12。安装 Python 时勾选“Add Python to PATH”，或者确认 `py -3.12` 命令可用。
-
-在解压后的项目目录中打开 PowerShell，执行：
+Install Python 3.12 for Windows. In the extracted directory, open PowerShell and run:
 
 ```powershell
 py -3.12 -m venv .venv
@@ -28,139 +28,73 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\python -m pip install -r requirements-public.txt
 ```
 
-如果只想使用题库、项目和 Markdown 功能，这些步骤即可。生成正式 LaTeX/PDF 还需要另行安装 TeX Live 或其他提供 `xelatex` 和 `latexmk` 的 TeX 发行版；公开版不会自动替你安装它。
+The problem bank, projects, vocabulary, and Markdown reader work without TeX. To build PDFs, install TeX Live or another distribution that provides `xelatex` and `latexmk`, and make sure those commands are on PATH.
 
-## 3. 第一次启动
+## 3. First launch
 
-双击解压目录中的 `LaunchStudyProblemBank.vbs`。这是推荐入口；不要直接双击内部的 Python 文件。
+Double-click `LaunchStudyProblemBank.vbs` in the extracted directory; this is the recommended entry point.
 
-首次启动时：
+On first launch:
 
-1. 选择数学工作区。
-2. 程序只初始化数学分析和高等代数两个公开学科。
-3. 在“学习项目”中创建一个学习问题集，或先在“标准题库”导入题目。
-4. 用户数据库、配置、背景图和学习项目会写入 `%LOCALAPPDATA%\MathProblemBank`，不会写入程序目录。
-5. 学习画像默认为空；程序不会自动写入一段个人资料。需要时在 AI 助手的学习记忆入口显式导入 UTF-8 `.txt` 或 `.md` 文件。
+1. Select the math workspace.
+2. The public build initializes only its supported mathematical subjects.
+3. Create a learning problem set, or import one or two synthetic problems into the standard bank.
+4. Runtime data, settings, backgrounds, and projects are stored under `%LOCALAPPDATA%\MathProblemBank` (or `MATH_PROBLEM_BANK_DATA_ROOT` if configured), not in the program directory.
+5. The learner profile is empty by default. Import a UTF-8 `.txt` or `.md` file only when you explicitly want to provide personal study context.
 
-## 4. 建议的第一次完整流程
+## 4. A safe first workflow
 
 ```text
-标准题库 → 导入一两道合成题
-        → 学习项目 → 新建学习问题集
-        → 把题目加入项目
-        → 生成项目 PDF
-        → 打开 PDF 检查封面、目录和正文
-        → 回到标准题库编辑题目，再重新生成 PDF
+Standard Problem Bank → import one or two synthetic problems
+    → Learning Projects → create a problem set
+    → add problems to the project
+    → generate the project PDF
+    → inspect cover, table of contents, and body
+    → edit a problem and regenerate
 ```
 
-第一次建议只使用一两道不含个人信息的简单题，先确认路径、题库和 PDF 流程正常，再导入自己的长期资料。
+Start with a small, non-sensitive example. Confirm the database and PDF paths before importing long-term material.
 
-## 5. 控制中心各页面
+## 5. Control Center pages
 
-### 总览
+### Overview
 
-显示当前工作区、当前学科、当前项目、题目数量和最近备份。这里的快捷卡片可以直接进入标准题库、学习项目、AI 助手或生成 PDF。总览不替代具体页面的编辑操作。
+Shows the workspace, subject, selected project, problem counts, and recent backups. Shortcut cards open the main areas; editing remains in the dedicated pages.
 
-### 标准题库
+### Standard Problem Bank
 
-这是正式题目数据库的主要入口。
+Search by summary, statement, solution, chapter, subsection, or notes. Use the outline tree to navigate, expand a problem card to inspect fields, and use direct or batch import after reading the LaTeX template preview. The application assigns permanent IDs; do not invent them in an import file. Edit, refine, delete, or undo a recent batch import only after checking the preview.
 
-- 用搜索框按问题简述、题干、解答、章节、小节或备注检索。
-- 用目录树按章/节定位；点击题卡可以展开完整字段。
-- “直接导入题目”支持单题或批量模板导入。导入前应先阅读页面中的 LaTeX 规范和模板预览。
-- 可以编辑、精修、删除题目，或撤销最近一次批量导入。
-- 题目的永久编号由系统生成，不要在导入模板中自行伪造编号。
-- 导入后可以选择加入当前学习项目；如果没有选择项目，题目只进入标准题库。
+### Learning Projects
 
-最安全的题目导入方法是：在页面中复制模板 → 填写章节、标题、问题简述、题干和解答 → 先在小批量上测试 → 确认卡片能编译后再批量导入。
+Create a problem set, add problems from the bank, open its directory, and generate or preview its PDF. Database records are the source of truth. `main.tex` and `chapters/*.tex` are generated outputs; long-lived customization belongs in the project preamble, `notation/local_overrides.tex`, `figures/`, or `pic/` as described in [USER_GUIDE.md](USER_GUIDE.md).
 
-### 学习项目
+### Vocabulary
 
-用于管理学习问题集、教材习题集和自定义专题集。
+Search mathematical terms, mark familiarity, locate selected terms in PDFs, import/export UTF-8 text, and export a vocabulary PDF. Deletion is backed up first. Public math workspaces are isolated from other subjects.
 
-1. 点击“新建学习问题集”并填写名称。
-2. 在项目列表中选中项目。
-3. 在标准题库或项目内容区把题目加入项目。
-4. 用“打开项目目录”查看项目的 LaTeX、图片和元数据。
-5. 用“生成项目 PDF”或“快速生成 PDF”编译当前项目。
-6. 用“打开项目 PDF”检查正式制品。
+### AI Assistant
 
-项目目录中的数据库内容是来源，`main.tex` 和 `chapters/*.tex` 是由项目生成器重建的输出。长期自定义请使用 `notation/local_overrides.tex`、项目自己的 `preamble/`、`figures/` 和 `pic/`，详见 [USER_GUIDE.md](USER_GUIDE.md)。
+Use it for explanations, project-material lookup, and authorized LaTeX/PDF operations. Configure your own provider and API key locally; never put credentials in source, screenshots, Issues, or commits. Data-changing actions request confirmation and provide backup/read-back evidence where applicable. AI-generated mathematics still needs review.
 
-### 词汇库
+### Markdown Reader
 
-管理当前工作区的数学词汇。
+Preview CommonMark/GFM and mathematical notation before importing content. It does not automatically create formal problem-bank records.
 
-- 搜索英文单词、短语、中文释义或备注。
-- 多选词条后标记“熟悉”或“不熟悉”。
-- 在 PDF 中定位选中的词条。
-- 批量导入、导出 UTF-8 TXT 或导出词汇 PDF。
-- 删除操作会先备份词汇数据库。
+### Course Lectures
 
-数学、物理和英语工作区的词汇库彼此隔离；公开版主要支持数学工作区。
+This is experimental. Recording, transcription, and lecture generation can be slow or fail, and formal material requires human review. Use only material you are authorized to process.
 
-### AI 助手
+### Data Tables
 
-用于数学解释、题目整理、项目内资料读取和受控的 LaTeX/PDF 操作。
+Read-only inspection and CSV export of the current SQLite schema. Direct database edits can bypass constraints and backup safeguards.
 
-- 未配置 API Key 时，普通题库和 PDF 功能仍可使用；需要模型回答时再配置你选择的服务。
-- 在模型配置中只填写你自己的 API Key，不要把 Key 写入源码、截图、Issue 或 Git 提交。
-- 需要修改数据库、项目 TeX 或正式 PDF 的操作会要求确认，并尽量提供备份和写后回读证据。
-- 学习画像必须由你主动导入；清空画像后，后续提示词不会继续带入旧画像。
+### All Operations
 
-AI 输出不是数学正确性的保证。讲义、证明和复杂 LaTeX 仍应由用户审阅并检查生成的 PDF。
+Provides shortcuts for importing problems, generating standard-bank text, building PDFs, opening project/export/backup directories, and opening the user-background directory. When unsure, return to Overview or All Operations instead of deleting database files.
 
-### Markdown 阅读器
+## 6. Backups and troubleshooting
 
-用于预览 CommonMark/GFM Markdown 和数学公式。它适合在导入题库前检查文字、公式和结构，不会自动把 Markdown 变成正式题库记录。复杂内容仍应通过标准题库模板导入。
+Keep periodic copies of important backups. If PDF generation fails, inspect `compile_error.log`, verify TeX installation and PATH, check image paths, and regenerate. A failed compile must not replace an existing formal PDF.
 
-### 网课讲义
-
-这是实验性功能，包含课程、分集、参考材料、转写、讲义目录和正式 PDF 流程。使用前应准备好自己的课程资料，并牢记：
-
-- 录制、转写和 AI 讲义生成可能耗时或失败；
-- 正式讲义采用 human-in-the-loop，必须人工审核；
-- 不要上传你无权处理的课程内容；
-- 网课功能不是 math v0.1 稳定功能的承诺。
-
-### 数据表
-
-只读浏览当前学科 SQLite 数据库的表结构和记录，并可导出当前表 CSV。普通使用者通常不需要在这里修改数据；直接改数据库可能破坏约束或绕过备份流程。
-
-### 全部操作
-
-按“图形工具”“命令行/维护工具”“文件和输出”分组，集中提供常用入口，例如：
-
-- 直接导入题目；
-- 生成标准题库 TXT；
-- 生成或快速生成项目 PDF；
-- 打开项目目录、章节目录、导出目录和备份目录；
-- 打开用户背景图目录；
-- 查看背景图导入提示词。
-
-不确定从哪里开始时，先回到“全部操作”或“总览”，不要直接删除数据库文件。
-
-## 6. 背景图、封面和 LaTeX 个性化
-
-这部分不是必需步骤，但适合建立自己的学习风格。
-
-- 自定义背景图：在“全部操作”点击“打开用户背景图目录”，把 PNG/JPEG/WEBP 放入目录，重启程序后刷新轮播。
-- 自动封面：新项目第一次生成 PDF 时，会从当前可用背景中选择封面；一轮内不会重复使用同一张图片。
-- 手动封面：打开项目目录，按 [USER_GUIDE.md](USER_GUIDE.md) 修改 `project_pdf_meta.json` 的 `cover_background` 和 `cover_file`，然后重新生成 PDF。
-- 自定义模板：把宏和记号放入 `notation/local_overrides.tex`，图片放入项目 `figures/` 或 `pic/`，并使用项目内相对路径。
-- 不要把 `main.pdf`、编译缓存、数据库、个人背景图和学习画像提交到公开仓库。
-
-## 7. 备份和恢复
-
-题库、项目和词汇的正式写入通常会先创建备份。你仍应定期在“全部操作”中检查备份目录，并把重要备份复制到安全位置。恢复前先关闭程序，保留当前数据目录的副本，再进行替换。
-
-如果生成 PDF 失败：
-
-1. 先查看运行日志和项目目录中的 `compile_error.log`。
-2. 检查 TeX Live/MiKTeX 是否安装并在 PATH 中。
-3. 检查图片是否存在、路径是否为项目内相对路径。
-4. 修正后重新生成；失败的编译不应替换已有的正式 PDF。
-
-## 8. 报告问题
-
-提交 Issue 前，请记录：Windows 版本、Python 版本、公开版版本、复现步骤和错误日志尾部。删除 API Key、Cookie、用户名、绝对路径、教材原文、个人画像和真实数据库内容；优先使用空白数据目录和合成题目复现。贡献规范见 [CONTRIBUTING.md](CONTRIBUTING.md)。
+When reporting an Issue, include Windows/Python/version information, reproduction steps, and the tail of the error log. Remove keys, cookies, usernames, absolute paths, course originals, learner profiles, and real databases. See [CONTRIBUTING.md](CONTRIBUTING.md).
