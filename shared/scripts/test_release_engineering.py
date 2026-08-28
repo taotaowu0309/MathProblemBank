@@ -343,6 +343,53 @@ class PublicReleaseBuilderTests(unittest.TestCase):
             self.assertIn("QT_RELEASE_SMOKE_OK", completed.stdout)
             self.assertFalse(any(output.rglob("*.db")))
 
+    def test_public_user_background_directory_is_discoverable(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            base = Path(temporary)
+            output = base / "public-release"
+            data_root = base / "user-data"
+            local_app_data = base / "local-app-data"
+            build_public_release(output, release_version="0.1.0rc1")
+            environment = os.environ.copy()
+            environment.update(
+                {
+                    "LOCALAPPDATA": str(local_app_data),
+                    "MATH_PROBLEM_BANK_DATA_ROOT": str(data_root),
+                    "PYTHONPATH": str(output),
+                    "PYTHONDONTWRITEBYTECODE": "1",
+                }
+            )
+            user_backgrounds = data_root / "config" / "backgrounds"
+            user_backgrounds.mkdir(parents=True)
+            (user_backgrounds / "custom-cover.png").write_bytes(b"synthetic png placeholder")
+            (user_backgrounds / "custom-cover.jpg").write_bytes(b"synthetic jpg placeholder")
+            script = (
+                "from shared.scripts.problem_bank_center_qt import DashboardService, discover_backgrounds, USER_BACKGROUND_DIR\n"
+                "paths = discover_backgrounds()\n"
+                "assert USER_BACKGROUND_DIR.is_dir()\n"
+                "assert {path.name for path in paths} == {'custom-cover.png', 'custom-cover.jpg'}, paths\n"
+                "assert len({str(path.resolve()).casefold() for path in paths}) == len(paths)\n"
+                "service = DashboardService.__new__(DashboardService)\n"
+                "first = service.next_project_pdf_cover_background()\n"
+                "second = service.next_project_pdf_cover_background()\n"
+                "third = service.next_project_pdf_cover_background()\n"
+                "assert first is not None and second is not None and third is not None\n"
+                "assert first.resolve() != second.resolve(), (first, second)\n"
+                "assert third.resolve() in {first.resolve(), second.resolve()}, third\n"
+                "print('PUBLIC_USER_BACKGROUND_DIRECTORY_OK')\n"
+            )
+            completed = subprocess.run(
+                [sys.executable, "-c", script],
+                cwd=output,
+                env=environment,
+                check=True,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                timeout=60,
+            )
+            self.assertIn("PUBLIC_USER_BACKGROUND_DIRECTORY_OK", completed.stdout)
+
     def test_release_builder_refuses_to_overwrite(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             output = Path(temporary) / "public-release"

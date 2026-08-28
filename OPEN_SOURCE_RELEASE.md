@@ -30,6 +30,7 @@
 - [x] 盘点公开源码中 bundled/runtime-downloaded 第三方组件及许可证；
 - [x] 为公开仓库准备全新的 Git 历史和首个 RC1 Pre-release；
 - [ ] 在带 XeLaTeX 的干净 Windows 环境完成人工 GUI 与正式 PDF 验收；
+- [x] 公开版提供用户背景图目录、封面轮换说明和 LaTeX 个性化编辑指南；
 
 ## 不属于 math v0.1 的承诺
 

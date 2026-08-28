@@ -3,7 +3,7 @@
   "profile": "public-math-v0.1",
   "release_version": "0.1.0rc1",
   "python_requires": ">=3.12,<3.13",
-  "file_count": 157,
+  "file_count": 159,
   "files": [
     {
       "path": ".gitignore",
@@ -17,13 +17,23 @@
     },
     {
       "path": "README.md",
-      "bytes": 2442,
-      "sha256": "62c968425249866e86b9c54af4637d39b4c44963e64f27b94c9c83917b70b83c"
+      "bytes": 2605,
+      "sha256": "4b55cd89f4fd1a5f9a8d848b8d0f28a858e0b4d418c7f92192e15cf29751128c"
+    },
+    {
+      "path": "GETTING_STARTED.md",
+      "bytes": 9047,
+      "sha256": "a7f9c261c832795256ece5871d29ab90a489e892f974f6f83d50ba98d5aa203a"
+    },
+    {
+      "path": "USER_GUIDE.md",
+      "bytes": 5849,
+      "sha256": "9359f4c615560a21c535c2341b790d4f29e9d2860957778f3f0d9b75e8eec9e4"
     },
     {
       "path": "OPEN_SOURCE_RELEASE.md",
-      "bytes": 2866,
-      "sha256": "a100fa3312f8a817bfb6e8b3aaea111a09af3306dad40ad4234f370e46437fe9"
+      "bytes": 2964,
+      "sha256": "b57d039a580911f5e3301778ba59ca498b47ea6edd6be95a5b162a809de5893f"
     },
     {
       "path": "CONTRIBUTING.md",
@@ -67,8 +77,8 @@
     },
     {
       "path": "tools/build_public_release.py",
-      "bytes": 19662,
-      "sha256": "4a78641872688e54cbdf5c8d0d72f2759867019f986ded690e610550f819889a"
+      "bytes": 19709,
+      "sha256": "84b4dac074041fba3b54f52ce2c5ada1dab42c33b459682f3d49a991858027fb"
     },
     {
       "path": "shared/scripts/ai_agent_acceptance.py",
@@ -352,8 +362,8 @@
     },
     {
       "path": "shared/scripts/problem_bank_center_qt.py",
-      "bytes": 971783,
-      "sha256": "5fba484cca8a69bb7ed0b5225de45427dcd7c095627f73dad42a8f7487e69acf"
+      "bytes": 973766,
+      "sha256": "2e374705da53ddee9a3f28d538d148718532f6ae0e4a3c71681aecc40ab920b3"
     },
     {
       "path": "shared/scripts/public_regression_core.py",
@@ -377,8 +387,8 @@
     },
     {
       "path": "shared/scripts/test_release_engineering.py",
-      "bytes": 21680,
-      "sha256": "5fee0c76befe00c7049311c50f3d690b2632b1a9b7264a9e03505e843f6d5f7f"
+      "bytes": 24207,
+      "sha256": "93a551c1955aac2a631bd4d3c1af9a79bf8251544766f307ad99d87aca5e57ed"
     },
     {
       "path": "shared/scripts/textbook_exercise_companion.py",

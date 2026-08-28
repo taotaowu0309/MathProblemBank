@@ -27,7 +27,7 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\python -m pip install -r requirements-public.txt
 ```
 
-随后双击 `LaunchStudyProblemBank.vbs`。
+随后双击 `LaunchStudyProblemBank.vbs`。完全第一次使用请先阅读 [GETTING_STARTED.md](GETTING_STARTED.md)；背景图、项目封面和 LaTeX 个性化编辑见 [USER_GUIDE.md](USER_GUIDE.md)。
 
 ## 本地数据与学习画像
 

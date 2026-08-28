@@ -20,6 +20,8 @@ ROOT_FILES = (
     ".gitignore",
     "LaunchStudyProblemBank.vbs",
     "README.md",
+    "GETTING_STARTED.md",
+    "USER_GUIDE.md",
     "OPEN_SOURCE_RELEASE.md",
     "CONTRIBUTING.md",
     "SECURITY.md",

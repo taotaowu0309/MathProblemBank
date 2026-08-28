@@ -144,6 +144,7 @@ from shared.ui.windows_shell import configure_process
 ROOT_DIR = APP_PATHS.application_root
 UI_DIR = ROOT_DIR / "shared" / "ui"
 CAROUSEL_DIR = ROOT_DIR / "shared" / "ui" / "assets" / "carousel"
+USER_BACKGROUND_DIR = APP_PATHS.config_dir / "backgrounds"
 COMPLEX_ANALYSIS_TEMPLATE_DIR = ROOT_DIR.parent / "ComplexAnalysis"
 APP_ICON_PATH = UI_DIR / "assets" / "icons" / "problem_bank_studio_icon.ico"
 SCRIPTS_DIR = ROOT_DIR / "shared" / "scripts"
@@ -1455,7 +1456,27 @@ BACKGROUND_PALETTES = {
 
 def discover_backgrounds() -> list[Path]:
     suffixes = {".jpg", ".jpeg", ".png", ".webp"}
-    return sorted(path for path in CAROUSEL_DIR.glob("*") if path.suffix.lower() in suffixes)
+    candidates: list[Path] = []
+    for directory in (CAROUSEL_DIR, USER_BACKGROUND_DIR):
+        if not directory.is_dir():
+            continue
+        candidates.extend(
+            path for path in directory.glob("*") if path.is_file() and path.suffix.lower() in suffixes
+        )
+    unique: dict[str, Path] = {}
+    for path in candidates:
+        try:
+            unique[str(path.resolve()).casefold()] = path
+        except OSError:
+            unique[str(path).casefold()] = path
+    return sorted(unique.values(), key=lambda path: (path.name.casefold(), str(path).casefold()))
+
+
+def _background_identity(path: Path) -> str:
+    try:
+        return str(path.resolve()).casefold()
+    except OSError:
+        return str(path).casefold()
 
 
 def load_startup_background_index(
@@ -3774,12 +3795,25 @@ class DashboardService:
                 state = loaded
         except (OSError, json.JSONDecodeError):
             state = {}
-        index = int(state.get("next_index") or 0) % len(backgrounds)
+        identities = [_background_identity(path) for path in backgrounds]
+        used = {
+            str(item).casefold()
+            for item in (state.get("used_backgrounds") or [])
+            if isinstance(item, str) and item.strip()
+        }
+        available = [index for index, identity in enumerate(identities) if identity not in used]
+        if not available:
+            used = set()
+            available = list(range(len(backgrounds)))
+        preferred = int(state.get("next_index") or 0) % len(backgrounds)
+        index = next((item for item in available if item >= preferred), available[0])
         source = backgrounds[index]
+        used.add(identities[index])
         state.update(
             {
                 "next_index": (index + 1) % len(backgrounds),
                 "cover_count": len(backgrounds),
+                "used_backgrounds": sorted(used),
                 "updated_at": datetime.now().isoformat(timespec="seconds"),
             }
         )
@@ -8529,6 +8563,14 @@ class BackgroundWindow(QWidget):
         except Exception as error:
             self.set_status(f"定位背景图导入提示词失败：{error}")
             QMessageBox.critical(self, "定位提示词失败", str(error))
+
+    def open_user_background_directory(self) -> None:
+        try:
+            USER_BACKGROUND_DIR.mkdir(parents=True, exist_ok=True)
+            reveal_path(USER_BACKGROUND_DIR)
+            self.set_status(f"已打开用户背景图目录：{USER_BACKGROUND_DIR}")
+        except Exception as error:
+            self.set_status(f"打开用户背景图目录失败：{error}")
 
     @staticmethod
     def _same_pdf_path(left: object, right: Path) -> bool:
@@ -19733,6 +19775,11 @@ Subsection {int(chapter_number)}.2.1: <Subsection title>
                         "查看背景图导入提示词",
                         "在文件资源管理器中定位高清重绘、主色选择与导入规范 TXT",
                         self.reveal_background_import_prompt,
+                    ),
+                    (
+                        "打开用户背景图目录",
+                        "把 JPG、PNG、WEBP 或 JPEG 放入此目录；重启后用于界面轮播和新项目封面",
+                        self.open_user_background_directory,
                     ),
                 ],
             ),
