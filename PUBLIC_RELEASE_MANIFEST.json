@@ -1,0 +1,794 @@
+{
+  "format_version": 1,
+  "profile": "public-math-v0.1",
+  "release_version": "0.1.0rc1",
+  "python_requires": ">=3.12,<3.13",
+  "file_count": 157,
+  "files": [
+    {
+      "path": ".gitignore",
+      "bytes": 1668,
+      "sha256": "5e4eb7eb872315fd90176697e453970aa1d6a9d353c07e39bb55cd53587e8df7"
+    },
+    {
+      "path": "LaunchStudyProblemBank.vbs",
+      "bytes": 1566,
+      "sha256": "533563ee5c71f2d316b9777b82c55197ace46aa08b70fbf7ab46917603255939"
+    },
+    {
+      "path": "README.md",
+      "bytes": 2442,
+      "sha256": "62c968425249866e86b9c54af4637d39b4c44963e64f27b94c9c83917b70b83c"
+    },
+    {
+      "path": "OPEN_SOURCE_RELEASE.md",
+      "bytes": 2698,
+      "sha256": "f58bdcb3a3eb214047d7f39b493b7232766c8b1b1f0b838de2f5680e6d74da59"
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "bytes": 1058,
+      "sha256": "985075a8adf993a1b9b814a5adbb53e412836d257b56279e5040875e14297d4b"
+    },
+    {
+      "path": "SECURITY.md",
+      "bytes": 584,
+      "sha256": "3f47988862b7d524db2c79fa62b31e1a917eeb96efb03ad4e66e82d32382afc1"
+    },
+    {
+      "path": "CLEAN_WINDOWS_E2E.md",
+      "bytes": 2561,
+      "sha256": "deb95d39339e12bd551d3bd31ee536a563e3ff65f8765f86438b795a4583ee45"
+    },
+    {
+      "path": "pyproject.toml",
+      "bytes": 1084,
+      "sha256": "4f81c1704e42595a20029add8e947aba92332f4e6a0189b16abeecd20a422f5a"
+    },
+    {
+      "path": "requirements-public.txt",
+      "bytes": 222,
+      "sha256": "8048d24b291168a7fc7ae98c569af5436de82c537309af2a40d705d1c20182a7"
+    },
+    {
+      "path": "LICENSE",
+      "bytes": 11357,
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+    },
+    {
+      "path": "THIRD_PARTY_NOTICES.md",
+      "bytes": 1457,
+      "sha256": "c0db4eb9a9e8b842559ddeeeece31a8e56b52f7f36070f795d78ca25c21ccac5"
+    },
+    {
+      "path": ".github/workflows/public-release-gate.yml",
+      "bytes": 1217,
+      "sha256": "89693b75c8d5ac1bc005445a757bc1971005538211b1465a819d780a75eb4ccb"
+    },
+    {
+      "path": "tools/build_public_release.py",
+      "bytes": 19662,
+      "sha256": "4a78641872688e54cbdf5c8d0d72f2759867019f986ded690e610550f819889a"
+    },
+    {
+      "path": "shared/scripts/ai_agent_acceptance.py",
+      "bytes": 21177,
+      "sha256": "52fdfcdf55f83c6a489232eb0b4f17c236a26fe2e752f05c2a865b3e184f5e94"
+    },
+    {
+      "path": "shared/scripts/ai_agent_attachments.py",
+      "bytes": 4107,
+      "sha256": "ae75ce589015d4bfc3cd8b017984319f5f18909d603a4847602014eff0cbee45"
+    },
+    {
+      "path": "shared/scripts/ai_agent_compute.py",
+      "bytes": 25895,
+      "sha256": "0325a54e6c4041c05b1eeffd301fdc5504f0808dadd7d96e8c6f8b7ad08cb351"
+    },
+    {
+      "path": "shared/scripts/ai_agent_compute_worker.py",
+      "bytes": 1760,
+      "sha256": "93462edbb3dbac79f7dcb28a4a1001310c6be36ebf3520ce684012f18532e360"
+    },
+    {
+      "path": "shared/scripts/ai_agent_config.py",
+      "bytes": 22165,
+      "sha256": "2e3105607007a2d472443fb34e2d3953f66752265993cb81867c77b5816b34d3"
+    },
+    {
+      "path": "shared/scripts/ai_agent_history.py",
+      "bytes": 19520,
+      "sha256": "ce4f696ba570bcefb9378b07a0bb4281c4594edeebaaaed81b33a010edcecc59"
+    },
+    {
+      "path": "shared/scripts/ai_agent_lean.py",
+      "bytes": 9861,
+      "sha256": "cc66a1e00b6d7f2806cc3b3875b3fa86f0779b839afa6215fab8dc3b57f53abb"
+    },
+    {
+      "path": "shared/scripts/ai_agent_learner_profile.py",
+      "bytes": 4547,
+      "sha256": "e397c6c4428dbb2a8536fafc383d7c98cfa427f1c6846bca938ec897412a3851"
+    },
+    {
+      "path": "shared/scripts/ai_agent_math.py",
+      "bytes": 23915,
+      "sha256": "a035e0e6589807a879313139fcd8767608fbfa4c8b09534e5b91803436798ef7"
+    },
+    {
+      "path": "shared/scripts/ai_agent_math_tools.py",
+      "bytes": 24744,
+      "sha256": "77a28c0c37981c1212b70e69cb567dea79db76882c2937144bd7ab4211fdd29e"
+    },
+    {
+      "path": "shared/scripts/ai_agent_mathematica_bridge.py",
+      "bytes": 24526,
+      "sha256": "9fbfaf9da75c767be2ec7ece50a8c246f3ce7162ec57e1245cde97cd7cf03ecd"
+    },
+    {
+      "path": "shared/scripts/ai_agent_memory.py",
+      "bytes": 36999,
+      "sha256": "bbe3ea91646ef57591d061ae845cfe98027fb8af091a0c6cd4a7d203409cc35e"
+    },
+    {
+      "path": "shared/scripts/ai_agent_ocr.py",
+      "bytes": 2718,
+      "sha256": "00c9df67ff9b9649980e9b88057d90aaa88f157c039a049bd5c058eb9393ddb5"
+    },
+    {
+      "path": "shared/scripts/ai_agent_operation_registry.py",
+      "bytes": 7993,
+      "sha256": "aaa61c336f6bfe966310b6928be635e3907701f0a7dbf434297261bd36ed6d4e"
+    },
+    {
+      "path": "shared/scripts/ai_agent_papers.py",
+      "bytes": 21589,
+      "sha256": "53283cdc3506996f39089ec971caeaf2943c1b6edb90f32211211999f4d6ab18"
+    },
+    {
+      "path": "shared/scripts/ai_agent_planner.py",
+      "bytes": 17043,
+      "sha256": "4a81a2b7ac23ddf950f5b85323400ee9b284f25b3d0855f265ed94669ec630bc"
+    },
+    {
+      "path": "shared/scripts/ai_agent_plot_tools.py",
+      "bytes": 14037,
+      "sha256": "523b02cb12c212f66a4fa5f3e8d92828d1f7f9621f0043c650143a9a29ffbc2e"
+    },
+    {
+      "path": "shared/scripts/ai_agent_providers.py",
+      "bytes": 62045,
+      "sha256": "d74fcf6436c08b11c68903ea642e89f284bde8dacf6682872d19a6812c240f49"
+    },
+    {
+      "path": "shared/scripts/ai_agent_qt.py",
+      "bytes": 262327,
+      "sha256": "63e62ccbdab3d89284d8798fe5297b673ec363adca8a3b0cbeffbccf32ff3f7e"
+    },
+    {
+      "path": "shared/scripts/ai_agent_quality.py",
+      "bytes": 13037,
+      "sha256": "bc035a4d470c9244eb4c2705b551f499101627bfede899e00a84386b54487695"
+    },
+    {
+      "path": "shared/scripts/ai_agent_quality_dataset.py",
+      "bytes": 10533,
+      "sha256": "dff1ee7810eac772a988cae5088a937c0fb1cfdc763017a03ada1ba475428100"
+    },
+    {
+      "path": "shared/scripts/ai_agent_reference_library.py",
+      "bytes": 6034,
+      "sha256": "470720d392ba229311c165f1f80b776bff4e96b7225959449f363d4b85fd7607"
+    },
+    {
+      "path": "shared/scripts/ai_agent_reference_materials.py",
+      "bytes": 5876,
+      "sha256": "5feeb22796017aa70a891ae24935431a11788d24cf2a9db74d0b2802669e5396"
+    },
+    {
+      "path": "shared/scripts/ai_agent_reliability.py",
+      "bytes": 10857,
+      "sha256": "e4ac862aeab5e353acf5bd69368de103b48e552a3766dbe953af57a23ba661de"
+    },
+    {
+      "path": "shared/scripts/ai_agent_repository.py",
+      "bytes": 268005,
+      "sha256": "b55b3c1be823e567712cf6782ffcbecc04fe51ecb8d352127fc899b3ff4ade1d"
+    },
+    {
+      "path": "shared/scripts/ai_agent_resources.py",
+      "bytes": 39100,
+      "sha256": "5fdabab1fa56791b71e8b9ad5a1c778069c45c813867ded9d1d675bc11f24cee"
+    },
+    {
+      "path": "shared/scripts/ai_agent_semantic_index.py",
+      "bytes": 96224,
+      "sha256": "db72758973de3feedacd3dcb6b26221b109d3d0de72be7c9138873c10ba8b13f"
+    },
+    {
+      "path": "shared/scripts/ai_agent_service.py",
+      "bytes": 125930,
+      "sha256": "e0c7cdf17e828f82b7c5dc7d2219977c44183709edb29de30bd563e3ca8ce152"
+    },
+    {
+      "path": "shared/scripts/ai_agent_tex_editor.py",
+      "bytes": 20562,
+      "sha256": "b4b5076d0be725ecca7525c6eed697d0b1f1026ff33df36129e7b8f0944a8fa3"
+    },
+    {
+      "path": "shared/scripts/ai_agent_visual_validation.py",
+      "bytes": 6758,
+      "sha256": "f8f3f274b3f04b25222e8a514de28c8b6a24b242a75451129241662eacffd0d9"
+    },
+    {
+      "path": "shared/scripts/ai_agent_workspace.py",
+      "bytes": 22982,
+      "sha256": "d4834110833ec8966030695dc130ba5ba7c3ec8cd781dcb31e53840251e1c0b6"
+    },
+    {
+      "path": "shared/scripts/ai_agent_workspace_tools.py",
+      "bytes": 30749,
+      "sha256": "fb4bad9b12d01231593b4032a77ec478a771941669c522047b6f2ab7b517ad6b"
+    },
+    {
+      "path": "shared/scripts/application_paths.py",
+      "bytes": 7350,
+      "sha256": "7aaccdcf485bbe05c275c84cde7de8af9cf09027a21bd11810cd00fb6b11f8dc"
+    },
+    {
+      "path": "shared/scripts/backup_databases.py",
+      "bytes": 3255,
+      "sha256": "b319ba458475d0d2f78785fd6c887586c770fbfabc3aea5bba51f41dc1f75a70"
+    },
+    {
+      "path": "shared/scripts/cleanup_old_backups.py",
+      "bytes": 7896,
+      "sha256": "896d4eed17b11e593630d6ff8b8dee958f112806d65a7e9cca78c65729438a4c"
+    },
+    {
+      "path": "shared/scripts/english_domain_profile.py",
+      "bytes": 10136,
+      "sha256": "dcbdf8cd8b3e715aada95a1b0d76c1c49d0190b5641314374024051c1251de9c"
+    },
+    {
+      "path": "shared/scripts/english_learning_service.py",
+      "bytes": 80889,
+      "sha256": "71c53d127c4448b49a0cbb8a2e5717efa3a9ba3fbb6d730addeaf0a70d750dc3"
+    },
+    {
+      "path": "shared/scripts/init_databases.py",
+      "bytes": 4926,
+      "sha256": "3108c0e712a74036059380f36ee224587b0917bb6a93802c65901e9cd402f9c9"
+    },
+    {
+      "path": "shared/scripts/latex_document_layout.py",
+      "bytes": 1660,
+      "sha256": "ceb4e802740f28d634cc462b2bc0a4551899901da3c95186c96cfc43beb87e63"
+    },
+    {
+      "path": "shared/scripts/latex_theorem_environments.py",
+      "bytes": 1959,
+      "sha256": "e4f8f33dbc7b1b2467a304feb1e0fae25bde42657f1a2009654f223b9f1e0ebb"
+    },
+    {
+      "path": "shared/scripts/launch_study_problem_bank.pyw",
+      "bytes": 13326,
+      "sha256": "1845a826a80dcf4549b1223c43badb6b7402076a139bbbed7d804a158eadaee9"
+    },
+    {
+      "path": "shared/scripts/markdown_reader_qt.py",
+      "bytes": 35811,
+      "sha256": "4f28b8d89222225d37b1aa8a91226cea2894c021a84ba8e607fe9acaa75d90d7"
+    },
+    {
+      "path": "shared/scripts/markdown_renderer.py",
+      "bytes": 18554,
+      "sha256": "d56bb51a7355a77080af7489a4d125998a4cc38f8212863906366a64083d7649"
+    },
+    {
+      "path": "shared/scripts/online_course_agent_prompts.py",
+      "bytes": 6224,
+      "sha256": "f78f1a40327c167329d71cf3c4c865504c5c72555b757e085b01e282b35375ae"
+    },
+    {
+      "path": "shared/scripts/online_course_ai_agent.py",
+      "bytes": 342578,
+      "sha256": "a00d59ac1abbec9710bd200eda1235eaf6730a685eb8f7c771010b81f471234f"
+    },
+    {
+      "path": "shared/scripts/online_course_board_keyframes.py",
+      "bytes": 36347,
+      "sha256": "f214aed7c9a939f8213b12331f4465e372c523d80b304333edd7883c1731d1e4"
+    },
+    {
+      "path": "shared/scripts/online_course_crv_worker.py",
+      "bytes": 1043,
+      "sha256": "1c3f770e875aa9aa55cef1011cdb9df3b1b766cc7307e4aa9a9d0b385c243407"
+    },
+    {
+      "path": "shared/scripts/online_course_diagram_backends.py",
+      "bytes": 16121,
+      "sha256": "0dcc8063015885469b7aa856621f5cd7bc7e01bdab4e90a3a3b335770a2d146e"
+    },
+    {
+      "path": "shared/scripts/online_course_lecture_experiments.py",
+      "bytes": 5377,
+      "sha256": "402feec4de3006d132808d408bc5f70c1298db4a92bd79f23f9ff32ab6fee126"
+    },
+    {
+      "path": "shared/scripts/online_course_lecture_quality.py",
+      "bytes": 44693,
+      "sha256": "def40e3d462122329c7699a1279adef265975ace18abc804bac895d758c17a5c"
+    },
+    {
+      "path": "shared/scripts/online_course_media_engine.py",
+      "bytes": 74678,
+      "sha256": "6aa352c079d216d34d96923ccf262ab0c7635fc99f0c90ab4615582543a837de"
+    },
+    {
+      "path": "shared/scripts/online_course_reference_mineru.py",
+      "bytes": 50453,
+      "sha256": "729153bb26f02bf71771c03b2798a2cb3d2ec7111b677422ddf6e29c81d3d2cb"
+    },
+    {
+      "path": "shared/scripts/online_course_scene_worker.py",
+      "bytes": 1292,
+      "sha256": "0ffb6a7769896523d2d0f127990b4a08aa37dea9ff0c41f923ce25a12b6c96a6"
+    },
+    {
+      "path": "shared/scripts/online_course_service.py",
+      "bytes": 1182983,
+      "sha256": "39ab2821dad0ca40ee4468146fd41cf1acc7f2123aba20ad1bbd64e6f16b936e"
+    },
+    {
+      "path": "shared/scripts/pdf_word_geometry.py",
+      "bytes": 27420,
+      "sha256": "9ab0d345155ced3480438a20e652b8590a923725545be8a599d55ae57ecd7285"
+    },
+    {
+      "path": "shared/scripts/problem_bank_center.py",
+      "bytes": 134370,
+      "sha256": "3342bafeea3c6d5da7662e6678d6c16533c3b11fa637d494a5a8a9d04091e2b3"
+    },
+    {
+      "path": "shared/scripts/problem_bank_center_qt.py",
+      "bytes": 971783,
+      "sha256": "5fba484cca8a69bb7ed0b5225de45427dcd7c095627f73dad42a8f7487e69acf"
+    },
+    {
+      "path": "shared/scripts/public_regression_core.py",
+      "bytes": 3724,
+      "sha256": "ef3f3b39ec99e89180cbdf2eaea12aaae08506bb27a1c9182fd5569596221723"
+    },
+    {
+      "path": "shared/scripts/quick_video_transcript.py",
+      "bytes": 100256,
+      "sha256": "2390951cac9f0f55dac3c1a8e95202d5550d5b40d4376f411a83934e2e66d29d"
+    },
+    {
+      "path": "shared/scripts/study_project_service.py",
+      "bytes": 27397,
+      "sha256": "de3b5b24e552fff68dc2aff7922d787c95e35a158f98a7ff0480836972ead669"
+    },
+    {
+      "path": "shared/scripts/test_public_core.py",
+      "bytes": 8801,
+      "sha256": "d21821fedc89a6c96eb50fb7363e05bc06d27b1bae8ede4b6eea28b55b857313"
+    },
+    {
+      "path": "shared/scripts/test_release_engineering.py",
+      "bytes": 21434,
+      "sha256": "98348d9891dc0331efb365c9e2cd4190f61cb1df2f20cc58c5de36b4cda6e48d"
+    },
+    {
+      "path": "shared/scripts/textbook_exercise_companion.py",
+      "bytes": 20786,
+      "sha256": "9e41edcbcd8ed6a146e764e1fe9c5e1acb10558f718a0cbc2328f123a574b7da"
+    },
+    {
+      "path": "shared/scripts/vocabulary_manager.py",
+      "bytes": 53322,
+      "sha256": "3dda39799938b815115fa698da54ee2dbc5ba67720ef623c9cf3b89f11b9e621"
+    },
+    {
+      "path": "shared/ui/assets/icons/problem_bank_studio_icon.ico",
+      "bytes": 106208,
+      "sha256": "b2714741899118f6c29dda733fdb04930213c26dfa7336b11600b5c877a83360"
+    },
+    {
+      "path": "shared/ui/assets/icons/problem_bank_studio_icon.png",
+      "bytes": 1639571,
+      "sha256": "6daf9b9040764414254efd960b8b998a09473e253020b0023f7fec72c81aa2bd"
+    },
+    {
+      "path": "shared/ui/assets/markdown/katex/fonts/KaTeX_AMS-Regular.woff2",
+      "bytes": 28076,
+      "sha256": "0cdd387c9590a1a9f9794560022dbb59654a7d86f187aa0c81495ad42d3a7308"
+    },
+    {
+      "path": "shared/ui/assets/markdown/katex/fonts/KaTeX_Caligraphic-Bold.woff2",
+      "bytes": 6912,
+      "sha256": "de7701e42cf1f4cf0b766c03fb27977207eee2f4fd5d76fa82188406da43ea4c"
+    },
+    {
+      "path": "shared/ui/assets/markdown/katex/fonts/KaTeX_Caligraphic-Regular.woff2",
+      "bytes": 6908,
+      "sha256": "5d53e70ad607c2352162dec9e0923fb54ecdafaccbf604cd8dcf7d00facb989b"
+    },
+    {
+      "path": "shared/ui/assets/markdown/katex/fonts/KaTeX_Fraktur-Bold.woff2",
+      "bytes": 11348,
+      "sha256": "74444efd593c005e3f4573b44524704c0af0a937fe911cca9e94068d0d140d3f"
+    },
+    {
+      "path": "shared/ui/assets/markdown/katex/fonts/KaTeX_Fraktur-Regular.woff2",
+      "bytes": 11316,
+      "sha256": "51814d270d06ff0255dba0799994fa4d8c84d11f09951d47595f4abb1f3602dc"
+    },
+    {
+      "path": "shared/ui/assets/markdown/katex/fonts/KaTeX_Main-Bold.woff2",
+      "bytes": 25324,
+      "sha256": "0f60d1b897938ec918c8ce073092411baf9438f6739465693ff18b0f9d20b021"
+    },
+    {
+      "path": "shared/ui/assets/markdown/katex/fonts/KaTeX_Main-BoldItalic.woff2",
+      "bytes": 16780,
+      "sha256": "99cd42a3c072d918f2f44984a807cf7aa16e13545fd0875fc07c6c65f99e715b"
+    },
+    {
+      "path": "shared/ui/assets/markdown/katex/fonts/KaTeX_Main-Italic.woff2",
+      "bytes": 16988,
+      "sha256": "97479ca6cce906abc961ecac96faa5f9ca2e61b8e7670d475826bcdee9a7c267"
+    },
+    {
+      "path": "shared/ui/assets/markdown/katex/fonts/KaTeX_Main-Regular.woff2",
+      "bytes": 26272,
+      "sha256": "c2342cd8b869e01752a9321dc17213fc40d4d04c79688c1d43f2cf316abd7866"
+    },
+    {
+      "path": "shared/ui/assets/markdown/katex/fonts/KaTeX_Math-BoldItalic.woff2",
+      "bytes": 16400,
+      "sha256": "dc47344dbb6cb5b655c8460d561f4df5f501b90c804ad3c6cec65fe322351ab1"
+    },
+    {
+      "path": "shared/ui/assets/markdown/katex/fonts/KaTeX_Math-Italic.woff2",
+      "bytes": 16440,
+      "sha256": "7af58c5ec8f132a2ddde9027c6d7814decce4d3b822a11192a42a20e2e973264"
+    },
+    {
+      "path": "shared/ui/assets/markdown/katex/fonts/KaTeX_SansSerif-Bold.woff2",
+      "bytes": 12216,
+      "sha256": "e99ae51144bf1232efcc1bfe5add36262c6866b0faab24fa75740e1b98577a62"
+    },
+    {
+      "path": "shared/ui/assets/markdown/katex/fonts/KaTeX_SansSerif-Italic.woff2",
+      "bytes": 12028,
+      "sha256": "00b26ac825e2095056396e0553b8ac26d3f8ad158c3826e28b4c45b385c4714a"
+    },
+    {
+      "path": "shared/ui/assets/markdown/katex/fonts/KaTeX_SansSerif-Regular.woff2",
+      "bytes": 10344,
+      "sha256": "68e8c73ef42afd3ccec58bf0fba302cce448938e7fc020a5e31f8a952eee1342"
+    },
+    {
+      "path": "shared/ui/assets/markdown/katex/fonts/KaTeX_Script-Regular.woff2",
+      "bytes": 9644,
+      "sha256": "036d4e95149b69ff9bcc0cd55771efeb25ffa3947293e69acd78d5ac328c684b"
+    },
+    {
+      "path": "shared/ui/assets/markdown/katex/fonts/KaTeX_Size1-Regular.woff2",
+      "bytes": 5468,
+      "sha256": "6b47c40166b6dbe21a5dfca7718413f2147fd2399be1ba605d8ad39cedf25dfe"
+    },
+    {
+      "path": "shared/ui/assets/markdown/katex/fonts/KaTeX_Size2-Regular.woff2",
+      "bytes": 5208,
+      "sha256": "d04c54219f9eaec6d4d4fd42dfb28785975a4794d6b2fc71e566b9cd6db842dd"
+    },
+    {
+      "path": "shared/ui/assets/markdown/katex/fonts/KaTeX_Size3-Regular.woff2",
+      "bytes": 3624,
+      "sha256": "73d591271b1604960cb10bb90fee021670af7297017e0e98480b332d11f51995"
+    },
+    {
+      "path": "shared/ui/assets/markdown/katex/fonts/KaTeX_Size4-Regular.woff2",
+      "bytes": 4928,
+      "sha256": "a4af7d414440a1c1790825cfb700cf9cf43b0f2c4b04f0ebc523011ad9853ec0"
+    },
+    {
+      "path": "shared/ui/assets/markdown/katex/fonts/KaTeX_Typewriter-Regular.woff2",
+      "bytes": 13568,
+      "sha256": "71d517d67827787cfabdf186914cc3358eda539e37931941f2b2fd4a21f68c0b"
+    },
+    {
+      "path": "shared/ui/assets/markdown/katex/katex.min.css",
+      "bytes": 23352,
+      "sha256": "19095127357ed6d29fe0a63a6b000c913a89f7f1963b765dd3715e97c9852e75"
+    },
+    {
+      "path": "shared/ui/assets/markdown/katex/katex.min.js",
+      "bytes": 276701,
+      "sha256": "e8d885505949f3a5f4abdd5dd0d53696bd1371ad26ffbf4f310dcd77c8cdae89"
+    },
+    {
+      "path": "shared/ui/assets/markdown/katex/LICENSE",
+      "bytes": 1107,
+      "sha256": "766ccc1f306c885aa45542a9846bbd0a505b27a0374f146778171c2254ce18e3"
+    },
+    {
+      "path": "shared/ui/assets/markdown/README.md",
+      "bytes": 368,
+      "sha256": "1fcff20b85f0335f267a51ed0f3bbd8cefaa7d0461025302a8e8d54315c06d85"
+    },
+    {
+      "path": "shared/ui/components/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "shared/ui/components/carousel.py",
+      "bytes": 18042,
+      "sha256": "aed5c7ec1f19c4d9bbdb03f161eb7b5dce8741c06a27e8d8850e431aa0adbacd"
+    },
+    {
+      "path": "shared/ui/config/ui_settings.json",
+      "bytes": 322,
+      "sha256": "182b3464e4fb2ca572a0cd367771f24c2a1cb0aeb05f86de0347404d01b25555"
+    },
+    {
+      "path": "shared/ui/themes/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "shared/ui/themes/theme_engine.py",
+      "bytes": 7938,
+      "sha256": "cd146adc12aec30fcd34b151bbc09c12f400ecbb2d3dff1c4dd09b311032b1dc"
+    },
+    {
+      "path": "shared/ui/windows_shell.py",
+      "bytes": 5057,
+      "sha256": "eae4fb420aa0105ac5129e0d2a7b88b9d7f2386a6c53c3762c11936b73bddb4d"
+    },
+    {
+      "path": "shared/templates/ai_agent_training/acceptance_cases.json",
+      "bytes": 2477,
+      "sha256": "01bbc87eef7b5c1974de5568ab1e9dd6fcff37c382cc1f265d10fee41492666d"
+    },
+    {
+      "path": "shared/templates/ai_agent_training/behavior_policy.md",
+      "bytes": 2799,
+      "sha256": "9fce605eb91bc4e7c02418a0a2cd20cfef0139b04ab3261fb8a1b5aa944883ab"
+    },
+    {
+      "path": "shared/templates/ai_agent_training/few_shot_examples.json",
+      "bytes": 5469,
+      "sha256": "748f4ccf405ac6d681f7c84bb76d9029b3a68a1fdbf762e52f55db90b30712c0"
+    },
+    {
+      "path": "shared/templates/ai_agent_training/math_quality_rubric.json",
+      "bytes": 1557,
+      "sha256": "3248f8cbeb053be66805f458c2eb68e6167bb0249880bde7587424aeaaced048"
+    },
+    {
+      "path": "shared/templates/ai_agent_training/math_style_guide.md",
+      "bytes": 4423,
+      "sha256": "d9e342d94df60ba3317313bfa07babb7d9ea1db2fb2e7d339ba723aa5e63a629"
+    },
+    {
+      "path": "shared/templates/ai_agent_training/portable_skill_profiles.json",
+      "bytes": 6713,
+      "sha256": "de286a84556d875ad08eb29778843fa2cb7832e3a0aea73cb4679b1cbe4b7d28"
+    },
+    {
+      "path": "shared/templates/ai_agent_training/README.md",
+      "bytes": 3155,
+      "sha256": "fcb29fe0c6911a31c000f000767394ab474fd8e5cd74080b31e6d8e295ceceb8"
+    },
+    {
+      "path": "shared/templates/ai_agent_training/tool_workflows.md",
+      "bytes": 6701,
+      "sha256": "e050aac3a0c6ec8a1d67a12e458b9b78aacc8a537533e476ba7d6b4ddf78b8dd"
+    },
+    {
+      "path": "shared/templates/ai_agent_training/training_manifest.json",
+      "bytes": 814,
+      "sha256": "7f415faab5a87f6f3393338323fc7a58dbb77f9fead56798be86ab0d5aabe85e"
+    },
+    {
+      "path": "shared/templates/background_import_codex_prompt.txt",
+      "bytes": 7741,
+      "sha256": "6010d34cb6a2b0fbc24a13f4820157bf8b7fc67f48c657116020ede6739c20ef"
+    },
+    {
+      "path": "shared/templates/document_layout.tex",
+      "bytes": 877,
+      "sha256": "fe01b01558236f0ecd5d351232e1ba973c98c3baa27bcb1efb5b64ffd07bf9e9"
+    },
+    {
+      "path": "shared/templates/general_theorem_environments.tex",
+      "bytes": 2915,
+      "sha256": "732d5d3118d3899d281db20f5a1f3ffcb2c199f34d576cdceccbb69d96c424f1"
+    },
+    {
+      "path": "shared/templates/latex_writing_rules.txt",
+      "bytes": 13941,
+      "sha256": "e10b6642c17796f8cba2cb667f953f9edbbb40bbe9485aaae3e45d097ec825c7"
+    },
+    {
+      "path": "shared/templates/online_course_chatgpt_writing_prompt.txt",
+      "bytes": 8071,
+      "sha256": "b2823a2ab65ad0987c971e61544df5942f4eb07cdbc158ad50768f9e5b7a6a8a"
+    },
+    {
+      "path": "shared/templates/online_course_latex_drawing_rules.txt",
+      "bytes": 4202,
+      "sha256": "bacbda7bd68fd364447d905eed043c38c21c0540536f698dc7473065a6a191c2"
+    },
+    {
+      "path": "shared/templates/online_course_latex_import_contract.txt",
+      "bytes": 6176,
+      "sha256": "257c1bda0ab07e2fbb70e3dcbee8e1d74a1754b30746aa445b0460ec9d9ff03c"
+    },
+    {
+      "path": "shared/templates/online_course_reference_and_continuity_prompt.txt",
+      "bytes": 5309,
+      "sha256": "a999d8375d9ece79955dbea00098840afcc1af7af7ff4ad079145f0a3372ae6a"
+    },
+    {
+      "path": "shared/templates/online_course_reference_coverage_prompt.txt",
+      "bytes": 4198,
+      "sha256": "252ca49db69048badaa70867690c02c4c4154203fc2b1ac6e7b91f220bc6cf1c"
+    },
+    {
+      "path": "shared/templates/online_course_reference_outline_prompt.txt",
+      "bytes": 2604,
+      "sha256": "58a6db036b42810a703dae272fbf3f076663d3d4bef81bc311393ea34d94ad1e"
+    },
+    {
+      "path": "shared/vendor/online_course_toolchain/README.md",
+      "bytes": 872,
+      "sha256": "cec973776536ecad2714e664ae9e337b5e7313ab38dd6d12470d7b815990511d"
+    },
+    {
+      "path": "shared/vendor/online_course_toolchain/SOURCE.json",
+      "bytes": 737,
+      "sha256": "212b112ae97431045bc685ebe15ddd73be9d2b6172f8888ad878fce5da06bdb5"
+    },
+    {
+      "path": "shared/vendor/summarize/LICENSE",
+      "bytes": 1095,
+      "sha256": "ab8db92d77d275d30fd3ab7c00897ddee4eebe9955dd9d3e752688e6664c9dee"
+    },
+    {
+      "path": "shared/vendor/summarize/README.md",
+      "bytes": 720,
+      "sha256": "f61f306bc2d9177afbecc2f3ed6a5c284230cd4fcd15c68b72e7408af924190c"
+    },
+    {
+      "path": "shared/vendor/summarize/SOURCE.json",
+      "bytes": 269,
+      "sha256": "9d44bc9856bfd0220a6477ed7d154e93cccf4e2d7b4f1a883d38664dc2012351"
+    },
+    {
+      "path": "shared/vendor/summarize/steipete-summarize-0.21.6.tgz",
+      "bytes": 6845558,
+      "sha256": "f5a6a497ebd65393faec442251c508a74ce778e83c2db6e398abbaa963e1477f"
+    },
+    {
+      "path": "shared/vendor/summarize/UPSTREAM_README.md",
+      "bytes": 39438,
+      "sha256": "d0c927c368461bea3c4acc2f366da838a8857588c30002081fc495555d3e1304"
+    },
+    {
+      "path": "shared/browser_extensions/online_course_recorder/content_script.js",
+      "bytes": 6967,
+      "sha256": "acacd08da77250d2feba55ff0d75156baff8423c5757e17fa832015303ff251d"
+    },
+    {
+      "path": "shared/browser_extensions/online_course_recorder/manifest.json",
+      "bytes": 945,
+      "sha256": "8939c79f4156ebc2cef94c4a0f77b0c95c68fe0ba397b7ec6ef8ab428b11be9c"
+    },
+    {
+      "path": "shared/browser_extensions/online_course_recorder/offscreen.html",
+      "bytes": 144,
+      "sha256": "c25ace9b74f378b3b033674b6affb11c5c8e64732101a232a1d9919b9fcbbe42"
+    },
+    {
+      "path": "shared/browser_extensions/online_course_recorder/offscreen.js",
+      "bytes": 18381,
+      "sha256": "5ebcad42f83af7bcbe7cb08058d6abf31838b222c81e72b3eb1124c4bc7c2c73"
+    },
+    {
+      "path": "shared/browser_extensions/online_course_recorder/popup.html",
+      "bytes": 1049,
+      "sha256": "7166bed6b55df00c1ec2c86297cfd0dc9a7b8c7b8a3f03322d271530b2407380"
+    },
+    {
+      "path": "shared/browser_extensions/online_course_recorder/popup.js",
+      "bytes": 3479,
+      "sha256": "3566fa01e75cf76c604c92f59a448def87f89297c96ce9362a57d21b1c02d01e"
+    },
+    {
+      "path": "shared/browser_extensions/online_course_recorder/README.md",
+      "bytes": 4663,
+      "sha256": "a2612df0289e168e681ed060e5dadecaaea6876b5e42ab83732e03bf1ef53cc8"
+    },
+    {
+      "path": "shared/browser_extensions/online_course_recorder/service_worker.js",
+      "bytes": 11568,
+      "sha256": "1149cb58d8e6ee99371c3621b246d97145a25cd356d2a13e7a17ba2aefbd1fa5"
+    },
+    {
+      "path": "MathAnalysis/preamble/chapter.title.tex",
+      "bytes": 627,
+      "sha256": "78aa0fc1042658494a96da79be9ea73414de725af112ffbd305c1c721be50d2a"
+    },
+    {
+      "path": "MathAnalysis/preamble/colors.tex",
+      "bytes": 1672,
+      "sha256": "0a57edb0919bb4b2960a622e31e5519333f69479373a88323075128ffb4f3c0e"
+    },
+    {
+      "path": "MathAnalysis/preamble/commands.tex",
+      "bytes": 874,
+      "sha256": "173c751c85ffd58a048b2a6df962cf7c64a1c70697a5e4c3441a552b34d836ae"
+    },
+    {
+      "path": "MathAnalysis/preamble/geometry.tex",
+      "bytes": 745,
+      "sha256": "00938dfd32e14c3c330d7983d4d6e5bf590c412b3b75efcc841a287b7ac8ad1d"
+    },
+    {
+      "path": "MathAnalysis/preamble/packages.tex",
+      "bytes": 910,
+      "sha256": "69068dff61a9d3f71fae7cb897dc06be42950555c3447d78dab66d4b851dc91c"
+    },
+    {
+      "path": "MathAnalysis/preamble/problem-bank-environments.tex",
+      "bytes": 4880,
+      "sha256": "446c833c8d60457fe71f0f7801d0377194742a5e9ed35f44d0672c7b36322081"
+    },
+    {
+      "path": "MathAnalysis/preamble/theorems.tex",
+      "bytes": 3043,
+      "sha256": "bf76b401e8909603b11cd373e7c27fdaf3cf2c20038be95028f5d901080378e5"
+    },
+    {
+      "path": "shared/templates/ai_agent_training/lecture_quality/batch_state_machine_cases.json",
+      "bytes": 243,
+      "sha256": "3ed59c30934408eecf2071544a01addbd602dc240aa3f305c79b031fa8bd671f"
+    },
+    {
+      "path": "shared/templates/ai_agent_training/lecture_quality/corpus.json",
+      "bytes": 352,
+      "sha256": "6b0302c56ceb169d51015b4060b0c9500ce446381b614df3777d8d3c1c258a3f"
+    },
+    {
+      "path": "shared/templates/ai_agent_training/lecture_quality/README.md",
+      "bytes": 211,
+      "sha256": "6d59a73147bf80743142307a36915961abd0e5b8db4d60a8d32160ee06a3611f"
+    },
+    {
+      "path": "shared/templates/ai_agent_training/lecture_quality/split_manifest.json",
+      "bytes": 253,
+      "sha256": "b5bc237fe9f511b9df106d022de2fa4dfc142d5f8386129a8ae3519a740d22b2"
+    },
+    {
+      "path": "shared/templates/ai_agent_training/math_quality_pairs.json",
+      "bytes": 2512,
+      "sha256": "a83c1778fa1fa47181e3e9def325bc823a79a91cefca0ee4176f559d064932d7"
+    },
+    {
+      "path": "shared/templates/ai_agent_training/math_capability_suite.json",
+      "bytes": 3373,
+      "sha256": "7d61d7b3ebde09cd8d4097703c8e559db643a4ff2b4aa715d4202a20a201bea6"
+    },
+    {
+      "path": "shared/templates/ai_agent_training/system_acceptance_suite.json",
+      "bytes": 3729,
+      "sha256": "85b66589b9633aad334df64f0829fd9b25bb5bc668a2bcd3f73777ab131ead27"
+    }
+  ]
+}

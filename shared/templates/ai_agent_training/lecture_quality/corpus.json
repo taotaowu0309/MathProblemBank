@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "dataset": "synthetic-algebra-demo",
+  "cases": [
+    {"id": "synthetic-missing-core", "split": "train", "mutation": "delete_required_atom_body_keep_title", "expected_hard_categories": ["coverage"]},
+    {"id": "synthetic-complete-subsection", "split": "validation", "mutation": "none", "expected_hard_categories": []}
+  ]
+}

@@ -1,0 +1,28 @@
+\RequirePackage[explicit]{titlesec}
+
+\titleformat{\chapter}[display]
+  {\normalfont}
+  {}
+  {0pt}
+  {%
+    \def\chaptertitletext{#1}%
+    \begingroup
+      \setlength{\fboxrule}{0.8pt}%
+      \setlength{\fboxsep}{0pt}%
+      \noindent
+      \fcolorbox{BlueMain}{BlueMain!10}{%
+        \parbox[c][1.35cm][c]
+          {\dimexpr\linewidth-2\fboxrule\relax}{%
+            \hspace*{0.45cm}%
+            {\color{BlueDark}\bfseries\Huge
+              第\thechapter 章\quad \chaptertitletext}%
+          }%
+      }%
+    \endgroup
+  }%
+  [\vspace{1.2em}]
+
+\titlespacing*{\chapter}
+  {0pt}
+  {0pt}
+  {1.5em}

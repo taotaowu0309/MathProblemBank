@@ -1,0 +1,154 @@
+MATH PROBLEM BANK PERMANENT CHATGPT AUTHORING CONTRACT
+
+PRIORITY AND REQUIRED READING
+
+This is the highest-priority package-level authoring contract for every formal
+online-course Section or Subsection. Read this entire file and every permanent
+companion contract named by `ChatGPT_PROMPT.txt` before planning or drafting.
+`ChatGPT_PROMPT.txt` is only the package-specific dispatcher: it identifies the
+locked target, available materials, and read order, but it does not duplicate or
+replace the permanent rules in this file.
+
+EXACT WRITABLE SCOPE AND MATHEMATICAL OWNERSHIP
+
+Return one complete, integrated LaTeX body for the exact application-selected
+formal writing unit. Recording segments, timestamps, evidence blocks, textbook
+parts, continuity files, and conversation history are sources, not independent
+writing scopes. Content is writable only when it belongs to the locked target
+under the current recording/content contracts or an explicit reference mapping.
+Continuity alone never makes previously written material writable again.
+
+Before drafting, privately create a CONTINUITY COLLISION LEDGER. For every
+substantial definition, theorem, proof, construction, and major example that may
+appear, identify its principal ownership location and classify the proposed use as:
+
+- already established;
+- minimal restatement needed;
+- new strengthening;
+- new proof revisited;
+- preview becomes formal theory.
+
+Every substantial mathematical object should have one principal ownership
+location in the course. If it is already established, cite it or restate only the
+minimum needed for the current argument. Reproduce a complete proof or construction
+only for a genuine current strengthening, an explicitly revisited proof, or a
+preview that the locked target now develops as formal theory. Never repeat a result
+merely because the current evidence or mapped source mentions it again.
+
+WHOLE-UNIT EXPOSITION
+
+Obey `WHOLE_SUBSECTION_WRITING_PROMPT.txt`. Integrate all in-scope evidence before
+writing and organize the unit by mathematical dependency and teaching logic, not
+recording chronology or source order. Preserve every distinct supported
+hypothesis, definition, result, proof step, calculation, example, exercise,
+warning, and explanation that is owned by the target; remove genuine overlap.
+Read `LECTURE_ERRORS_AND_CORRECTIONS.md`, verify every reported diagnosis and
+correction, and independently check the complete target for additional mathematical
+errors. Never preserve a demonstrably false claim merely because it appears in a
+source.
+
+Use the supported semantic environments truthfully. Definitions, results,
+standalone examples, exercises, mathematical remarks or warnings, and target-owned
+proofs use their matching environments. Motivation, transitions, contextual
+claims, and connective reasoning remain ordinary prose. Never turn a contextual
+or motivational claim into a boxed theorem merely to make it look formal.
+
+PROOF OWNERSHIP
+
+Apply the five-category decision rule in `UNEXPANDED_PROOFS_PROMPT.txt` to every
+nontrivial result before deciding whether to prove it. Complete proofs are required
+for current target results and explicit current obligations. Previously established
+results are cited or minimally restated, not proved again. External prerequisites
+are stated in the exact version needed but are not proved unless current recording
+evidence, explicit mapped-reference coverage, or an evidence obligation assigns
+that proof to this target. Contextual claims remain prose. The mere use of a
+`theorem`, `lemma`, `proposition`, or `corollary` environment does not override
+this ownership decision.
+
+Every retained example must still contain the calculation or verification needed
+to establish what that example claims. Definitions must state complete hypotheses,
+object types, operations, and conditions. Do not manufacture a proof obligation
+for a definition, a motivational observation, or an already completed earlier
+result.
+
+CORE NARRATIVE AND OPTIONAL SUPPLEMENTS
+
+Mathematical completeness does not require every long technical proof to interrupt
+the first-reading path. State the core definition or theorem before a long
+target-owned technical supplement whenever mathematically legitimate. Mark the
+supplement clearly with a short first-reading remark, place supporting lemmas with
+it, and resume the main conceptual thread immediately afterward. Advanced material
+is retained when it is owned by the current target, but it must not obscure the
+unit's core narrative.
+
+When the unit invokes an external theorem, state the exact version and hypotheses
+needed before using it. Do not silently invoke an unspecified theorem, and do not
+expand the external theorem into a new chapter-length proof unless its proof is
+assigned to the current target.
+
+FORWARD-SCOPE CONTROL
+
+The end of the unit may contain a short transition explaining what the next formal
+unit will do. Do not systematically develop the next unit's definitions, theorems,
+constructions, examples, or proofs here. A brief preview does not transfer principal
+ownership into the current target.
+
+LANGUAGE, OUTPUT, AND IMPORT SAFETY
+
+Write entirely in polished academic English. Translate Chinese speech, OCR,
+headings, examples, and reference text while preserving mathematical notation.
+Return only compilable body LaTeX. The application owns and inserts the formal
+outline. Obey every command, environment, paragraph, proof-marker, diagram, and
+image-path rule in `LATEX_IMPORT_CONTRACT.txt` and `LATEX_DRAWING_RULES.txt`.
+
+EXERCISE AND SOLUTION CONTRACT
+
+Every exercise statement owned by the target must have exactly one complete solution
+immediately after it. Never write "left to the reader", "the proof is similar",
+"obvious", "routine", a hint instead of a solution, an answer-only line, or a
+placeholder.
+
+For a standalone exercise use:
+
+\begin{exercise}
+<complete exercise statement>
+\end{exercise}
+
+\begin{solution}
+<complete detailed solution>
+\end{solution}
+
+For a numbered exercise set inside a top-level `enumerate`, keep each statement
+and solution in the same `\item`; put `\textbf{Solution.}` alone on its own source
+line and begin the answer in the following paragraph. A detailed solution must
+justify every nontrivial implication and treat all relevant cases and boundary
+conditions.
+
+REFERENCE, CONTINUITY, AND DRAWINGS
+
+Read `REFERENCE_AND_CONTINUITY_PROMPT.txt` on every formal writing task. When
+reference files are present, obey the specialized coverage contract and its
+mathematical-ownership intersection. When continuity files are present, read the
+complete prior lecture PDF before drafting, use it to maintain notation and locate
+prior ownership, and never copy its wrappers or rewrite earlier content.
+
+Read `LATEX_DRAWING_RULES.txt` completely. Keyframes and screenshots are evidence
+only. Include a new TikZ figure only after its mathematical purpose, diagram type,
+object types, and relation to the surrounding prose pass that contract's private
+gates. When curated diagram materials assign a realization marker, preserve it
+immediately after the matching complete drawing; a marker without its drawing is
+invalid. Zero figures is a valid result.
+
+PRIVATE FINAL CHECK
+
+Before returning, check the complete draft against all permanent contracts and the
+private whole-unit plan and collision ledger. Confirm that every substantial item
+has a defensible ownership classification; no earlier proof, construction, or
+example has been repeated without a genuine current reason; the core narrative is
+visible before optional supplements; external prerequisites are stated at the
+right strength; no later unit has been developed early; and all explicit current
+proof obligations are resolved. Also confirm that the output is one complete
+body-only target unit, every required atom is substantively realized, no forbidden
+command, Chinese character, evidence timestamp, or unfinished marker remains, and
+every emitted figure is present, explained, and mathematically faithful. Return
+only LaTeX; do not print the plan, ledger, or check.

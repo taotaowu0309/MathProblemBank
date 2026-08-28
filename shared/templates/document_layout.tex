@@ -1,0 +1,22 @@
+% Shared document layout managed by MathProblemBank.
+% This is the single source used by both project PDFs and online-course PDFs.
+% A top-level numbered exercise is a sequence of ordinary textbook paragraphs:
+% the number occupies the first-line indent, wrapped text returns to the full
+% measure, and every later paragraph receives the standard two-em indentation.
+\RequirePackage{enumitem}
+\setlength{\parindent}{2em}
+\setlist[enumerate,1]{
+  wide=0pt,
+  listparindent=2em,
+  parsep=0.35\baselineskip,
+  itemsep=0.75\baselineskip,
+  topsep=0.5\baselineskip
+}
+
+% The solution label is a fixed, flush-left heading.  The mathematical answer
+% begins in a new paragraph, so its first line and every later paragraph use
+% the shared two-em paragraph indentation.
+\newcommand{\MPBSolutionHeading}{%
+  \par\addvspace{0.35\baselineskip}%
+  \noindent\textbf{Solution.}\par\nobreak
+}

@@ -1,0 +1,120 @@
+PERMANENT LATEX IMPORT CONTRACT
+
+Read this entire contract before writing. It mirrors the deterministic structural
+checks performed by the Math Problem Bank online-course LaTeX importer. These are
+hard requirements, not stylistic suggestions.
+
+1. ORDINARY SELECTED-UNIT MODE IS BODY-ONLY
+
+The normal workflow has already selected and locked the target Chapter, Section,
+and Subsection in the application. Return only that target's body.
+
+- Do not output `\setcounter`.
+- Do not output `\part`, `\chapter`, `\section`, `\subsection`,
+  `\subsubsection`, `\paragraph`, or `\subparagraph`.
+- Do not repeat, translate, shorten, or restate the selected unit title.
+- Begin directly with mathematical prose or the first legitimate semantic
+  environment.
+
+Historical files may contain compatible legacy headings. They are read-only
+evidence and are never templates for ordinary import. Only when a prompt explicitly
+declares `LEGACY_OUTLINE_IMPORT_MODE` may legacy headings appear. In that exceptional
+mode they must be a single contiguous prefix at the absolute beginning, occur at
+most once each, follow `chapter` then `section` then `subsection`, and use titles
+identical to the application-locked titles. `\setcounter` is not allowed even in
+that prefix. No ordinary selected-unit prompt enables legacy mode.
+
+2. SUPPORTED SEMANTIC ENVIRONMENTS
+
+Use these environments whenever the mathematical content has the corresponding
+meaning:
+
+- `kind=definition` -> `definition`;
+- `kind=theorem` -> `theorem`;
+- `kind=lemma` -> `lemma`;
+- `kind=proposition` -> `proposition`;
+- `kind=corollary` -> `corollary`;
+- `kind=example` -> `example`;
+- `kind=exercise` -> `exercise`, followed immediately by `solution`;
+- a mathematical remark, convention, or warning -> `remark`;
+- a supplied proof -> `proof`, immediately after the result it proves.
+
+The importer recognizes `definition`, `theorem`, `lemma`, `proposition`,
+`corollary`, `example`, `exercise`, `remark`, `proof`, and `solution`. A generic
+`kind=statement` must be classified by its actual mathematical role: use the
+appropriate environment if it is a named semantic result, otherwise write it as
+ordinary prose. A `kind=proof_step` belongs inside the corresponding proof or
+explanation and does not justify inventing a separate result.
+
+Never simulate Definition, Theorem, Lemma, Proposition, Corollary, Example,
+Exercise, Remark, or Proof with `\textbf`, `\textit`, `\emph`, `\noindent`,
+`\paragraph`, or a plain prose label. Do not create bold or italic topical
+headings. Motivation, transitions, background, and connective explanation stay
+as ordinary prose paragraphs.
+
+Before returning, inspect every explicit mathematical semantic object and verify
+that it is wholly contained in the correct environment. A marker or environment
+name without the actual mathematical content does not count.
+
+3. FORBIDDEN DOCUMENT-LEVEL AND ACTIVE COMMANDS
+
+Return body content only. Do not output:
+
+- `\documentclass`, `\begin{document}`, or `\end{document}`;
+- `\usepackage`;
+- `\input` or `\include`;
+- `\write18`, `\openout`, `\read`, or `\immediate`;
+- `\newcommand`, `\renewcommand`, or `\def`;
+- shell commands, file-writing commands, external URLs, or absolute paths.
+
+Do not wrap the answer in Markdown fences and do not include a preamble, audit
+report, checklist, explanation of the response, or summary of your work.
+
+4. DETERMINISTIC CONTENT REJECTIONS
+
+- The body must contain no Chinese character.
+- The body must contain no evidence timestamp such as `[00:12:34]` or a Markdown
+  timestamp heading.
+- No `【待补证明：...】` marker may remain.
+- Every required proof obligation must be completed in the mathematics. Proof
+  IDs and `% evidence-obligation: ... resolved` comments are optional
+  bookkeeping and never establish mathematical completion.
+- Every required Mathematical Atom must appear substantively before its matching
+  `% MPB-ATOM: <atom-id> realized` comment. Never emit a coverage comment alone.
+
+5. DRAWINGS AND EVIDENCE IMAGES
+
+Never emit `\includegraphics`. Follow `LATEX_DRAWING_RULES.txt`. Every new
+non-textbook figure must use its single LaTeX-safe `% MPB-DIAGRAM-SOURCE-BEGIN`
+protocol with `backend=tikz` and exactly one complete body-local `tikzpicture`.
+Penrose, Quiver/tikz-cd, Asymptote, Graphviz, CeTZ, and raw `tikzpicture` content
+outside that block are rejected. The application compiles and inserts the derived
+vector PDF during import. Agent-final keyframes, board screenshots, and page
+renders remain evidence only. Generated assets are application-owned under
+`generated_diagrams/` or `textbook_figures/`; never write or guess a path there yourself.
+
+The sole image exception is an indexed original textbook diagram. Refer to it
+only with `% MPB-TEXTBOOK-FIGURE: sha256=... width=...`; never emit its path. The
+application accepts only a hash present in the current material package, copies
+the original bytes unchanged, and verifies the hash after copying.
+
+6. PARAGRAPH AND EXERCISE STRUCTURE
+
+Separate genuine prose paragraphs with a blank line. Do not imitate paragraph
+breaks with `\\`, `\newline`, or repeated `\noindent`. A numbered exercise set
+may use one top-level `enumerate`. Apply the exercise/solution rules from
+`GLOBAL_CHATGPT_WRITING_RULES.txt` exactly.
+
+7. PAGE-BREAK-SAFE BODY LATEX
+
+The semantic environments are breakable `tcolorbox` environments. Do not emit
+`\newpage`, `\clearpage`, `\pagebreak`, `\nopagebreak`, `\vfill`, or manual
+vertical skips to control pagination. Begin a long theorem, proposition, example,
+or proof with a short prose sentence before the first display, and separate a
+sequence of displayed formulas with explanatory prose paragraphs. Do not put a
+single giant paragraph containing many consecutive `$$...$$` or `\[...\]` blocks
+inside one semantic box. Split such material into logically complete paragraphs
+so the box can break at ordinary paragraph boundaries. A proof may follow an
+example immediately after `\end{example}`; this is valid, but the example itself
+must still contain its stated construction or calculation. The generated PDF must
+not contain an interior page whose only text is running header/footer furniture.

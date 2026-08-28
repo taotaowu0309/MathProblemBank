@@ -1,0 +1,65 @@
+# Project PDF build artifacts
+**/collections/*/compile_error.log
+**/collections/*/main.aux
+**/collections/*/main.bbl
+**/collections/*/main.bcf
+**/collections/*/main.blg
+**/collections/*/main.fdb_latexmk
+**/collections/*/main.fls
+**/collections/*/main.idx
+**/collections/*/main.ilg
+**/collections/*/main.ind
+**/collections/*/main.lof
+**/collections/*/main.log
+**/collections/*/main.lot
+**/collections/*/main.out
+**/collections/*/main.pdf
+**/collections/*/main.run.xml
+**/collections/*/main.synctex.gz
+**/collections/*/main.toc
+**/collections/*/main.xdv
+**/collections/*/chapters/*.aux
+**/collections/*/*_new_*.pdf
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Repository-local scratch space and generated previews/cards
+tmp/
+**/exports/single_problem_preview/
+**/exports/standard_problem_cards/
+shared/exports/vocabulary/vocabulary_all_build/
+
+# Runtime UI, AI, OCR, and rendering caches
+shared/ui/cache/
+
+# Timestamped safety snapshots are superseded by the tracked current/latest DBs
+**/backups/*_before_*.db
+**/data/*_before_*.db
+shared/vocabulary_backups/vocabulary_before_*.db
+
+# Local AI-agent workspaces and edit recovery data
+MathWorkspace/AI_Acceptance/
+PhysicsWorkspace/
+shared/backups/ai_agent_tex_edits/
+shared/backups/ai_math_workspace/
+**/collections/*/.ai_agent_tex_patches.json
+
+# Machine-specific integration paths (never publish)
+shared/private_paths.local.json
+shared/private_provider_compat.py
+shared/private_release_policy.local.py
+# Public-release runtime data must stay outside Git
+user-data/
+runtime-data/
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+*.pdf
+*.zip
+*.7z
+*.rar
+*.synctex.gz

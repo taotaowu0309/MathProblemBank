@@ -1,0 +1,67 @@
+[
+  {
+    "id": "synthetic_analysis_limit_proof",
+    "capability": "local_proof_explanation",
+    "subject_name": "数学分析",
+    "project_ref": "SYN-MA-C0001",
+    "problem_ref": "SYN-MA-P000001",
+    "search_query": "数列极限唯一性",
+    "task": "沿 synthetic 题解解释数列极限唯一性证明中的关键不等式。",
+    "required_behaviors": ["沿用题解记号", "写明 epsilon 的选择", "补齐三角不等式连接"],
+    "forbidden_behaviors": ["循环引用待证结论", "省略产生矛盾的严格不等式"]
+  },
+  {
+    "id": "synthetic_algebra_rank_nullity",
+    "capability": "local_concept_explanation",
+    "subject_name": "高等代数",
+    "project_ref": "SYN-HA-C0001",
+    "problem_ref": "SYN-HA-P000001",
+    "search_query": "秩零度定理 单射 满射",
+    "task": "解释同维有限维线性映射中单射与满射的等价关系。",
+    "required_behaviors": ["声明同维有限维前提", "使用秩-零度定理", "给出不同维反例"],
+    "forbidden_behaviors": ["省略维数条件", "把一般映射的单射与满射混为一谈"]
+  },
+  {
+    "id": "synthetic_related_problem_search",
+    "capability": "local_search",
+    "subject_name": "数学分析",
+    "task": "在 synthetic 项目与绑定资料中寻找与一致连续性直接相关的少量题目。",
+    "required_behaviors": ["返回 fixture 题号或页码", "解释直接相关性"],
+    "forbidden_behaviors": ["遍历整库", "虚构不存在的题号"]
+  },
+  {
+    "id": "synthetic_local_reference",
+    "capability": "local_reference",
+    "task": "结合本地 synthetic 资料解释 Cauchy 序列，同时保持当前材料的定义优先。",
+    "required_behaviors": ["优先当前材料", "标明引用来源", "说明使用的前提"],
+    "forbidden_behaviors": ["把补充资料当唯一权威", "静默替换当前定义"]
+  },
+  {
+    "id": "synthetic_scanned_pdf_definition",
+    "capability": "scanned_pdf_ocr",
+    "task": "从 synthetic 扫描 PDF 指定页读取一个定义，保留页码并标出 OCR 不确定符号。",
+    "required_behaviors": ["实际 OCR", "引用页码", "显式标记不确定字符"],
+    "forbidden_behaviors": ["猜测无法辨认的公式", "声称原 PDF 有文本层"]
+  },
+  {
+    "id": "synthetic_math_image_tangent",
+    "capability": "image_math",
+    "task": "从 synthetic 图片识别抛物线、切点与切线，并用解析计算核对斜率。",
+    "required_behaviors": ["直接观察图片", "区分可见事实与计算推断"],
+    "forbidden_behaviors": ["只复述文件名", "把示意图当严格证明"]
+  },
+  {
+    "id": "synthetic_conflicting_definitions",
+    "capability": "source_conflict",
+    "task": "比较两个 synthetic 附件对同名概念的不同定义，并按当前材料口径回答。",
+    "required_behaviors": ["逐一标明来源", "列出不同假设", "说明采用口径"],
+    "forbidden_behaviors": ["静默拼接", "制造不存在的等价性"]
+  },
+  {
+    "id": "synthetic_public_material_discovery",
+    "capability": "public_discovery",
+    "task": "寻找公开可访问的高质量数学讲义，并说明与问题直接相关的章节。",
+    "required_behaviors": ["核验页面或 PDF", "给出直接链接", "区分资料类型"],
+    "forbidden_behaviors": ["推荐打不开的页面", "只依赖搜索摘要"]
+  }
+]

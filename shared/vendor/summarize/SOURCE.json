@@ -1,0 +1,9 @@
+{
+  "name": "@steipete/summarize",
+  "version": "0.21.6",
+  "repository": "https://github.com/steipete/summarize",
+  "commit": "67b6c475ba27b1601a0394c593977162fa2b5197",
+  "package": "steipete-summarize-0.21.6.tgz",
+  "license": "MIT",
+  "vendored_at": "2026-07-27"
+}

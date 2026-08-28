@@ -1,0 +1,99 @@
+PERMANENT REFERENCE AND CONTINUITY CONTRACT
+
+Read this entire contract before writing every formal Section or Subsection,
+including tasks whose package contains no textbook mapping or no prior compiled
+lecture notes. The presence or absence of files changes the available evidence;
+it does not change this contract.
+
+SOURCE AUTHORITY AND SCOPE
+
+Use sources in this order:
+
+1. The application-owned formal target and its current recording/content contracts
+   define the exact writable scope and the lecturer's supported presentation.
+2. Textbook parts explicitly mapped in `reference_materials/REFERENCE_INDEX.json`
+   supply standard mathematics only within their assigned coverage and the exact
+   target's ownership boundary.
+3. Accepted lecture notes under `continuity/` define previously established
+   notation, results, examples, terminology, and exposition. They are read-only
+   scope context; continuity alone never makes old material writable again.
+4. Standard mathematical knowledge may fill a current proof or connective step
+   only when compatible with the supplied hypotheses and without enlarging the
+   formal target.
+
+Never import material merely because it exists elsewhere in the same course,
+textbook, conversation, or complete lecture PDF.
+
+MANDATORY CONTINUITY READ ORDER
+
+When `continuity/CONTINUITY_MANIFEST.json` is present, read it completely first.
+Then read, in this order:
+
+1. `continuity/PREVIOUS_NOTES_INDEX.json`;
+2. `continuity/THEOREM_AND_NOTATION_REGISTRY.json`;
+3. the complete `continuity/RELATED_PREVIOUS_SUBSECTIONS.tex`;
+4. the complete `continuity/COMPLETE_LECTURE_NOTES.pdf` from beginning to end.
+
+Read the complete prior PDF as mathematical continuity context before drafting the
+new unit, not merely when a local doubt arises. The purpose is to know what the
+reader has already seen, where major results and constructions were established,
+how notation was introduced, which examples were already verified, which topics
+were only previewed, and what later promises were made. This full read is for
+continuity and ownership, never for copying.
+
+FULL-PDF READ GATE:
+
+- The PDF named by `complete_lecture_pdf` is one indivisible required input. Read
+  every physical page from the first page through the final page reported by
+  `source_pdf_pages` before planning or drafting.
+- Never replace that full read with selected pages, page excerpts, search snippets,
+  OCR summaries, `RELATED_PREVIOUS_SUBSECTIONS.tex`, or the previous-notes index.
+  Those files are navigation aids only and do not certify whole-course continuity.
+- If the complete PDF is absent, inaccessible, truncated, or has a different page
+  count from `CONTINUITY_MANIFEST.json`, do not draft the lecture body. Report the
+  missing or unreadable complete-PDF evidence instead of pretending that a partial
+  read was sufficient.
+- Do not begin the private whole-unit plan or the final LaTeX until this full-PDF
+  gate has passed.
+
+Before drafting, use these materials to build the private CONTINUITY COLLISION
+LEDGER required by `GLOBAL_CHATGPT_WRITING_RULES.txt`. Classify every possible
+reuse as already established, minimal restatement needed, new strengthening, new
+proof revisited, or preview becomes formal theory. Previously owned mathematics is
+normally cited or minimally restated. Do not copy, rewrite, polish, or reprove it
+merely because the current source mentions it again.
+
+CONTINUITY FILE SAFETY
+
+Never copy or imitate continuity file-level structure. In particular, never inherit
+or reproduce `\setcounter`, `\part`, `\chapter`, `\section`, `\subsection`,
+`\subsubsection`, `\paragraph`, `\subparagraph`, `\clearpage`, `\newpage`,
+`\input`, `\include`, preambles, document wrappers,
+`% MPB_RECORDING_IMPORT_SCOPE` metadata, historical filenames, or source comments.
+
+If current evidence or a mapped reference corrects an earlier note, write the
+mathematically valid current account without discussing editing history unless the
+mathematical distinction itself belongs in the lecture.
+
+TEXTBOOK AND OTHER COURSE REFERENCES
+
+When `reference_materials/REFERENCE_INDEX.json` is present, read the index and
+every listed part completely before drafting. Also read
+`reference_materials/REFERENCE_COVERAGE_PROMPT.txt` completely and, when named by
+the index, `reference_materials/REFERENCE_OUTLINE_PROMPT.txt` completely.
+
+The paired Markdown is navigation and OCR, not final authority for symbols. Use the
+paired split PDF visually whenever a formula, quantifier, domain, label, diagram,
+table, or proof step is uncertain. A complete source file or page may contain
+neighboring mathematics; file inclusion does not transfer mathematical ownership.
+Apply the specialized reference-coverage intersection before writing any item.
+
+Integrate the writable reference contribution into the current exposition rather
+than appending a source-labelled section. Do not output reference IDs, filenames,
+page labels, or a coverage checklist. Do not read or import unmapped parts merely
+because they are available.
+
+When no reference index is present, do not invent a textbook mapping. When no
+continuity manifest is present, do not invent prior lecture content. In all cases,
+obey the current package's whole-unit, ownership, proof, and body-only contracts
+rather than the formatting of any source.

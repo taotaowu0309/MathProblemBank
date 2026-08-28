@@ -1,0 +1,39 @@
+{
+  "manifest_version": 3,
+  "name": "Math Problem Bank Web Course Recorder",
+  "version": "0.8.1",
+  "description": "Records internal tab audio without a microphone while keeping the lecture audible locally.",
+  "permissions": [
+    "activeTab",
+    "offscreen",
+    "scripting",
+    "storage",
+    "tabCapture"
+  ],
+  "host_permissions": [
+    "http://127.0.0.1:8765/*",
+    "https://www.youtube.com/*",
+    "https://youtube.com/*",
+    "https://www.bilibili.com/*",
+    "https://bilibili.com/*"
+  ],
+  "background": {
+    "service_worker": "service_worker.js"
+  },
+  "action": {
+    "default_title": "Record this web course",
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.youtube.com/*",
+        "https://youtube.com/*",
+        "https://www.bilibili.com/*",
+        "https://bilibili.com/*"
+      ],
+      "js": ["content_script.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

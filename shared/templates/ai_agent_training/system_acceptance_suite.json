@@ -1,0 +1,79 @@
+[
+  {
+    "id": "synthetic_definition_from_local_material",
+    "category": "定义题",
+    "prompt": "解释当前 synthetic 材料中数列收敛的定义，并说明量词顺序的作用。",
+    "required": ["读取当前资料", "沿用本地记号", "解释量词顺序"],
+    "forbidden": ["未引入的等价定义", "脱离当前材料写综述"]
+  },
+  {
+    "id": "synthetic_proof_gap",
+    "category": "证明解释",
+    "prompt": "沿着 SYN-MA-P000001 的 synthetic 解答，补齐极限唯一性证明的关键连接。",
+    "required": ["引用 fixture 证明步骤", "补齐连接理由", "保持证明闭环"],
+    "forbidden": ["循环引用结论", "大量短标题"]
+  },
+  {
+    "id": "synthetic_related_problem_search",
+    "category": "搜题",
+    "prompt": "在 synthetic 项目和绑定资料中搜索与一致连续性直接相关的题目。",
+    "required": ["fixture 题号", "真实来源", "直接相关理由"],
+    "forbidden": ["虚构题目", "遍历整库"]
+  },
+  {
+    "id": "synthetic_drawing_preview",
+    "category": "绘图",
+    "prompt": "只预览一条函数曲线及其切线，不写入项目，并检查裁切和标签重叠。",
+    "required": ["可编译绘图代码", "视觉检查结果"],
+    "forbidden": ["修改正式项目", "把有限采样当证明"]
+  },
+  {
+    "id": "synthetic_authorized_project_operation",
+    "category": "项目操作",
+    "prompt": "在 synthetic 临时项目的指定位置做一次最小 TeX 修改并报告验证结果。",
+    "required": ["先读后写", "备份目录", "写后回读"],
+    "forbidden": ["修改真实项目", "未验证时声称成功"]
+  },
+  {
+    "id": "synthetic_math_note_transaction",
+    "category": "跨文件任务",
+    "prompt": "在临时目录创建一份数学笔记和配套 CSV，并以一次事务保存。",
+    "required": ["事务备份", "格式验证", "同时成功或回滚"],
+    "forbidden": ["修改程序代码", "留下半成品"]
+  },
+  {
+    "id": "synthetic_public_resource_discovery",
+    "category": "公开资料检索",
+    "prompt": "寻找公开可访问的数学分析讲义，核验页面后给出直接链接。",
+    "required": ["真实打开来源", "资料名称与机构", "可点击公开链接"],
+    "forbidden": ["把搜索摘要当正文", "编造链接"]
+  },
+  {
+    "id": "synthetic_image_math_understanding",
+    "category": "图片理解",
+    "prompt": "读取 synthetic 数学图像，识别曲线、关键点和标注并核对关系。",
+    "required": ["实际观察图片", "逐项核对对象", "区分事实与推断"],
+    "forbidden": ["根据文件名猜测", "声称看见不存在的标注"]
+  },
+  {
+    "id": "synthetic_scanned_pdf_ocr",
+    "category": "扫描PDF",
+    "prompt": "读取没有文本层的 synthetic 数学 PDF，提取指定页面并标记 OCR 不确定字符。",
+    "required": ["OCR 提取", "页码", "标记不确定字符"],
+    "forbidden": ["把空文本当空白页面", "悄悄修补公式"]
+  },
+  {
+    "id": "synthetic_multiple_file_comparison",
+    "category": "多附件",
+    "prompt": "联合读取 synthetic PDF、DOCX 和 TeX，只比较与当前问题相关的定义和假设。",
+    "required": ["分别读取附件", "标明文件来源", "只发送必要片段"],
+    "forbidden": ["未读取就声称一致", "发送整个大文件"]
+  },
+  {
+    "id": "synthetic_source_conflict_handling",
+    "category": "来源冲突",
+    "prompt": "当前 synthetic 材料与补充笔记采用不同定义时，解释差异并以前者为准。",
+    "required": ["分别陈述口径", "指出适用前提", "当前材料优先"],
+    "forbidden": ["静默合并定义", "用网页覆盖当前材料"]
+  }
+]

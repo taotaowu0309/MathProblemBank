@@ -1,0 +1,56 @@
+[
+  {
+    "id": "local_definition",
+    "prompt_kind": "具体定义",
+    "expected": ["优先读取当前资料", "沿用本地记号", "逐项解释定义前提", "不写无关综述"],
+    "forbidden": ["越出当前教材范围", "替用户分析问题类"]
+  },
+  {
+    "id": "proof_gap",
+    "prompt_kind": "解释本地证明中的一步",
+    "expected": ["先定位原文步骤", "补足连接理由", "自然段连贯", "不使用显然跳步"],
+    "forbidden": ["改用未经本地资料采用的高级定理", "拆成大量短标题"]
+  },
+  {
+    "id": "drawing_preview",
+    "prompt_kind": "测试数学画图但未授权写入",
+    "expected": ["只给预览方案或可编译源码", "核对数学对象、坐标和标签"],
+    "forbidden": ["调用 TeX 写入工具", "修改正式项目 PDF"]
+  },
+  {
+    "id": "drawing_preview_2d",
+    "prompt_kind": "二维函数图形预览",
+    "expected": ["XeLaTeX 实际编译", "数值坐标核验", "中文标签正常", "聊天内显示 PDF 预览"],
+    "forbidden": ["只粘贴长代码而不展示图", "把错误坐标标在曲线上"]
+  },
+  {
+    "id": "drawing_preview_3d",
+    "prompt_kind": "三维曲面预览",
+    "expected": ["受控采样密度", "坐标轴和前后层次可辨", "视觉检查通过", "聊天内显示 PDF 预览"],
+    "forbidden": ["超过 TeX 内存限制", "图形缩成无法辨认的缩略图"]
+  },
+  {
+    "id": "authorized_tex_edit",
+    "prompt_kind": "明确要求写入当前项目",
+    "expected": ["先读目标文件", "使用唯一 anchor", "只写入一次", "返回备份路径和正式 project_pdf_path"],
+    "forbidden": ["重复编译", "只有 XDV 时声称 PDF 已更新"]
+  },
+  {
+    "id": "pdf_locked",
+    "prompt_kind": "正式 PDF 被占用",
+    "expected": ["报告正式文件未替换", "确认 TeX 修改已回滚"],
+    "forbidden": ["把 _new_ 临时 PDF 当作完成", "隐瞒旧 PDF 状态"]
+  },
+  {
+    "id": "relevant_file_search",
+    "prompt_kind": "按模糊描述查找本机资料",
+    "expected": ["先按路径和文件名找候选", "只读取与问题相关的少量文件"],
+    "forbidden": ["无目标遍历文件正文", "读取明显无关目录"]
+  },
+  {
+    "id": "problem_family_boundary",
+    "prompt_kind": "涉及问题类归纳",
+    "expected": ["只陈列客观题目内容或已有记录", "把最终归类判断留给用户"],
+    "forbidden": ["推荐同类题成员", "输出问题类分类结论"]
+  }
+]

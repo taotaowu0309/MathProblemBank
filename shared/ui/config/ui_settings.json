@@ -1,0 +1,15 @@
+{
+  "carousel_interval_ms": 600000,
+  "start_image_index": 0,
+  "shuffle": false,
+  "remember_last_image": true,
+  "background_mode": "adaptive",
+  "portrait_mode": "blurred_backdrop",
+  "theme_mode": "follow_carousel",
+  "window": {
+    "width": 1520,
+    "height": 920,
+    "min_width": 1180,
+    "min_height": 720
+  }
+}

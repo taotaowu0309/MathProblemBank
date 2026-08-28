@@ -1,0 +1,165 @@
+LaTeX 书写规范（复制给 ChatGPT，导入前必须遵守）
+
+一、直接导入与模板结构
+1. 本规范用于总览页“直接导入题目”窗口。导入内容会直接写入标准题库；按界面选项可同时加入当前学习项目，并可通过 [Vocabulary] 更新当前工作空间专用词汇库；数学、物理、英语等工作空间之间不共享词条。
+2. 只输出可直接粘贴进“直接导入题目”窗口的模板文本，不要输出 Markdown 报告、解释、复核清单或代码块围栏。
+3. 每道题使用这些结构字段：Chapter Code、Chapter Name、Section Code、Section Name、Title、Solution Status、Difficulty、Main Method、[Problem Summary]、[Problem Statement]、[Solution]、[Notes]、[Method Tags]、[Vocabulary]。字段名也支持对应的中文写法：章节代码、章节名称、小节代码、小节名称、标题、解答状态、难度、主要方法、[问题简述]、[标准题干]、[解答]、[标准题备注]、[方法标签]、[词汇表]；同一道题可以逐项中英混用。不要填写 Problem Code、Problem Order、Order 或题目顺序；永久编号和当前项目内从 1 开始的连续顺序均由系统分配。
+4. Solution Status 的值统一使用英文，并严格区分：
+   Answered = The problem has a complete solution or proof in this entry.
+   Deferred = The problem is intentionally left for later because it requires more tools, more theory, or a longer treatment.
+   Open = The problem is an open mathematical problem with no known solution at present.
+   普通“暂时没有写答案”必须使用 Deferred，不能使用 Open；Answered 的 [Solution] 不得为空。
+5. Chapter/Section 的 code 和 name 必须从“章/节清单”逐字复制。不得根据“第一章”、CH01、DM01、MA01 或类似编号猜测、翻译或改写章节名称；同一个 Chapter Code 已存在时，Chapter Name 必须完全一致。
+6. [Problem Summary] / [问题简述] 是标准题库界面直接显示的自足描述，必须填写。[Problem Statement] / [标准题干] 用于保存更完整的原题；可以省略，导入器会把 [Problem Summary] 原文自动复制为题干。只有当完整题干确实比简述包含更多内容时，才需要单独提供 [Problem Statement]。
+7. [Problem Summary] 必须用英文写成标准定理、命题或引理式的陈述，而不是解释性摘要。这里的“简短”只表示删除重复叙述、证明过程、解释和提示，绝不表示省略数学概念的定义性内容。它应当近似“删除证明过程、解释和提示后的压缩题干”，条件与结论的数学细节不得比原题明显减少。严格按 Setting（对象与所在结构）→ Definitions（定义记号）→ Hypotheses（关键假设）→ Conclusions（完整结论）的顺序组织。
+8. 问题简述中使用的关键定义、量词条件、集合、映射、范数、收敛、上下极限等概念，凡能公式化都必须详细展开成公式。若连续性、收敛性、有界性、可测性、同态性质或其他数学概念是识别本题、表达假设或陈述结论所必需的内容，必须写出本题实际使用的定义性条件、量词、等式或不等式，不能只写概念名称。重要定义和最终结论使用独占一行、居中的行间公式 `\[...\]`；多个等价条件、恒等式、极限或估计使用 `\[\begin{aligned}...\end{aligned}\]`。不得只用 “prove convergence”“characterize continuity”“show it is bounded” 等文字代替具体公式。
+9. 问题简述必须让读者不打开标题和完整题干也能识别本题，并逐项写全需要证明、计算或构造的结论。删除所有与条件和结论无关的内容，包括证明步骤、建议采用的序列或辅助对象、解题方法、哪里使用某假设、动机、历史背景和答案。所有非通用记号必须在简述中定义。题目很长时，纵向长度只增加标准题库卡片高度，不会缩小字体；因此应使用 `aligned` 等可换行结构压缩重复文字，把过长公式主动拆成多行。问题简述禁止使用 `\resizebox`、`\scalebox`、`\fontsize`、`\small`、`\scriptsize`、`\tiny` 等命令改变统一字号，也禁止使用超宽 `array` 迫使整段内容缩放。
+10. 可直接复用的问题简述提示词：
+“阅读完整题干，把 [Problem Summary] 写成英文的标准定理/命题陈述。将原题压缩为对象、定义、全部假设和全部结论；所有能公式化的定义、量词、映射、集合、极限、等价条件、恒等式与估计都用 LaTeX 公式完整展开，重要内容使用行间公式。不得省略任何数学条件或结论。删除证明步骤、证明提示、建议构造的中间对象、方法说明、动机和历史背景。输出必须自足，使读者不查看标题和完整题干也能准确恢复问题。”
+
+一般化输出骨架如下，生成时必须替换所有尖括号内容，并按题目删去不适用的行：
+
+[Problem Summary]
+Let \(X,V,f,\ldots\) be <objects and ambient structures>. Define
+\[
+<definitions needed to recognize the problem>.
+\]
+Assume <all essential hypotheses>. Prove/Determine/Construct
+\[
+\begin{aligned}
+<main conclusion> &\Longleftrightarrow <equivalent condition>,\\
+<limit or identity> &= <exact value>,\\
+<estimate> &\le <bound>.
+\end{aligned}
+\]
+
+对于单结论只保留一行；对于多问、反例或构造任务，应继续用行间公式准确写出目标对象及其必须满足的性质。不要在最终导入文本中保留任何 `<...>` 占位符。
+11. [Notes] 只能写普通文本说明，例如 Source、Purpose、Common pitfalls。不要在 [Notes] 后面再写 \begin{remark}...\end{remark}、\begin{definition}...\end{definition} 等 LaTeX 环境。
+12. 题干只写题干，解答只写解答；不要把“后续小问”“补充命题”“答案提纲”混进题干。
+13. 所有学科和新建项目共用同一套问题简述卡片渲染流程。导入器不再用字符串规则猜测 LaTeX 是否合法，只在备份和数据库写入之前实际执行 XeLaTeX→SVG 编译；问题简述为空或真实编译失败时，整批导入失败且不写库。只使用项目公共导言区支持的命令。
+
+二、数学分点和小标题
+1. 不要用手写粗体编号小标题，例如禁止：
+   \textbf{13. Commutativity of connected sum.}
+   \textbf{1. Construction of normalized coordinate charts.}
+2. 如果确实需要分点，使用普通编号列表：
+   \begin{enumerate}
+     \item ...
+     \item ...
+   \end{enumerate}
+   或在自然段中写“(1) ... (2) ...”。
+3. 不要让题干从 13、14、15 这种奇怪数字开始计数；如果是一道题内的小问，应从 (1) 开始并保持连续。
+4. 不要把解答步骤写成一串粗体小标题。可以用自然段、enumerate，或必要时用“Step 1.”这样的普通句子，但不要伪造章节标题。
+
+三、公式定界符
+1. 行内公式只用 \( ... \) 或 $ ... $，全文保持一种风格即可。
+2. 展示公式只用 \[ ... \]、equation、align、align*、gather 等标准环境。
+3. 禁止三个美元符号或多余美元符号，例如 $$$...$$$、$$$、$x$$。
+4. 不要混用定界符，例如禁止 \[ ... $$ 或 $$ ... \]。
+5. 短公式应放在句子中，例如 \(p\in U\cap V\)、\(f\colon M\to N\)。不要把每个短符号都单独展示成一行。
+
+四、常见非法 LaTeX
+1. 禁止写 \mathrel{\left|} 或 \mathrel{\middle|}。\mathrel{...} 会创建局部分组，使其中的 \left 或 \middle 无法与外层定界符正确配对。集合条件分隔符应直接写成：
+   \left\{ x\in\mathbb{R}^n \,\middle|\, \lVert x\rVert<2 \right\}
+   或简单写成：
+   \{x\in\mathbb{R}^n: \lVert x\rVert<2\}.
+2. \left、\middle、\right 必须位于同一数学分组；不要把其中任何一个放进 \mathrel{...}、\text{...} 或其他局部分组。正确写法是 \left\{ ... \,\middle|\, ... \right\}，不要写 \left\{ ... \mathrel{\middle|} ... \right\}。
+3. 不要写未闭合环境，例如 \begin{align*} 后必须有 \end{align*}。
+4. 不要在数学模式里直接写中文或长英文句子；需要文字时用 \text{...}，但大段解释应放回正文。
+5. 不要随意使用未定义命令。若使用自定义命令，必须确认项目 preamble 已定义。
+
+五、排版风格
+1. 像数学教材一样写自然段。先用文字说明思路，再写必要公式。
+2. 长映射、分段函数、多行推导、关键结论可以展示；普通变量、短等式、短不等式不要展示。
+3. 多行推导用 align*，分段定义用 cases，多个条件用 enumerate/itemize。
+4. 不要为了“看起来正式”堆砌定理、命题、备注环境。只有题目真正需要独立编号的数学陈述时，才使用 theorem/proposition/lemma/remark 等环境。
+5. 每道题的 Title 应是题目标题，不要包含“Problem 12”“Exercise 1.1.8”这类重复编号，编号由题库系统生成。
+
+六、导入前自检
+1. 搜索并确认没有：$$$、\mathrel{\left|}、\mathrel{\middle|}、\textbf{1.、\textbf{13.、\begin{remark} 出现在 [Notes] 之后。
+2. 确认 Chapter Code 和 Chapter Name 与已有章节一致。
+3. 确认 [Problem Summary] 已填写且自足；[Problem Statement] 可省略，省略时系统自动复制 Summary 作为题干。
+4. 如果填写了 [Problem Statement]，确认它和 [Solution] 没有互相串内容。
+5. 确认所有 \begin{...} 都有对应 \end{...}。
+6. 确认 PDF 编译不会因为非法分隔符、未闭合公式、未闭合环境而失败。
+七、批量直接导入
+1. 单题和批量题目使用完全相同的字段结构。批量时，每一道题都必须是自足的完整题目块，不得让后一题继承前一题的 Chapter、Section、Title、Status 或任何分节内容。
+2. 相邻题目之间必须使用独占一行的分隔符：
+   ================ 下一题 ================
+   可以继续复制该分隔符和题目块，一次导入任意多道题；分隔符前后不要混入题目正文。
+3. 不要填写永久题目编号、Problem Code、Problem Order、Order 或题目顺序。系统会自动生成永久编号，并按导入顺序加入当前项目，从 1 开始连续显示。
+4. Solution Status 只使用：
+   Answered = 已有完整解答或证明；
+   Deferred = 暂未解答，留待以后处理；
+   Open = 数学上尚无已知解的开放问题。
+   普通“目前没写答案”必须使用 Deferred，不能使用 Open。
+5. 每一道题严格使用下面的完整结构；尖括号内容必须替换，空解答可以保留空的 [Solution] 分节：
+
+Chapter Code=<从章/节清单逐字复制>
+Chapter Name=<从章/节清单逐字复制>
+Section Code=<从章/节清单逐字复制>
+Section Name=<从章/节清单逐字复制>
+Title=<只写题目标题，不写 Problem/Exercise 编号>
+Solution Status=<Answered、Deferred 或 Open>
+Difficulty=<1-5 或留空>
+Main Method=<主要方法；多个方法用分号分隔>
+
+[Problem Summary]
+Let \(X,V,f,\ldots\) be <objects and ambient structures>. Define
+\[
+<all definitions and notation needed to recognize the problem>.
+\]
+Assume <every essential hypothesis>. Prove/Determine/Construct
+\[
+\begin{aligned}
+<all exact conclusions, equivalences, limits, identities, or estimates>.
+\end{aligned}
+\]
+
+[Problem Statement]
+<完整题干；只写条件和任务，不混入解答>
+
+[Solution]
+<完整解答或证明；Deferred/Open 可以留空>
+
+[Notes]
+Source:
+Purpose:
+Common pitfalls:
+
+[Method Tags]
+<方法标签；多个标签用分号分隔>
+
+[Vocabulary]
+<English term> | <part of speech> | <中文释义>
+
+6. 批量输出时，第一题完整块结束后写分隔符，再从 Chapter Code 开始写下一题完整块。最终输出不得包含说明文字、Markdown 代码围栏或未替换占位符。
+
+八、PDF 统一引用与标签
+1. 题目的统一标签由系统根据永久题目编号自动生成：
+   \label{prob:<永久题目编号>}
+   引用写法：Problem~\ref{prob:SYN-MA-P000002}
+   只能使用章/节清单或现有上下文明确提供的真实永久编号，不得猜测或虚构编号。
+2. 系统会为有框数学环境自动补充统一标签，各环境分别在本题内从 1 编号：
+   theorem     -> \label{thm:<永久题目编号>:<本题内序号>}
+   lemma       -> \label{lem:<永久题目编号>:<本题内序号>}
+   proposition -> \label{prop:<永久题目编号>:<本题内序号>}
+   corollary   -> \label{cor:<永久题目编号>:<本题内序号>}
+   definition  -> \label{def:<永久题目编号>:<本题内序号>}
+   example     -> \label{ex:<永久题目编号>:<本题内序号>}
+   exercise    -> \label{exer:<永久题目编号>:<本题内序号>}
+   remark      -> \label{rem:<永久题目编号>:<本题内序号>}
+3. 推荐引用写法：
+   Theorem~\ref{thm:SYN-MA-P000002:1}
+   Lemma~\ref{lem:SYN-MA-P000002:1}
+   Proposition~\ref{prop:SYN-MA-P000002:1}
+   Definition~\ref{def:SYN-MA-P000002:1}
+4. 公式使用 equation、align 或 align* 之外需要编号的标准环境；需要引用的公式手写语义化 ASCII 标签：
+   \begin{equation}
+   <formula>
+   \label{eq:descriptive-ascii-name}
+   \end{equation}
+   引用写法：\eqref{eq:descriptive-ascii-name}。
+5. 可以为数学环境手写更语义化的标签，例如 \label{thm:zorn-lemma}；系统会保留它，并额外补充统一标签。不要手写或覆盖系统的 prob:/thm:/lem:/prop:/cor:/def:/ex:/exer:/rem: 永久编号标签。
+6. 所有手写标签只使用 ASCII 字母、数字、冒号、连字符和下划线；不得包含空格、中文或中文标点。同一 PDF 中标签必须唯一。
+7. 跨题引用只引用已经存在并明确提供的永久题目编号；如果编号未知，保留自然语言描述并提示用户补充编号，不要自行推测。

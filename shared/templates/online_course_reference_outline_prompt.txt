@@ -1,0 +1,43 @@
+REFERENCE-AUTHORITATIVE OUTLINE CONTRACT
+
+This contract is mandatory whenever the course outline mode is
+`reference_section`.
+
+For formal LaTeX authoring, read this file only after reading the complete
+package-level permanent authoring, whole-unit, import, and reference/continuity
+contracts. This file fixes the outline identity; it does not authorize ChatGPT
+to emit `\chapter`, `\section`, `\subsection`, or `\setcounter` in a normal
+selected-Section body response.
+
+The imported reference document's complete Chapter/Section table of contents is
+the sole authority for the lecture-note hierarchy, numbering, boundaries, and
+titles. Preserve every reference Chapter and every reference Section in source
+order, including Sections for which no recording has been made yet. Copy each
+two-level Section number exactly and use its exact approved academic-English
+translation. Use the reference Chapter number and its approved academic-English
+translation. Never infer a different directory from recording titles, upload
+parts, lecture weeks, timestamps, theorem names, examples, proof transitions,
+board changes, or the amount of recorded material.
+
+Section is the finest outline and writing-unit level. Do not create, expose, or
+write a Subsection, including numbered source headings such as 1.1.1. Such
+headings and their content remain inside their enclosing reference Section. A
+recording segment may only be attached to an existing reference Section. When a
+recording continues the current reference Section, keep it in that Section even
+if it is a new physical episode. Create a new outline assignment only when the
+mathematical evidence crosses an explicit reference Section boundary.
+
+Bilibili multipart videos require the part number (`p`) as part of the physical
+episode identity. Different `p` values have independent playback timelines even
+when they share the same BV/av identifier. Never carry an end time, overlap
+boundary, or deduplication boundary from one `p` value into another. The same
+rule applies to any platform where two distinct playable episode identities have
+independent timelines.
+
+The application-supplied `reference_section_catalog` is the machine-readable
+form of this contract. Do not add a catalog-external number, rename a catalog
+entry, merge adjacent catalog Sections, split one Section, or omit unrecorded
+catalog entries. For compatibility with schemas that still contain subsection
+fields, set `subsection_number` to 1 and copy the exact Section title into
+`subsection_title`; these fields are storage aliases and must never produce a
+visible or LaTeX Subsection.

@@ -1,0 +1,88 @@
+PERMANENT SINGLE-PROTOCOL MATHEMATICAL DRAWING CONTRACT
+
+This contract applies to every future online-course lecture. Diagram generation is
+optional, never a quota. Create a figure only when omitting it would materially
+impair understanding of a spatial, geometric, incidence, quotient, gluing, or
+multi-map relationship that prose and displayed formulas cannot communicate as
+clearly. Zero figures is a normal successful result.
+
+1. PURPOSE AND DIAGRAM-TYPE GATE
+
+Before writing TikZ, privately complete the sentence:
+
+    This figure shows that ...
+
+The sentence must identify the precise mathematical relationship the reader should
+understand. If it cannot be stated clearly, omit the figure. Use a map or
+commutative diagram when the essential information concerns spaces and maps. Use a
+spatial or geometric diagram only when the essential information is genuinely
+geometric or topological. Do not force an abstract map relation into a misleading
+picture of lines or regions.
+
+2. OBJECT-TYPE FIDELITY
+
+Every drawn object must look like the mathematical type it represents.
+
+- A two-dimensional open set or neighborhood must be an actual region, not one arc.
+- A boundary must be a boundary curve or hyperplane, not the region it bounds.
+- A point must be visibly a point.
+- An overlap must visibly lie in both relevant regions.
+- A Euclidean neighborhood that crosses a boundary hyperplane must visibly cross
+  that hyperplane, including the portion outside a relative half-space domain.
+- Arrows, projections, inclusions, restrictions, and compositions must have the
+  correct sources, targets, and directions.
+
+Labels alone never repair a wrong visual type. If faithful representation would be
+ambiguous or misleading, use a map diagram or omit the figure.
+
+3. THE ONLY AUTHORING FORM
+
+Every new non-textbook figure must use exactly one backend and source form:
+
+    backend=tikz
+
+Its source must contain exactly one complete body-local `tikzpicture`. Penrose,
+Quiver/tikz-cd, Asymptote, Graphviz, CeTZ, raw `\includegraphics`, and an unwrapped
+`tikzpicture` are forbidden. Do not emit a preamble, `\usepackage`, command
+definitions, file operations, URLs, or absolute paths.
+
+Use only this LaTeX-safe source-block protocol, with every source line commented:
+
+% MPB-DIAGRAM-SOURCE-BEGIN: diagram-0123456789abcdef backend=tikz
+%| \begin{tikzpicture}[x=1cm,y=1cm]
+%|   \draw[->] (0,0) -- (2,0) node[right] {$V$};
+%| \end{tikzpicture}
+% MPB-DIAGRAM-SOURCE-END: diagram-0123456789abcdef
+
+Preserve the assigned diagram id. The application compiles, verifies, caches, and
+inserts the vector PDF. Never emit `\includegraphics` or a generated path yourself.
+
+4. SEMANTIC AND VISUAL ACCEPTANCE
+
+Check every object, label, arrow direction, region, containment, incidence,
+exclusion, and panel relationship against the evidence. Check label separation,
+crossings, clipping, scale, mathematical typography, whitespace, and reading order.
+All visible text must be English and all notation must be real LaTeX. Keyframes,
+board screenshots, raster previews, and page renders remain evidence only.
+
+The figure must be introduced or explained by nearby prose. If prose says "the
+following diagram" or makes another forward figure reference, the diagram must
+actually follow. If no figure is emitted, remove every such forward reference. Do
+not leave an orphan figure whose mathematical role is never explained. If the
+evidence is insufficient or prose is equally clear, omit the figure.
+
+5. PIPELINE AND TEXTBOOK FIGURES
+
+Only an included whole-lecture candidate receives `backend=tikz` and source. The
+renderer is the compilation authority; rejected source is never a successful
+preview. The canonical deliverable and application preview are the same standalone
+vector PDF.
+
+An indexed textbook figure is optional and may be referenced only when the indexed
+original is already a native-vector PDF or SVG and is mathematically necessary:
+
+% MPB-TEXTBOOK-FIGURE: sha256=<64 lowercase hexadecimal digits> width=0.82
+
+The application copies the original bytes unchanged and rechecks its hash and
+vector-only content. A path, screenshot, page render, edited derivative, raster
+asset, or unindexed hash is rejected.

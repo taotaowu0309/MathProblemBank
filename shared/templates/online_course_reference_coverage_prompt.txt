@@ -1,0 +1,76 @@
+REFERENCE-MATERIAL COVERAGE CONTRACT
+
+Read this entire file after the permanent package contracts. This specialized
+contract controls mapped-reference coverage but never enlarges the locked formal
+target or relaxes the whole-unit, ownership, proof, language, or body-only rules.
+
+READ THE ASSIGNED MATERIALS
+
+Read `reference_materials/REFERENCE_INDEX.json` and every listed part completely
+before drafting. The Markdown part is a page-ordered navigation and OCR layer, not
+authority for mathematical symbols. For a PDF part, use its split PDF pages as the
+visual source of truth whenever a formula, heading, diagram, table, subscript,
+superscript, quantifier, domain, or proof step is uncertain. Do not infer content
+from an omitted source or an OCR placeholder.
+
+When the index names `REFERENCE_OUTLINE_PROMPT.txt`, read that persistent contract
+before planning. Its application-approved hierarchy and physical-episode identity
+rules control outline interpretation.
+
+THE MATHEMATICAL-OWNERSHIP INTERSECTION
+
+A listed reference part is eligible evidence, not an instruction to copy the whole
+part. The writable reference contribution is the intersection of:
+
+- content present in the listed reference part;
+- content belonging to the exact application-selected formal target;
+- content supported by the current recording/content contracts or explicitly named
+  in `reference_mapping.decisions[].coverage`;
+- content not already fully owned by accepted previous notes, except for minimal
+  restatement or genuine revisiting.
+
+Every proposed reference item must satisfy all four conditions. A complete source
+page is indivisible as a file but divisible by mathematical ownership. Shared or
+boundary pages may therefore appear in adjacent packages without making all of
+their mathematics writable in both. Read the whole page for context, but include
+only the current target's owned contribution.
+
+If the mapped part contains the tail of a previous unit, the body of the current
+unit, or the beginning of a later unit, exclude the neighboring material. If an
+earlier accepted unit already owns a definition, theorem, proof, construction, or
+major example, cite or minimally restate it unless the present mapping explicitly
+assigns a genuine strengthening, a revisited proof, or formal development of an
+earlier preview.
+
+FIGURES FROM REFERENCES
+
+MinerU-derived parts may list `figure_context_file`,
+`reference_diagram_obligations_file`, and `figure_asset_files`. Read the listed
+context and inspect each source crop. A crop or description is evidence, not final
+artwork. Apply the same ownership intersection and the permanent drawing contract.
+Recreate an applicable mathematical figure only when it is necessary and its
+mathematical role, diagram type, labels, incidences, and object types can be checked.
+Never insert a raster crop. Silently omit decorative or out-of-scope figures.
+
+INTEGRATION AND FINAL COVERAGE PASS
+
+Use the recording Agent's board notes, transcript, outline, and exposition choices
+as evidence for order, notation, and presentation. Reconcile eligible reference
+content with those sources instead of appending a source-labelled textbook section.
+Preserve the application-owned outline and complete selected formal unit. Physical
+recording ranges and reference-file boundaries are never output parts.
+If the package says that Section is the finest outline level, do not create a
+Subsection or any lower formal outline node.
+Do not merely summarize eligible reference content or cite the source in place of
+writing the target-owned mathematics.
+
+Write the final LaTeX entirely in polished academic English. For Chinese source
+prose and captions, translate their mathematical content into English; preserve
+mathematical notation. Do not copy Chinese prose or retain Chinese characters in
+the final LaTeX. Do not output source IDs, filenames,
+mapping reasons, page-coverage labels, or a checklist.
+
+Before returning, privately inspect every listed part and confirm that every item
+inside the four-way intersection appears substantively, while every item outside
+it is excluded. Never import an unlisted part or use an entire mapped section merely
+because the package contains it.

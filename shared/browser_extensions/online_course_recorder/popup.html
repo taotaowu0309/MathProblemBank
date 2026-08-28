@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { width: 320px; margin: 0; padding: 16px; font: 13px/1.45 system-ui; color: #17243a; background: #f7fafc; }
+    h1 { font-size: 16px; margin: 0 0 10px; }
+    #course { font-weight: 650; margin-bottom: 6px; }
+    #status { color: #657187; min-height: 38px; white-space: pre-wrap; }
+    button { width: 100%; margin-top: 10px; border: 0; border-radius: 8px; padding: 10px; color: white; background: #2366d1; font-weight: 650; cursor: pointer; }
+    button.stop { background: #bb3f4a; }
+    button.reload { background: #596579; }
+    button:disabled { opacity: .5; cursor: default; }
+  </style>
+</head>
+<body>
+  <h1>Web Course Recorder</h1>
+  <div id="course">Checking local receiver…</div>
+  <div id="status"></div>
+  <button id="start" disabled>Start recording this episode</button>
+  <button id="stop" class="stop" hidden>Stop and save</button>
+  <button id="reload" class="reload" hidden>Reload updated recorder</button>
+  <script src="popup.js"></script>
+</body>
+</html>

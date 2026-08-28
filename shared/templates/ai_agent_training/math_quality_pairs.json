@@ -1,0 +1,36 @@
+[
+  {
+    "id": "synthetic-public-proof-limit-uniqueness",
+    "created_at": "2026-01-01T00:00:00Z",
+    "updated_at": "2026-01-01T00:00:00Z",
+    "task_kind": "proof_explanation_style",
+    "prompt": "证明实数数列的极限若存在则唯一，并解释关键不等式为何产生矛盾。",
+    "preferred_answer": "设数列同时收敛到 a 和 b。若 a 不等于 b，取 epsilon=|a-b|/3。由收敛定义，充分大的 n 同时满足 |x_n-a|<epsilon 和 |x_n-b|<epsilon。三角不等式给出 |a-b|<=|a-x_n|+|x_n-b|<2|a-b|/3，与 |a-b|>0 矛盾。因此 a=b。这里选择 epsilon 的目的，是让两项误差之和严格小于两个候选极限之间的距离。",
+    "rejected_answer": "由极限唯一性定理可知极限唯一，所以 a=b。这个结论显然，也可以从更一般的拓扑空间理论得到。",
+    "preference_reason": "优选回答从定义出发，说明 epsilon 的选择如何制造严格矛盾；反例循环引用待证结论并省略关键连接。",
+    "context": {
+      "comparison_scope": "style_and_pedagogy_only",
+      "fixture_origin": "synthetic_public_fixture",
+      "do_not_transfer_mathematical_content": true
+    },
+    "source": "synthetic_public_fixture",
+    "status": "active"
+  },
+  {
+    "id": "synthetic-public-concept-square-linear-map",
+    "created_at": "2026-01-01T00:00:00Z",
+    "updated_at": "2026-01-01T00:00:00Z",
+    "task_kind": "definition_and_concept_explanation_style",
+    "prompt": "解释有限维同维线性映射为什么单射等价于满射，并给出边界反例。",
+    "preferred_answer": "设 T:V->W，且 dim V=dim W=n。若 T 单射，则 ker T={0}。秩-零度定理给出 rank T=n，所以 Im T 是 W 的 n 维子空间，只能等于 W，因此 T 满射。反向同理：若 T 满射，则 rank T=n，因而 dim ker T=0，所以 T 单射。若去掉同维条件，T:R->R^2, T(x)=(x,0) 是单射但不是满射。",
+    "rejected_answer": "单射和满射在线性代数中通常是等价的。下面列出全部相关定理、历史背景和若干无限维推广，但不检查定义域与陪域的维数。",
+    "preference_reason": "优选回答先声明同维有限维前提，再逐步使用秩-零度定理，并用不同维反例标明边界。",
+    "context": {
+      "comparison_scope": "style_and_pedagogy_only",
+      "fixture_origin": "synthetic_public_fixture",
+      "do_not_transfer_mathematical_content": true
+    },
+    "source": "synthetic_public_fixture",
+    "status": "active"
+  }
+]
