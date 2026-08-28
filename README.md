@@ -1,51 +1,68 @@
 # MathProblemBank
 
-MathProblemBank 是一个面向高等数学学习的 Windows 本地工作台，整合结构化题库、学习项目、LaTeX/PDF 生成、词汇管理、本地 AI 助手和实验性的网课讲义工作流。
+[English](README.md) | [简体中文](README.zh-CN.md)
 
-当前公开版本目标是 **math v0.1**。物理、英语及其他尚未经过长期自用验证的工作区不属于此版本的支持范围。
+MathProblemBank is a local-first Windows workbench for advanced mathematical study. It brings a structured problem bank, learning projects, LaTeX/PDF publishing, vocabulary management, a local AI assistant, and an experimental lecture workflow into one desktop application.
 
-## 公开发行状态
+The current public scope is **math v0.1**. Physics, English, and other workspaces that have not gone through long-term personal validation are not supported by this release.
 
-本仓库是 MathProblemBank 从唯一正式源码生成的净化后的公开发行视图。公开 Git 历史从公开版本开始，不包含私人开发仓库历史、用户数据库、教材、录课、生成产物、凭据或预置学习画像。
+## Project status
 
-## 数学版核心能力
+This repository is a sanitized public view generated from one canonical implementation. Its public history does not contain private development history, user databases, textbooks, recordings, generated artifacts, credentials, or a pre-filled learner profile.
 
-- SQLite 题库、教材登记与学习项目管理；
-- LaTeX 章节和正式 PDF 生成；
-- PDF 阅读、题目定位与词汇收集；
-- 本地 AI 助手及显式授权的数据写入；
-- 实验性的网课录制、转写、讲义生成和数学质量审计。
+The project is released under the Apache License 2.0. Third-party components retain their own licenses; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
-数学讲义采用 human-in-the-loop 设计，人工审核是正式流程的一部分，不承诺 AI 输出无需校对。
+## What math v0.1 provides
 
-## 安装与启动
+- SQLite problem-bank, textbook-registration, and learning-project management;
+- LaTeX chapters and formal PDF generation;
+- PDF reading, problem navigation, and vocabulary collection;
+- a local AI assistant with explicit authorization for data-changing operations;
+- an experimental course-recording, transcription, lecture-generation, and mathematical-quality workflow.
 
-要求 Windows 10/11 和 Python 3.12。math v0.1 暂未承诺兼容其他 Python 小版本。LaTeX/PDF 功能需要可用的 TeX Live 或同等 XeLaTeX 环境。
+Lecture generation is intentionally human-in-the-loop. AI output is not a guarantee of mathematical correctness, and users should review source and rendered PDFs.
+
+## Install and launch
+
+Supported environment: Windows 10/11 and Python 3.12. LaTeX/PDF features additionally require TeX Live or another distribution providing `xelatex` and `latexmk`.
 
 ```powershell
 py -3.12 -m venv .venv
-.\.venv\Scripts\python -m pip install -r requirements-public.txt
+.\\.venv\\Scripts\\python -m pip install -r requirements-public.txt
 ```
 
-随后双击 `LaunchStudyProblemBank.vbs`。完全第一次使用请先阅读 [GETTING_STARTED.md](GETTING_STARTED.md)；背景图、项目封面和 LaTeX 个性化编辑见 [USER_GUIDE.md](USER_GUIDE.md)。
+Then double-click `LaunchStudyProblemBank.vbs` from the extracted directory. New users should start with [GETTING_STARTED.md](GETTING_STARTED.md). Custom backgrounds, covers, and LaTeX editing are documented in [USER_GUIDE.md](USER_GUIDE.md).
 
-## 本地数据与学习画像
+## Local data and learner profile
 
-运行数据默认保存在 `%LOCALAPPDATA%\MathProblemBank`，也可用 `MATH_PROBLEM_BANK_DATA_ROOT` 指定其他目录。程序目录不会作为公开版的用户数据库目录。
+The public build stores runtime data under `%LOCALAPPDATA%\\MathProblemBank` by default. Set `MATH_PROBLEM_BANK_DATA_ROOT` to choose another data root. The program directory is kept separate from user data.
 
-学习画像初始为空，首次启动不会创建画像文件，也不会向模型注入默认画像。用户可以在“学习记忆”窗口显式导入 UTF-8 编码的 `.txt` 或 `.md` 文件，并随时清空或替换。画像仅保存在本机用户配置目录。
+The learner profile starts empty: first launch does not create a profile or inject default personal information into prompts. Users may explicitly import a UTF-8 `.txt` or `.md` file from the Learning Memory screen, replace it, or clear it at any time. The profile remains local.
 
-## 验证
+## Validation
 
 ```powershell
 python -m unittest shared.scripts.test_release_engineering
 python shared/scripts/public_regression_core.py
 ```
 
-干净 Windows 的首次启动、CRUD、重启回读和 XeLaTeX/PDF 验收步骤见 [CLEAN_WINDOWS_E2E.md](CLEAN_WINDOWS_E2E.md)。
+To build a fresh public staging directory and archive:
+
+```powershell
+python tools/build_public_release.py `
+  --output D:\\Temp\\MathProblemBank-v0.1.0-rc1 `
+  --zip D:\\Temp\\MathProblemBank-v0.1.0-rc1.zip `
+  --release-version 0.1.0rc1
+```
+
+The exporter uses an allowlist, a closed-world manifest, and sensitive-data checks. It rejects databases, textbooks, generated PDFs, compiler caches, undeclared archives, and private paths.
+
+## Scope and limitations
+
+Optional AI, OCR, video, Wolfram, and browser integrations require their own local configuration. The public release does not promise that every optional integration is available out of the box. A clean-machine PDF acceptance pass is tracked separately from the automated regression suite; see [CLEAN_WINDOWS_E2E.md](CLEAN_WINDOWS_E2E.md).
+
+For contribution guidance, read [CONTRIBUTING.md](CONTRIBUTING.md). For security or credential exposure, use [SECURITY.md](SECURITY.md).
 
 ## License
 
-MathProblemBank 使用 [Apache License 2.0](LICENSE)。第三方组件及其许可证见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。
-
-参与修改前请阅读 [CONTRIBUTING.md](CONTRIBUTING.md)；隐私或凭据泄露问题见 [SECURITY.md](SECURITY.md)。
+MathProblemBank is licensed under [Apache License 2.0](LICENSE). Third-party notices are listed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
