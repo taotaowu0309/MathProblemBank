@@ -141,7 +141,7 @@ class PublicReleaseBuilderTests(unittest.TestCase):
             ):
                 self.assertTrue((output / relative).is_file(), relative)
             self.assertIn("README.zh-CN.md", public_readme)
-            self.assertIn("GETTING_STARTED.md", (output / "README.zh-CN.md").read_text(encoding="utf-8"))
+            self.assertIn("GETTING_STARTED.zh-CN.md", (output / "README.zh-CN.md").read_text(encoding="utf-8"))
             self.assertIn("GETTING_STARTED.zh-CN.md", (output / "GETTING_STARTED.md").read_text(encoding="utf-8"))
             self.assertIn("USER_GUIDE.zh-CN.md", (output / "USER_GUIDE.md").read_text(encoding="utf-8"))
             self.assertTrue((output / "LICENSE").is_file())
