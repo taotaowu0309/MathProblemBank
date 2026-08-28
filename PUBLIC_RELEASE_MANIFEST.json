@@ -377,8 +377,8 @@
     },
     {
       "path": "shared/scripts/test_release_engineering.py",
-      "bytes": 21434,
-      "sha256": "98348d9891dc0331efb365c9e2cd4190f61cb1df2f20cc58c5de36b4cda6e48d"
+      "bytes": 21680,
+      "sha256": "5fee0c76befe00c7049311c50f3d690b2632b1a9b7264a9e03505e843f6d5f7f"
     },
     {
       "path": "shared/scripts/textbook_exercise_companion.py",

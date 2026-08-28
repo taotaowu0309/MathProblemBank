@@ -269,7 +269,8 @@ class PublicReleaseBuilderTests(unittest.TestCase):
                 "name = next(iter(subjects))\n"
                 "ensure_subject_storage(name)\n"
                 "print(json.dumps({'name': name, 'db': str(subjects[name]['db']), "
-                "'registry': str(APP_PATHS.subjects_registry_path)}, ensure_ascii=False))\n"
+                "'registry': str(APP_PATHS.subjects_registry_path), "
+                "'data_root': str(APP_PATHS.user_data_root)}, ensure_ascii=False))\n"
             )
             completed = subprocess.run(
                 [sys.executable, "-c", script],
@@ -281,10 +282,14 @@ class PublicReleaseBuilderTests(unittest.TestCase):
                 encoding="utf-8",
             )
             result = json.loads(completed.stdout.strip())
-            self.assertTrue(Path(result["db"]).is_file())
-            self.assertTrue(Path(result["registry"]).is_file())
-            self.assertTrue(Path(result["db"]).is_relative_to(data_root))
-            self.assertTrue(Path(result["registry"]).is_relative_to(data_root))
+            reported_data_root = Path(result["data_root"])
+            database = Path(result["db"])
+            registry = Path(result["registry"])
+            self.assertTrue(database.is_file())
+            self.assertTrue(registry.is_file())
+            self.assertTrue(reported_data_root.samefile(data_root))
+            self.assertTrue(database.is_relative_to(reported_data_root))
+            self.assertTrue(registry.is_relative_to(reported_data_root))
             self.assertFalse(any(output.rglob("*.db")))
 
     def test_release_qt_shell_starts_without_private_assets_or_integrations(self) -> None:
