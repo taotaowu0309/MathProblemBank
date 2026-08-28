@@ -39,10 +39,9 @@ class PublicCoreTests(unittest.TestCase):
                     "PYTHONPATH": str(APP_PATHS.application_root),
                 }
             )
-            script = '''
+            writer_script = '''
 import sqlite3
 
-from shared.scripts.ai_agent_repository import GlobalProblemRepository
 from shared.scripts.study_project_service import ensure_subject_storage, load_subjects
 
 name, config = next(iter(load_subjects("math").items()))
@@ -54,16 +53,17 @@ with sqlite3.connect(config["db"]) as connection:
             problem_code, chapter_code, chapter_name, title, statement_tex
         ) VALUES (?, ?, ?, ?, ?)
         """,
-        ("SYN-0001", "1", "Synthetic", "Synthetic problem", "Prove that $1=1$."),
+        ("SYN-0001", "1", "Synthetic", "Synthetic problem edited", "Prove that $1=1$."),
+    )
+    connection.execute(
+        "UPDATE canonical_problems SET solution_tex=?, notes=? WHERE problem_code=?",
+        ("The identity is immediate.", "persisted after restart", "SYN-0001"),
     )
     connection.commit()
-result = GlobalProblemRepository().search_problems("Synthetic problem", [name])
-assert result["result_count"] == 1
-assert result["results"][0]["problem_code"] == "SYN-0001"
-print("PUBLIC_DATABASE_ROUND_TRIP_OK")
+print("PUBLIC_DATABASE_WRITE_OK")
 '''
-            completed = subprocess.run(
-                [sys.executable, "-c", script],
+            writer = subprocess.run(
+                [sys.executable, "-c", writer_script],
                 cwd=APP_PATHS.application_root,
                 env=environment,
                 check=True,
@@ -71,7 +71,38 @@ print("PUBLIC_DATABASE_ROUND_TRIP_OK")
                 text=True,
                 encoding="utf-8",
             )
-            self.assertIn("PUBLIC_DATABASE_ROUND_TRIP_OK", completed.stdout)
+            self.assertIn("PUBLIC_DATABASE_WRITE_OK", writer.stdout)
+
+            reader_script = '''
+import sqlite3
+
+from shared.scripts.study_project_service import load_subjects
+
+name, config = next(iter(load_subjects("math").items()))
+with sqlite3.connect(config["db"]) as connection:
+    row = connection.execute(
+        "SELECT problem_code, title, solution_tex, notes FROM canonical_problems WHERE title=?",
+        ("Synthetic problem edited",),
+    ).fetchone()
+assert row is not None, name
+assert tuple(row) == (
+    "SYN-0001",
+    "Synthetic problem edited",
+    "The identity is immediate.",
+    "persisted after restart",
+), row
+print("PUBLIC_DATABASE_RESTART_READ_OK")
+'''
+            reader = subprocess.run(
+                [sys.executable, "-c", reader_script],
+                cwd=APP_PATHS.application_root,
+                env=environment,
+                check=True,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+            )
+            self.assertIn("PUBLIC_DATABASE_RESTART_READ_OK", reader.stdout)
 
     def test_repository_dependency_injection_keeps_vocabulary_isolated(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

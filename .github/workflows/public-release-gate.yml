@@ -19,6 +19,15 @@ jobs:
           cache: pip
       - name: Install public dependencies
         run: python -m pip install -r requirements-public.txt
+      - name: Report optional XeLaTeX availability
+        shell: pwsh
+        run: |
+          $xelatex = Get-Command xelatex -ErrorAction SilentlyContinue
+          if ($null -eq $xelatex) {
+            Write-Host "XeLaTeX is not installed on this hosted runner; PDF E2E remains a separate environment check."
+          } else {
+            xelatex --version | Select-Object -First 1
+          }
       - name: Compile allowlisted source roots
         run: python shared/scripts/public_regression_core.py --static-only
       - name: Run public release tests

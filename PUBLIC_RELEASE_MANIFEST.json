@@ -22,8 +22,8 @@
     },
     {
       "path": "OPEN_SOURCE_RELEASE.md",
-      "bytes": 2698,
-      "sha256": "f58bdcb3a3eb214047d7f39b493b7232766c8b1b1f0b838de2f5680e6d74da59"
+      "bytes": 2866,
+      "sha256": "a100fa3312f8a817bfb6e8b3aaea111a09af3306dad40ad4234f370e46437fe9"
     },
     {
       "path": "CONTRIBUTING.md",
@@ -62,8 +62,8 @@
     },
     {
       "path": ".github/workflows/public-release-gate.yml",
-      "bytes": 1217,
-      "sha256": "89693b75c8d5ac1bc005445a757bc1971005538211b1465a819d780a75eb4ccb"
+      "bytes": 1615,
+      "sha256": "178c9b9f4c910262ab80e77011a532997df1d385a4ab38d59fc1ccb472af36a3"
     },
     {
       "path": "tools/build_public_release.py",
@@ -372,8 +372,8 @@
     },
     {
       "path": "shared/scripts/test_public_core.py",
-      "bytes": 8801,
-      "sha256": "d21821fedc89a6c96eb50fb7363e05bc06d27b1bae8ede4b6eea28b55b857313"
+      "bytes": 9766,
+      "sha256": "0cd5036cb07ebffa464514409018439743adaea2600e7257f385884c6733d7a5"
     },
     {
       "path": "shared/scripts/test_release_engineering.py",

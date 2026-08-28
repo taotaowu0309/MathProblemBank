@@ -16,19 +16,20 @@
 - 发行器显式写入 public PEP 440 版本；math v0.1 的公开 Python 支持范围固定为 3.12；
 - 回归检查只扫描明确的源码根目录，不扫描用户 `output/`。
 
-## 正式公开前仍需完成
+## RC1 状态与后续验证
 
 - [x] 添加 Apache-2.0、第三方组件说明和项目许可证元数据；
-- [ ] 在干净 Windows 环境安装公开发行视图；
+- [x] 在 GitHub Actions `windows-latest` 全新 Windows runner 安装公开依赖并运行发行门禁；
 - [x] 自动化验证首次启动在用户数据区创建空数学数据库；
-- [ ] 导入合成示例题并完成编辑、搜索和重启回读；
+- [x] 自动化导入合成示例题并在独立进程中完成编辑、搜索和重启回读；
 - [ ] 在干净环境生成 LaTeX 与正式 PDF；
 - [x] 自动化验证未配置 Mathematica、API、OCR 和浏览器扩展时数学核心界面仍可启动；
 - [x] 白名单与敏感文本、训练来源门禁检查公开目录不含密钥、Cookie、私人路径、私人 learner profile、真实对话历史或生产训练材料；
 - [x] 公开 AI 默认配置为中性 OpenAI profile，不携带私人中转站默认值；
 - [x] 最终 ZIP 使用独立新 staging 和闭世界清单校验，不包含 `__pycache__` 或审查提示词；
 - [x] 盘点公开源码中 bundled/runtime-downloaded 第三方组件及许可证；
-- [ ] 为公开仓库准备全新的 Git 历史和首个 Release。
+- [x] 为公开仓库准备全新的 Git 历史和首个 RC1 Pre-release；
+- [ ] 在带 XeLaTeX 的干净 Windows 环境完成人工 GUI 与正式 PDF 验收；
 
 ## 不属于 math v0.1 的承诺
 
