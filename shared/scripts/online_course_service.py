@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from shared.scripts.ai_agent_api_policy import budgeted_task, submit_with_budget
+
 import hashlib
 import json
 import mimetypes
@@ -23,7 +25,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 from typing import Any, Callable, Mapping
 from xml.etree import ElementTree
 
@@ -41,9 +43,17 @@ from shared.scripts.ai_agent_providers import create_provider
 from shared.scripts.latex_document_layout import (
     DOCUMENT_LAYOUT_FILENAME,
     DOCUMENT_LAYOUT_INPUT,
-    sync_document_layout,
+    sync_shared_latex_layout,
+    shared_math_prose_rules,
+)
+from shared.scripts.latex_build_pipeline import (
+    run_latexmk,
+    run_unified_latex_build,
 )
 from shared.scripts.latex_theorem_environments import sync_theorem_environments
+from shared.scripts.latex_overfull_repair import (
+    inspect_pdf_layout,
+)
 from shared.scripts.online_course_ai_agent import OnlineCourseAiAgent
 from shared.scripts.online_course_agent_prompts import (
     ensure_course_agent_prompt_directory,
@@ -147,16 +157,15 @@ INCREMENTAL_ASR_WORKER_COUNT = 2
 RECORDING_AGENT_WINDOW_VERSION = 1
 RECORDING_AGENT_WINDOW_MAX_DURATION_SECONDS = 5 * 60.0
 RECORDING_AGENT_CHECKPOINT_SECONDS = 2.5 * 60.0
-# Keep a small bounded pool so every ordinary stop-time backlog (usually one to
-# four independent windows) runs concurrently.  A hard bound avoids turning a
-# long recording into an unbounded burst that triggers provider rate limits.
+# Keep a small bounded pool so stop-time cleanup cannot outlive the owning
+# recording task by spawning an unbounded burst of workers.
 RECORDING_AGENT_WINDOW_WORKER_COUNT = 2
 RECORDING_AGENT_FINAL_WAIT_SECONDS = 15 * 60.0
 RECORDING_AGENT_TRANSCRIPT_WAIT_SECONDS = 5.0
-# Every formal Subsection must own at least ten minutes of 1x lecture evidence.
-# Repeated or cross-episode segments assigned to the same stable Subsection are
-# accumulated; five-minute recording windows remain unrelated processing units.
-MIN_AUTOMATIC_SUBSECTION_SECONDS = 10 * 60.0
+# Mathematical units have no duration quota.  This name remains as a
+# compatibility constant for callers that imported it, but zero means that
+# duration is never a validity criterion for a formal Subsection.
+MIN_AUTOMATIC_SUBSECTION_SECONDS = 0.0
 MAX_AUTOMATIC_LECTURE_REPAIR_ROUNDS = 1
 SOURCE_TITLE_PROVISIONAL_ANNOTATION = "source_title_provisional"
 PRESERVED_AFTER_RECORDING_DELETION_ANNOTATION = (
@@ -302,6 +311,8 @@ def _copy_static_permanent_authoring_contracts(
             )
         target = materials_dir / filename
         _copy_file_verified(source, target)
+        if filename == GLOBAL_CHATGPT_WRITING_RULES_FILENAME:
+            _atomic_text(target, target.read_text(encoding="utf-8").rstrip() + "\n\n" + shared_math_prose_rules())
         copied[filename] = target
     return copied
 
@@ -1142,6 +1153,10 @@ class OnlineCourseService:
         self.lecture_quality_mode = LECTURE_QUALITY_MODE
         self._lock = threading.RLock()
         self._episode_package_locks: dict[int, threading.Lock] = {}
+        self._subsection_package_locks: dict[int, threading.RLock] = {}
+        self._reference_refresh_threads: dict[int, threading.Thread] = {}
+        self._reference_refresh_revisions: dict[int, int] = {}
+        self._reference_refresh_course_locks: dict[int, threading.RLock] = {}
         self._progress_lock = threading.RLock()
         self._progress_events: deque[dict[str, Any]] = deque(maxlen=4000)
         self._progress_sequence = 0
@@ -1177,6 +1192,7 @@ class OnlineCourseService:
         self._last_cleanup_check_monotonic = 0.0
         self.root.mkdir(parents=True, exist_ok=True)
         self._ensure_schema()
+        self._repair_relocated_database_paths()
         self._ensure_existing_course_agent_prompt_directories()
 
     @staticmethod
@@ -2552,15 +2568,53 @@ class OnlineCourseService:
         emit = emit or (lambda _message: None)
         episode_id = int(episode_id)
         announced = False
+        last_snapshot = 0.0
         with self._incremental_condition:
             while int(self._incremental_pending.get(episode_id, 0)) > 0:
                 if not announced:
                     pending = int(self._incremental_pending.get(episode_id, 0))
                     emit(f"正在等待录制期增量处理收尾：还有 {pending} 个分块。")
                     announced = True
+                now = time.monotonic()
+                if now - last_snapshot >= 2.0:
+                    # Consume completed chunks incrementally while the queue is
+                    # draining. This is a derived preview only; final package
+                    # generation still reloads and validates the complete DB.
+                    last_snapshot = now
+                    try:
+                        self._write_incremental_transcript_snapshot(episode_id)
+                    except (OSError, sqlite3.Error, RuntimeError):
+                        pass
                 self._incremental_condition.wait(timeout=0.25)
         if announced:
+            try:
+                self._write_incremental_transcript_snapshot(episode_id, complete=True)
+            except (OSError, sqlite3.Error, RuntimeError):
+                pass
             emit("录制期增量处理已全部收尾，开始证据 Agent 与材料压缩包阶段。")
+
+    def _write_incremental_transcript_snapshot(
+        self, episode_id: int, *, complete: bool = False
+    ) -> None:
+        """Persist a restart-safe preview of ASR already completed in the queue."""
+        material = self._canonical_episode_material(self._episode_material(int(episode_id)))
+        lines: list[str] = []
+        for row in material.get("chunks") or []:
+            text = str(row.get("transcript") or "").strip()
+            if text and not bool(row.get("program_time_pruned")):
+                lines.append(
+                    f"[{self._format_time(float(row['start_video_time'] or 0))}] {text}"
+                )
+        if not lines:
+            return
+        session = next(iter(material.get("sessions") or []), None)
+        target = Path(str(session["session_dir"])) / "derived" / "incremental_transcript_preview.md" if session else None
+        if target is None:
+            return
+        target.parent.mkdir(parents=True, exist_ok=True)
+        _atomic_text(target, "# Incremental ASR preview\n\n" + "\n".join(lines) + "\n")
+        if complete:
+            _atomic_json(target.with_suffix(".json"), {"episode_id": int(episode_id), "complete": True, "updated_at": _now(), "line_count": len(lines)})
 
     def retry_failed_incremental_chunks(
         self,
@@ -3925,6 +3979,195 @@ class OnlineCourseService:
         return target
 
     @staticmethod
+    def _replace_path_prefix(value: str, old: Path, new: Path) -> str:
+        """Replace a stored Windows path prefix without touching unrelated text."""
+        source = str(value or "")
+        old_text = str(old)
+        new_text = str(new)
+        source_folded = source.casefold().replace("/", "\\")
+        old_folded = old_text.casefold().replace("/", "\\").rstrip("\\")
+        if source_folded == old_folded:
+            return new_text
+        boundary = old_folded + "\\"
+        if source_folded.startswith(boundary):
+            return new_text.rstrip("\\") + source[len(old_text) :]
+        return source
+
+    def _relocated_course_storage_dir(
+        self, course: sqlite3.Row | Mapping[str, Any]
+    ) -> Path | None:
+        """Find a course directory after the workspace root was moved.
+
+        Older catalogues store absolute paths.  The course code and collection
+        code are stable, so they are sufficient to locate the copied directory
+        below the current ``online_courses/projects`` root even when a subject
+        name was affected by a Windows encoding conversion.
+        """
+        declared = Path(str(course["storage_dir"] or ""))
+        current_root = (self.root / "projects").resolve()
+        if declared.is_dir() and current_root in declared.resolve().parents:
+            return declared.resolve()
+
+        try:
+            old_parts = list(PureWindowsPath(str(declared)).parts)
+            project_index = next(
+                index
+                for index, part in enumerate(old_parts)
+                if str(part).casefold() == "projects"
+            )
+        except (StopIteration, ValueError):
+            project_index = -1
+        if project_index >= 0:
+            relative = Path(*old_parts[project_index + 1 :])
+            direct = (current_root / relative).resolve()
+            if direct.is_dir() and current_root in direct.parents:
+                return direct
+
+        collection_code = str(course["collection_code"] or "").strip()
+        course_code = str(course["course_code"] or "").strip()
+        if not collection_code or not course_code or not current_root.is_dir():
+            return None
+        matches = [
+            candidate.resolve()
+            for candidate in current_root.glob(f"*/{collection_code}/{course_code}")
+            if candidate.is_dir()
+        ]
+        return matches[0] if len(matches) == 1 else None
+
+    @staticmethod
+    def _relocated_project_path(value: str) -> Path | None:
+        """Map an old checkout path to the current application checkout."""
+        text = str(value or "").strip()
+        if not re.match(r"^(?:[A-Za-z]:[\\/]|\\\\)", text):
+            return None
+        declared = Path(text)
+        try:
+            if declared.exists():
+                return declared.resolve()
+        except OSError:
+            return None
+        parts = list(PureWindowsPath(text).parts)
+        marker_index = next(
+            (
+                index
+                for index, part in enumerate(parts)
+                if str(part).casefold() == "mathproblembank"
+            ),
+            -1,
+        )
+        if marker_index < 0:
+            return None
+        candidate = (APP_PATHS.application_root / Path(*parts[marker_index + 1 :])).resolve()
+        return candidate if candidate.exists() else None
+
+    def _repair_relocated_database_paths(self) -> int:
+        """Repair absolute catalogue paths after a workspace relocation.
+
+        The file migration moves the course tree, but older databases retain
+        absolute paths to the previous checkout.  Import-status checks are
+        intentionally filesystem based, so stale paths make valid LaTeX appear
+        to be missing.  This migration only rewrites paths for which the copied
+        target can be found below the current application roots, creates one
+        SQLite backup, and verifies every changed value after committing.
+        """
+        if not self.database.is_file():
+            return 0
+        with self.connect(rows=True) as connection:
+            courses = connection.execute("SELECT * FROM online_courses ORDER BY id").fetchall()
+            tables = [
+                str(row[0])
+                for row in connection.execute(
+                    "SELECT name FROM sqlite_master "
+                    "WHERE type='table' AND name NOT LIKE 'sqlite_%'"
+                ).fetchall()
+            ]
+
+        prefix_pairs: list[tuple[Path, Path]] = []
+        project_pairs: list[tuple[Path, Path]] = []
+        for course in courses:
+            old_storage = Path(str(course["storage_dir"] or ""))
+            new_storage = self._relocated_course_storage_dir(course)
+            if new_storage is not None and old_storage.resolve() != new_storage:
+                prefix_pairs.append((old_storage, new_storage))
+
+            old_project = Path(str(course["project_dir"] or ""))
+            new_project = self._relocated_project_path(str(old_project))
+            if new_project is not None and old_project.resolve() != new_project:
+                project_pairs.append((old_project, new_project))
+            old_pdf = Path(str(course["project_pdf_path"] or ""))
+            new_pdf = self._relocated_project_path(str(old_pdf))
+            if new_pdf is not None and old_pdf.resolve() != new_pdf:
+                project_pairs.append((old_pdf, new_pdf))
+
+        if not prefix_pairs and not project_pairs:
+            return 0
+
+        changed: list[tuple[str, str, int, str]] = []
+        with self.connect(rows=True) as connection:
+            for table in tables:
+                table_info = connection.execute(f'PRAGMA table_info("{table}")').fetchall()
+                text_columns = [
+                    str(row[1])
+                    for row in table_info
+                    if "TEXT" in str(row[2] or "").upper()
+                ]
+                if not text_columns:
+                    continue
+                quoted_columns = ",".join(f'"{column}"' for column in text_columns)
+                rows = connection.execute(
+                    f'SELECT rowid,{quoted_columns} FROM "{table}"'
+                ).fetchall()
+                for row in rows:
+                    rowid = int(row[0])
+                    for offset, column in enumerate(text_columns, start=1):
+                        original = row[offset]
+                        if not isinstance(original, str) or not original:
+                            continue
+                        repaired = original
+                        for old, new in prefix_pairs:
+                            repaired = self._replace_path_prefix(repaired, old, new)
+                        for old, new in project_pairs:
+                            repaired = self._replace_path_prefix(repaired, old, new)
+                        # Reference sources and other catalogue paths may use
+                        # the old checkout root without matching a course's
+                        # own project_dir.  Apply the same existence-checked
+                        # repository-root relocation to those values.
+                        relocated = self._relocated_project_path(repaired)
+                        if relocated is not None:
+                            repaired = str(relocated)
+                        if repaired != original:
+                            changed.append((table, column, rowid, repaired))
+
+        if not changed:
+            return 0
+
+        self._backup_database("relocate_paths")
+        with self.connect() as connection:
+            connection.execute("BEGIN IMMEDIATE")
+            try:
+                for table, column, rowid, repaired in changed:
+                    connection.execute(
+                        f'UPDATE "{table}" SET "{column}"=? WHERE rowid=?',
+                        (repaired, rowid),
+                    )
+                connection.commit()
+            except Exception:
+                connection.rollback()
+                raise
+
+        with self.connect() as connection:
+            for table, column, rowid, repaired in changed:
+                row = connection.execute(
+                    f'SELECT "{column}" FROM "{table}" WHERE rowid=?',
+                    (rowid,),
+                ).fetchone()
+                if row is None or str(row[0] or "") != repaired:
+                    raise RuntimeError(
+                        f"路径迁移写后回读失败：{table}.{column} rowid={rowid}"
+                    )
+        return len(changed)
+
+    @staticmethod
     def _subsection_stable_key(
         chapter_number: int,
         section_number: int,
@@ -3935,6 +4178,11 @@ class OnlineCourseService:
     @staticmethod
     def _section_stable_key(chapter_number: int, section_number: int) -> str:
         return f"{int(chapter_number)}.{int(section_number)}"
+
+    @staticmethod
+    def _is_auto_split_subsection(row: Mapping[str, Any] | sqlite3.Row) -> bool:
+        """Whether a reference Section was divided into bounded writing units."""
+        return str(row["annotation_source"] or "").startswith("agent_auto_split")
 
     @staticmethod
     def _clean_source_outline_title(value: str) -> str:
@@ -4519,6 +4767,7 @@ class OnlineCourseService:
                     else 0.0
                 )
                 row = {key: subsection[key] for key in subsection.keys()}
+                row_section_only = section_only and not self._is_auto_split_subsection(subsection)
                 row.update(
                     {
                         "id": int(subsection["id"]),
@@ -4530,7 +4779,7 @@ class OnlineCourseService:
                                 f"{int(subsection['section_number'])} "
                                 f"{subsection['section_title']}"
                             )
-                            if section_only
+                            if row_section_only
                             else (
                                 f"{int(subsection['chapter_number'])}."
                                 f"{int(subsection['section_number'])}."
@@ -4619,11 +4868,21 @@ class OnlineCourseService:
             )
         return path
 
-    def formal_lecture_outline_catalog(self, course_id: int) -> dict[str, Any]:
+    def formal_lecture_outline_catalog(
+        self, course_id: int, pdf_path: Path | None = None
+    ) -> dict[str, Any]:
         """Return every stable outline unit with pages from the formal PDF bookmarks."""
 
         course = self._readonly_course(int(course_id))
-        formal_pdf = self._formal_lecture_pdf_path(course)
+        formal_pdf = (
+            Path(pdf_path).resolve()
+            if pdf_path is not None
+            else self._formal_lecture_pdf_path(course)
+        )
+        if not formal_pdf.is_file() or formal_pdf.stat().st_size <= 0:
+            raise FileNotFoundError(
+                "The formal online-course PDF is missing or empty: " + str(formal_pdf)
+            )
         with self.connect_readonly(rows=True) as connection:
             subsection_rows = connection.execute(
                 """
@@ -4704,6 +4963,12 @@ class OnlineCourseService:
                         item
                         for item in bookmarks
                         if normalized_title
+                        # Do not let a short parent bookmark (for example
+                        # ``Smooth Maps``) claim an uncompiled child
+                        # subsection such as ``Smooth Maps Between
+                        # Manifolds``.  Broad containment is only useful for
+                        # genuinely long, distinctive titles.
+                        and min(len(normalized_title), len(str(item["normalized_title"]))) >= 16
                         and (
                             normalized_title in str(item["normalized_title"])
                             or str(item["normalized_title"]) in normalized_title
@@ -4712,6 +4977,22 @@ class OnlineCourseService:
                     ]
                 page_start = int(candidates[0]["physical_page"]) if candidates else 0
                 match_source = "pdf_bookmark" if page_start else ""
+                # A stale hyperref destination may point to the page immediately
+                # before the visible heading.  Verify the bookmark target and
+                # advance to the first page whose heading actually matches so
+                # direct location remains correct even before the next rebuild.
+                if page_start:
+                    verified_heading_page = self._find_pdf_heading_page(
+                        document,
+                        display_title,
+                        str(row["stable_key"]),
+                        start_page=page_start,
+                        end_page=min(page_count, page_start + 3),
+                    )
+                    if verified_heading_page is not None:
+                        if verified_heading_page != page_start:
+                            match_source = "pdf_bookmark_heading_repaired"
+                        page_start = verified_heading_page
                 if not page_start:
                     stable_key_pattern = re.compile(
                         rf"(?m)^\s*{re.escape(str(row['stable_key']))}\s*$"
@@ -5397,6 +5678,14 @@ class OnlineCourseService:
             subsection_id = int(subsection.get("id") or subsection.get("subsection_id") or 0)
             if not subsection_id:
                 continue
+            # A reference-section course normally stores one two-level section
+            # file, but an oversized section may have been split into explicit
+            # mathematical subsections.  The writer uses the subsection stem
+            # for those automatic children; derive the status from the same
+            # semantic row-level rule instead of the course-wide mode.
+            subsection_section_only = section_only and not self._is_auto_split_subsection(
+                subsection
+            )
             override_path = self._subsection_latex_override_path(course, subsection_id)
             try:
                 authoritative_override = (
@@ -5425,7 +5714,7 @@ class OnlineCourseService:
 
             imported_count = 0
             for session_id, source_paths in recording_sources.items():
-                if section_only:
+                if subsection_section_only:
                     stem = (
                         f"section_{int(subsection['chapter_number']):03d}_"
                         f"{int(subsection['section_number']):03d}"
@@ -5633,7 +5922,7 @@ class OnlineCourseService:
     ) -> Path:
         subsection = self.subsection(int(subsection_id))
         course = self.course(int(subsection["course_id"]))
-        section_only = self._uses_reference_section_outline(course)
+        section_only = self._uses_reference_section_outline(course) and not self._is_auto_split_subsection(subsection)
         stem = (
             f"section_{int(subsection['chapter_number']):03d}_"
             f"{int(subsection['section_number']):03d}"
@@ -5865,14 +6154,14 @@ class OnlineCourseService:
                     )
                 existing_session_ids = list(existing_scope.get("session_ids") or [])
                 if existing_session_ids != expected_session_ids:
-                    # A previously imported first segment may be upgraded to an
-                    # explicitly selected contiguous batch.  This is safe only
-                    # for the body-owning first file and only when the old IDs
-                    # are an exact prefix of the new batch.
+                    # Every member carries the same batch marker, including
+                    # comment-only followers. Accept extension for all members
+                    # of the complete old prefix, not just its body file.
                     can_extend = (
                         str(existing_scope.get("body_session_id") or "")
                         == str(recording["session_id"])
-                        and target == targets[0]
+                        and bool(existing_session_ids)
+                        and target in targets[: len(existing_session_ids)]
                         and expected_session_ids[: len(existing_session_ids)]
                         == existing_session_ids
                     )
@@ -5886,7 +6175,9 @@ class OnlineCourseService:
                     can_extend = (
                         str(existing_scope.get("body_session_id") or "")
                         == str(recording["session_id"])
-                        and target == targets[0]
+                        and bool(existing_ranges)
+                        and len(existing_ranges) == len(existing_session_ids)
+                        and target in targets[: len(existing_session_ids)]
                         and ranges_without_display_order(
                             expected_ranges[: len(existing_ranges)]
                         )
@@ -8983,7 +9274,7 @@ class OnlineCourseService:
         """Build the stable, evidence-bounded context used only for reference mapping."""
         subsection = dict(self.subsection(int(subsection_id)))
         course = self.course(int(subsection["course_id"]))
-        section_only = self._uses_reference_section_outline(course)
+        section_only = self._uses_reference_section_outline(course) and not self._is_auto_split_subsection(subsection)
         number = (
             f"{int(subsection['chapter_number'])}.{int(subsection['section_number'])}"
             if section_only
@@ -10498,6 +10789,14 @@ class OnlineCourseService:
             "generated_at": _now(),
         }
         _atomic_json(manifest_path, continuity_manifest)
+        # Include the complete existing TeX source tree as read-only context so
+        # downstream writers can reproduce the established layout exactly.
+        latex_context_files = []
+        if latex_dir.is_dir():
+            for source in sorted(latex_dir.rglob("*.tex")):
+                if source.is_file():
+                    relative = Path("latex_context") / source.relative_to(latex_dir)
+                    latex_context_files.append((source, relative.as_posix()))
         return {
             "available": True,
             "manifest": continuity_manifest,
@@ -10507,6 +10806,7 @@ class OnlineCourseService:
                 (index_path, "continuity/PREVIOUS_NOTES_INDEX.json"),
                 (registry_path, "continuity/THEOREM_AND_NOTATION_REGISTRY.json"),
                 (manifest_path, "continuity/CONTINUITY_MANIFEST.json"),
+                *latex_context_files,
             ],
         }
 
@@ -11014,16 +11314,17 @@ class OnlineCourseService:
         segments: list[dict[str, Any]],
         *,
         recording_window_boundaries: set[float] | None = None,
-        minimum_independent_seconds: float = 60.0,
-        minimum_subsection_seconds: float = MIN_AUTOMATIC_SUBSECTION_SECONDS,
+        minimum_independent_seconds: float = 0.0,
+        minimum_subsection_seconds: float | None = None,
         maximum_segments: int | None = None,
     ) -> list[dict[str, Any]]:
         """Remove recording-window boundaries from the formal lecture outline.
 
         The browser's five-minute windows are evidence-processing units. They
         are never directory units. This pass is deliberately local and
-        deterministic: it merges repeated labels, conservative title aliases at
-        an internal window boundary, and very short non-independent fragments.
+        deterministic: it merges repeated labels and conservative title
+        aliases at an internal evidence-window boundary. It never invents a
+        semantic merge from elapsed time.
         """
         rows = [dict(item) for item in segments if isinstance(item, dict)]
         if not rows:
@@ -11089,6 +11390,11 @@ class OnlineCourseService:
                 merged["evidence"] = " ".join(dict.fromkeys(evidence))
             return merged
 
+        # Repeated labels at a recording-window boundary are safe to coalesce
+        # because the Agent has already supplied the same mathematical unit on
+        # both sides.  Do not merge short rows, introductions, or tails based
+        # on elapsed seconds: that would silently rewrite a genuine textbook
+        # boundary.
         changed = True
         while changed and rows:
             changed = False
@@ -11100,47 +11406,10 @@ class OnlineCourseService:
                 else:
                     compacted.append(row)
             rows = compacted
-            for index, row in enumerate(rows):
-                start = float(row.get("start_video_time") or 0)
-                end = float(row.get("end_video_time") or start)
-                if end - start >= float(minimum_independent_seconds) or len(rows) == 1:
-                    continue
-                previous = rows[index - 1] if index > 0 else None
-                starts_new_parent = bool(
-                    previous is not None
-                    and (
-                        int(previous.get("chapter_number") or 0)
-                        != int(row.get("chapter_number") or 0)
-                        or int(previous.get("section_number") or 0)
-                        != int(row.get("section_number") or 0)
-                    )
-                )
-                title_tokens = cls._outline_topic_tokens(row.get("subsection_title"))
-                opens_context = bool(title_tokens & {"introduction", "overview", "preliminaries", "setup"})
-                if index == 0 or starts_new_parent or opens_context:
-                    # An opening label such as "Introduction" is context for
-                    # the substantive following topic, so inherit the next row.
-                    if index + 1 < len(rows):
-                        replacement = dict(rows[index + 1])
-                        replacement["start_video_time"] = start
-                        rows[index + 1] = replacement
-                        del rows[index]
-                    else:
-                        rows[index - 1] = merge_into(rows[index - 1], row)
-                        del rows[index]
-                else:
-                    rows[index - 1] = merge_into(rows[index - 1], row)
-                    del rows[index]
-                changed = True
-                break
 
-        # Formal Subsection duration is accumulated by stable outline identity,
-        # so repeated non-adjacent segments may jointly satisfy the ten-minute
-        # minimum. Existing IDs may already own evidence outside this bounded
-        # request and are verified again against the full course before saving.
+        # Formal Subsection duration is retained as evidence metadata only.
         previous_end = float(rows[0].get("start_video_time") or 0)
         unit_durations: dict[tuple[Any, ...], float] = {}
-        unit_titles: dict[tuple[Any, ...], str] = {}
         for row in rows:
             row["start_video_time"] = previous_end
             row_end = float(row.get("end_video_time") or previous_end)
@@ -11157,11 +11426,6 @@ class OnlineCourseService:
                 )
             unit_durations[unit_key] = unit_durations.get(unit_key, 0.0) + max(
                 0.0, row_end - previous_end
-            )
-            unit_titles.setdefault(
-                unit_key,
-                " ".join(str(row.get("subsection_title") or "").split())
-                or "(untitled subsection)",
             )
             previous_end = row_end
 
@@ -11180,22 +11444,9 @@ class OnlineCourseService:
                 f"the explicit maximum of {limit}; no mathematical boundaries "
                 "were merged."
             )
-        short_new_units = [
-            (unit_titles[key], duration)
-            for key, duration in unit_durations.items()
-            if key[0] == "new"
-            and duration + 0.5 < float(minimum_subsection_seconds)
-        ]
-        if short_new_units:
-            details = "; ".join(
-                f"{title}: {duration:.3f}s"
-                for title, duration in short_new_units
-            )
-            raise RuntimeError(
-                "outline_minimum_subsection_duration: every new formal Subsection "
-                f"must contain at least {float(minimum_subsection_seconds):.3f} "
-                f"seconds of lecture evidence; noncompliant units: {details}."
-            )
+        # ``minimum_subsection_seconds`` is retained in the signature for
+        # compatibility with persisted callers.  It is intentionally ignored:
+        # mathematical completeness, not elapsed time, decides validity.
         return rows
 
     @classmethod
@@ -11205,6 +11456,7 @@ class OnlineCourseService:
         *,
         coverage_start: float,
         recording_window_boundaries: set[float] | None = None,
+        minimum_subsection_seconds: float | None = None,
         maximum_segments: int | None = None,
     ) -> list[dict[str, Any]]:
         """Normalize Agent endpoints and enforce the protocol safety ceiling."""
@@ -11218,6 +11470,7 @@ class OnlineCourseService:
         return cls._coalesce_agent_outline_segments(
             rows,
             recording_window_boundaries=recording_window_boundaries,
+            minimum_subsection_seconds=minimum_subsection_seconds,
             maximum_segments=maximum_segments,
         )
 
@@ -12661,26 +12914,9 @@ class OnlineCourseService:
                 " ".join(str(item.get("subsection_title") or "").split())
                 or "(untitled subsection)",
             )
-        short_touched_units = [
-            (
-                accumulated_unit_titles.get(unit_key, "(untitled subsection)"),
-                accumulated_unit_seconds.get(unit_key, 0.0),
-            )
-            for unit_key in touched_unit_keys
-            if accumulated_unit_seconds.get(unit_key, 0.0) + 0.5
-            < MIN_AUTOMATIC_SUBSECTION_SECONDS
-        ]
-        if short_touched_units:
-            details = "; ".join(
-                f"{title}: {duration:.3f}s"
-                for title, duration in sorted(short_touched_units)
-            )
-            raise ValueError(
-                "outline_minimum_subsection_duration: every formal Subsection "
-                f"touched by this update must contain at least "
-                f"{MIN_AUTOMATIC_SUBSECTION_SECONDS:.3f} seconds of accumulated "
-                f"lecture evidence across the course; noncompliant units: {details}."
-            )
+        # Duration is evidence metadata only.  A short but complete theorem or
+        # construction remains valid; do not reject or merge it to satisfy a
+        # recording-time quota.
 
         current_end = max(
             [
@@ -12891,6 +13127,40 @@ class OnlineCourseService:
             return value if isinstance(value, dict) else None
         except (OSError, ValueError, json.JSONDecodeError):
             return None
+
+    def active_recording_sessions(self, course_id: int) -> list[dict[str, Any]]:
+        """Return open recorder sessions, newest first, for one course."""
+        with self.connect(rows=True) as connection:
+            rows = connection.execute(
+                """
+                SELECT s.id AS session_id, s.episode_id, s.started_video_time,
+                       s.last_video_time, s.playback_rate, s.session_dir,
+                       s.started_at, s.updated_at, s.state,
+                       e.episode_number, e.title, e.source_identity
+                FROM recording_sessions AS s
+                JOIN course_episodes AS e ON e.id=s.episode_id
+                WHERE e.course_id=? AND COALESCE(s.ended_at,'')=''
+                ORDER BY s.started_at DESC, s.rowid DESC
+                """,
+                (int(course_id),),
+            ).fetchall()
+        return [
+            {
+                "session_id": str(row["session_id"]),
+                "episode_id": int(row["episode_id"]),
+                "episode_number": int(row["episode_number"]),
+                "title": str(row["title"] or ""),
+                "source_identity": str(row["source_identity"] or ""),
+                "started_video_time": float(row["started_video_time"] or 0),
+                "last_video_time": float(row["last_video_time"] or 0),
+                "playback_rate": float(row["playback_rate"] or 1),
+                "session_dir": str(row["session_dir"] or ""),
+                "started_at": str(row["started_at"] or ""),
+                "updated_at": str(row["updated_at"] or ""),
+                "state": str(row["state"] or ""),
+            }
+            for row in rows
+        ]
 
     @staticmethod
     def _platform(url: str) -> str:
@@ -14062,7 +14332,12 @@ class OnlineCourseService:
             raise RuntimeError("录制转写引擎未提供 Groq 认证预检。")
         primary_probe()
 
-    def start_recording(self, metadata: dict[str, Any]) -> dict[str, Any]:
+    def start_recording(
+        self,
+        metadata: dict[str, Any],
+        *,
+        enforce_single_active_session: bool = False,
+    ) -> dict[str, Any]:
         armed = self.armed_course()
         if not armed:
             raise RuntimeError("请先在题库管理中心选择网课；选中后录制扩展会自动同步。")
@@ -14086,6 +14361,23 @@ class OnlineCourseService:
         playback_rate = max(0.1, float(metadata.get("playback_rate") or 1))
         now = _now()
         with self._lock, self.connect(rows=True) as connection:
+            if enforce_single_active_session:
+                active = connection.execute(
+                    """
+                    SELECT s.id, e.episode_number
+                    FROM recording_sessions AS s
+                    JOIN course_episodes AS e ON e.id=s.episode_id
+                    WHERE e.course_id=? AND COALESCE(s.ended_at,'')=''
+                    ORDER BY s.started_at DESC, s.rowid DESC
+                    LIMIT 1
+                    """,
+                    (course_id,),
+                ).fetchone()
+                if active is not None:
+                    raise RuntimeError(
+                        f"已有未结束的录制会话（第{int(active['episode_number'])}集，{active['id']}），"
+                        "请先停止或恢复该会话。"
+                    )
             episode = connection.execute(
                 """
                 SELECT e.* FROM course_episodes AS e
@@ -14123,9 +14415,11 @@ class OnlineCourseService:
                 )
                 episode_id = int(cursor.lastrowid)
                 episode_number = next_number
+                new_episode = True
             else:
                 episode_id = int(episode["id"])
                 episode_number = int(episode["episode_number"])
+                new_episode = False
                 connection.execute(
                     """
                     UPDATE course_episodes
@@ -14163,6 +14457,20 @@ class OnlineCourseService:
                 "session_id": session_id,
             },
         )
+        if new_episode:
+            # Enable the validated sidecar only for this newly-created
+            # episode.  The live detector stays on its 200/500 ms path; this
+            # marker affects stop-time recovery and keeps per-source fallback.
+            _atomic_json(
+                episode_dir / "derived" / "offline_candidate_promotion.json",
+                {
+                    "status": "experimental",
+                    "sidecar_version": 2,
+                    "input": str(episode_dir.resolve()),
+                    "created_at": now,
+                    "scope": "new_episode_stop_time_recovery",
+                },
+            )
         analysis_stream_version = int(metadata.get("analysis_stream_version") or 0)
         if analysis_stream_version >= STREAM_ANALYSIS_VERSION:
             stream_manifest = self._new_stream_manifest(
@@ -14787,7 +15095,14 @@ class OnlineCourseService:
         # node; the evidence Agent must identify boundaries from the mathematics.
         provisional_subsection_id = 0
         recording_agent_windows_queued = 0
-        if not capture_failed:
+        # A lightweight subclass may provide its own package writer without
+        # consuming recording-agent windows.  Do not leave those workers
+        # touching a temporary test tree after that custom writer completes.
+        custom_package_writer = (
+            type(self).prepare_episode_chatgpt_package
+            is not OnlineCourseService.prepare_episode_chatgpt_package
+        )
+        if not capture_failed and not (self.auto_package_on_stop and custom_package_writer):
             recording_agent_windows_queued = self._schedule_recording_agent_windows(
                 session_id,
                 finalize=True,
@@ -14855,7 +15170,10 @@ class OnlineCourseService:
     def subsection_package_path(self, subsection_id: int) -> Path:
         subsection = self.subsection(subsection_id)
         course = self.course(int(subsection["course_id"]))
-        section_only = self._uses_reference_section_outline(course)
+        section_only = (
+            self._uses_reference_section_outline(course)
+            and not self._is_auto_split_subsection(subsection)
+        )
         stem = (
             f"section_{int(subsection['chapter_number']):03d}_"
             f"{int(subsection['section_number']):03d}"
@@ -14931,7 +15249,25 @@ class OnlineCourseService:
                 selected.append(line)
         return "\n".join(selected).strip()
 
+    @budgeted_task
     def prepare_subsection_chatgpt_package(
+        self,
+        subsection_id: int,
+        emit: Callable[[str], None] | None = None,
+    ) -> dict[str, Any]:
+        # Background refresh and a manual rebuild must never share a .tmp ZIP.
+        course_id = int(self.subsection(int(subsection_id))["course_id"])
+        with self._lock:
+            course_lock = self._reference_refresh_course_locks.setdefault(
+                course_id, threading.RLock()
+            )
+            lock = self._subsection_package_locks.setdefault(
+                int(subsection_id), threading.RLock()
+            )
+        with course_lock, lock:
+            return self._prepare_subsection_chatgpt_package_unlocked(subsection_id, emit)
+
+    def _prepare_subsection_chatgpt_package_unlocked(
         self,
         subsection_id: int,
         emit: Callable[[str], None] | None = None,
@@ -14944,7 +15280,10 @@ class OnlineCourseService:
             raise ValueError(
                 "教材习题集讲义不生成材料包；请直接使用 ChatGPT 网页版编写并导入 LaTeX。"
             )
-        section_only = self._uses_reference_section_outline(course)
+        section_only = (
+            self._uses_reference_section_outline(course)
+            and not self._is_auto_split_subsection(subsection)
+        )
         unit_kind = "section" if section_only else "subsection"
         unit_label = "Section" if section_only else "Subsection"
         unit_heading = "section" if section_only else "subsection"
@@ -15027,6 +15366,14 @@ class OnlineCourseService:
                     payload = _read_material_zip_member(source_package, member)
                     if payload is not None:
                         return payload.decode("utf-8")
+                    # Older fixtures and interrupted pre-manifest builds kept
+                    # evidence beside the ZIP.  Permit that fallback only for
+                    # an unmanifested package; a verified package remains the
+                    # immutable source of truth.
+                    if _read_material_zip_member(source_package, "package_manifest.json") is None:
+                        legacy = source_dir / member
+                        if legacy.is_file():
+                            return legacy.read_text(encoding="utf-8")
                     return None
 
                 if start_time >= end_time - 0.001:
@@ -15079,8 +15426,7 @@ class OnlineCourseService:
                     )
                 if not audio_fragment:
                     raise RuntimeError(
-                        f"小节标注片段 {int(segment['id'])} 的时间范围内缺少真实音频转写；"
-                        "请先完成对应录制音频的语音识别，再生成材料压缩包。"
+                        f"小节标注片段 {int(segment['id'])} 的时间范围内缺少真实音频转写。"
                     )
                 source_label = (
                     f"source episode {episode_number}, segment {int(segment['segment_order'])}, "
@@ -15878,6 +16224,385 @@ class OnlineCourseService:
         emit: Callable[[str], None] | None = None,
         *,
         normalize_formulas: bool = True,
+        _allow_auto_split: bool = True,
+    ) -> dict[str, Any]:
+        """Rebuild one writing unit and split oversized recorded sections safely.
+
+        Reference-backed courses traditionally expose one writing unit per
+        Section.  When that unit contains enough evidence to exceed the 30 MB
+        transport ceiling, the locked transcript and board notes are passed
+        through the same mathematical outline Agent used for the course
+        directory.  Its semantic ranges are persisted with a database backup,
+        and each child package is rebuilt independently.
+        """
+        emit = emit or (lambda _message: None)
+        try:
+            return self._rebuild_subsection_chatgpt_package_once(
+                int(subsection_id), emit, normalize_formulas=normalize_formulas
+            )
+        except RuntimeError as error:
+            if not _allow_auto_split or "超过 30 MB" not in str(error):
+                raise
+            split_ids = self._split_oversized_subsection(int(subsection_id), emit)
+            results: list[dict[str, Any]] = []
+            for index, child_id in enumerate(split_ids, start=1):
+                emit(f"正在重建数学边界写作节 {index}/{len(split_ids)}（subsection_id={child_id}）。")
+                results.append(
+                    self.rebuild_subsection_chatgpt_package(
+                        child_id,
+                        emit,
+                        normalize_formulas=normalize_formulas,
+                        _allow_auto_split=False,
+                    )
+                )
+            if not results or not all(bool(item.get("readback_verified")) for item in results):
+                raise RuntimeError("自动拆分后的写作节材料包未全部通过写后回读。")
+            first = dict(results[0])
+            first.update(
+                {
+                    "auto_split": True,
+                    "split_subsection_ids": split_ids,
+                    "split_results": results,
+                    "package_paths": [str(item.get("package_path") or "") for item in results],
+                    "source_segment_count": sum(int(item.get("source_segment_count") or 0) for item in results),
+                    "source_episode_count": sum(int(item.get("source_episode_count") or 0) for item in results),
+                    "readback_verified": True,
+                }
+            )
+            emit(f"数学边界拆分完成：原写作节已拆为 {len(results)} 个独立材料包，均低于 30 MB。")
+            return first
+
+    def _semantic_oversized_split_plan(
+        self,
+        subsection: Mapping[str, Any],
+        segments: list[dict[str, Any]],
+        emit: Callable[[str], None],
+    ) -> list[dict[str, Any]]:
+        """Ask the outline Agent for semantic ranges inside one writing unit.
+
+        The source ZIPs are immutable evidence.  This method only reads their
+        timestamped transcript and board notes, then returns a provisional plan
+        for the caller's single transactional database update.
+        """
+        course = self.course(int(subsection["course_id"]))
+        agent = self._online_course_agent(course)
+        existing_units: list[dict[str, Any]] = []
+        synthetic_id = 900000000
+        # Auto-generated size fragments are deliberately excluded from the
+        # identity catalogue; reusing their generic titles would preserve the
+        # very mechanical split this repair is meant to remove.
+        for item in self.course_subsections(int(subsection["course_id"])):
+            if int(item.get("id") or 0) == int(subsection["id"]):
+                continue
+            if str(item.get("annotation_source") or "").startswith("agent_auto_split"):
+                continue
+            existing_units.append(
+                {
+                    "existing_subsection_id": int(item["id"]),
+                    "chapter_number": int(item["chapter_number"]),
+                    "chapter_title": str(item["chapter_title"]),
+                    "section_number": int(item["section_number"]),
+                    "section_title": str(item["section_title"]),
+                    "subsection_number": int(item["subsection_number"]),
+                    "subsection_title": str(item["subsection_title"]),
+                    "accumulated_lecture_seconds": 0.0,
+                }
+            )
+
+        plan: list[dict[str, Any]] = []
+        generated_units: dict[tuple[int, int, str], dict[str, Any]] = {}
+        for source in sorted(
+            segments,
+            key=lambda item: (
+                int(item.get("episode_number") or 0),
+                float(item.get("start_video_time") or 0),
+                int(item.get("id") or 0),
+            ),
+        ):
+            episode_id = int(source["episode_id"])
+            package = self.episode_package_path(episode_id)
+            audio_bytes = _read_material_zip_member(package, "AUDIO_TRANSCRIPT.md")
+            board_bytes = _read_material_zip_member(package, "BOARD_NOTES.md")
+            if audio_bytes is None or board_bytes is None:
+                raise RuntimeError(
+                    f"第 {int(source['episode_number'])} 个证据分集缺少完整转写或板书，不能按数学含义拆分。"
+                )
+            start = float(source["start_video_time"] or 0)
+            end = float(source["end_video_time"] or 0)
+            transcript = self._filter_timestamped_transcript(
+                audio_bytes.decode("utf-8"), start, end
+            )
+            board = self._filter_timestamped_markdown(
+                board_bytes.decode("utf-8"), start, end
+            )
+            if not transcript or not board:
+                raise RuntimeError(
+                    f"第 {int(source['episode_number'])} 个录制片段缺少可核验数学证据，不能按数学含义拆分。"
+                )
+            emit(
+                f"正在依据第 {int(source['episode_number'])} 集的完整转写与板书识别数学小节边界。"
+            )
+            episode_outline = [
+                dict(item)
+                for item in plan
+                if int(item.get("episode_id") or 0) == episode_id
+            ]
+            course_info = {
+                "course_id": int(course["id"]),
+                "course_title": str(course["title"]),
+                "course_domain": str(course["course_domain"] or "math"),
+                "course_track": str(course["course_track"] or "general"),
+                "episode_id": episode_id,
+                "episode_number": int(source["episode_number"]),
+                "episode_title": str(source["source_title"] or ""),
+                "outline_mode": str(course["outline_mode"] or "chapter_section_subsection"),
+                "reference_section_catalog": self.reference_section_catalog(int(course["id"])),
+            }
+            detected = agent.detect_lecture_outline(
+                course_info,
+                transcript,
+                board,
+                emit,
+                coverage_start=start,
+                coverage_end=end,
+                existing_outline=episode_outline,
+                existing_subsections=existing_units,
+                prohibited_boundary_times=[],
+                maximum_segments=None,
+            )
+            for item in detected:
+                title = " ".join(str(item.get("subsection_title") or "").split())
+                if not title or re.search(
+                    r"(?:part|segment|分段|片段)\s*(?:\d+\s*/\s*\d+)?",
+                    title,
+                    flags=re.IGNORECASE,
+                ):
+                    raise RuntimeError(
+                        "语义拆分 Agent 返回了机械分段标题，拒绝写入：" + title
+                    )
+                key = (
+                    int(item.get("chapter_number") or subsection["chapter_number"]),
+                    int(item.get("section_number") or subsection["section_number"]),
+                    title.casefold(),
+                )
+                if key[:2] != (
+                    int(subsection["chapter_number"]),
+                    int(subsection["section_number"]),
+                ):
+                    raise RuntimeError(
+                        "语义拆分 Agent 试图跨越原 Chapter/Section；应先在目录层建立独立 Section。"
+                    )
+                if key not in generated_units:
+                    generated_units[key] = {
+                        "existing_subsection_id": synthetic_id,
+                        "chapter_number": key[0],
+                        "chapter_title": str(item.get("chapter_title") or subsection["chapter_title"]),
+                        "section_number": key[1],
+                        "section_title": str(item.get("section_title") or subsection["section_title"]),
+                        "subsection_number": len(generated_units) + 1,
+                        "subsection_title": title,
+                        "accumulated_lecture_seconds": 0.0,
+                    }
+                    existing_units.append(generated_units[key])
+                    synthetic_id += 1
+                plan.append(
+                    {
+                        "unit_key": key,
+                        "source_segment_id": int(source["id"]),
+                        "episode_id": episode_id,
+                        "chapter_number": key[0],
+                        "section_number": key[1],
+                        "subsection_title": title,
+                        "start_video_time": max(start, float(item["start_video_time"])),
+                        "end_video_time": min(end, float(item["end_video_time"])),
+                    }
+                )
+        for item in plan:
+            if item["end_video_time"] <= item["start_video_time"] + 0.001:
+                raise RuntimeError("语义拆分 Agent 返回了空数学时间片段。")
+        return plan
+
+    def _split_oversized_subsection(
+        self,
+        subsection_id: int,
+        emit: Callable[[str], None],
+    ) -> list[int]:
+        """Split an oversized unit at Agent-verified mathematical boundaries.
+
+        ZIP size is a transport constraint, never a directory rule.  The
+        semantic outline pass reads the already locked episode evidence and may
+        create several time ranges inside one episode.  Episode boundaries are
+        used only as evidence containers; they never become child titles.
+        """
+        subsection = self.subsection(int(subsection_id))
+        segments = self.subsection_segments(int(subsection_id))
+        if not segments:
+            raise RuntimeError("该写作节没有可用于语义拆分的录制证据。")
+
+        plan = self._semantic_oversized_split_plan(
+            subsection, segments, emit
+        )
+        unit_keys = list(dict.fromkeys(item["unit_key"] for item in plan))
+        if len(unit_keys) < 2:
+            raise RuntimeError(
+                "材料包超过 30 MB，但锁定证据只支持一个完整数学写作单元；"
+                "不能按分集或时长硬拆，请减少派生图像材料后重试。"
+            )
+
+        backup = self._backup_database("auto_split_oversized_subsection")
+        chapter = int(subsection["chapter_number"])
+        section = int(subsection["section_number"])
+        now = _now()
+        child_ids: list[int] = []
+        unit_number = {key: index for index, key in enumerate(unit_keys, start=1)}
+        occupied_keys = {
+            str(item.get("stable_key") or "")
+            for item in self.course_subsections(int(subsection["course_id"]))
+            if int(item.get("id") or 0) != int(subsection_id)
+        }
+        requested_keys = {f"{chapter}.{section}.{index}" for index in range(1, len(unit_keys) + 1)}
+        if occupied_keys & requested_keys:
+            raise RuntimeError(
+                "语义拆分需要先合并旧的自动分段目录；为避免覆盖现有写作节，本次未写入。"
+            )
+        plan_by_source: dict[int, list[dict[str, Any]]] = {}
+        for item in plan:
+            plan_by_source.setdefault(int(item["source_segment_id"]), []).append(item)
+        all_episode_ids = sorted({int(item["episode_id"]) for item in segments})
+        with self.connect(rows=True) as connection:
+            parent = connection.execute(
+                "SELECT * FROM course_subsections WHERE id=?", (int(subsection_id),)
+            ).fetchone()
+            if parent is None:
+                raise ValueError(f"写作节不存在：{subsection_id}")
+            connection.execute("BEGIN")
+            for child_index, unit_key in enumerate(unit_keys, start=1):
+                semantic = next(item for item in plan if item["unit_key"] == unit_key)
+                child_title = str(semantic["subsection_title"]).strip()
+                stable_key = f"{chapter}.{section}.{child_index}"
+                if child_index == 1:
+                    child_id = int(subsection_id)
+                    connection.execute(
+                        """
+                        UPDATE course_subsections SET stable_key=?,subsection_title=?,
+                            subsection_order=?,subsection_number=?,annotation_source=?,
+                            package_status='pending',package_path='',package_error='',
+                            package_updated_at='',updated_at=? WHERE id=?
+                        """,
+                        (stable_key, child_title, child_index, child_index,
+                         "agent_auto_split", now, child_id),
+                    )
+                else:
+                    cursor = connection.execute(
+                        """
+                        INSERT INTO course_subsections(
+                            course_id,stable_key,chapter_title,section_title,subsection_title,
+                            chapter_order,section_order,subsection_order,chapter_number,
+                            section_number,subsection_number,annotation_source,package_status,
+                            created_at,updated_at
+                        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                        """,
+                        (
+                            int(parent["course_id"]), stable_key,
+                            str(parent["chapter_title"]), str(parent["section_title"]), child_title,
+                            int(parent["chapter_order"]), int(parent["section_order"]), child_index,
+                            chapter, section, child_index, "agent_auto_split", "pending", now, now,
+                        ),
+                    )
+                    child_id = int(cursor.lastrowid)
+                child_ids.append(child_id)
+            # Replace each original range with the Agent's semantic ranges.
+            # Existing rows receive a temporary negative order so inserts can
+            # coexist with the UNIQUE(episode_id, segment_order) constraint.
+            for episode_id in all_episode_ids:
+                connection.execute(
+                    "UPDATE episode_outline_segments SET segment_order=-id WHERE episode_id=?",
+                    (episode_id,),
+                )
+            for source in segments:
+                source_id = int(source["id"])
+                pieces = plan_by_source.get(source_id) or []
+                if not pieces:
+                    raise RuntimeError(f"语义拆分缺少原片段 {source_id} 的归属。")
+                for piece_index, piece in enumerate(pieces):
+                    child_index = unit_number[piece["unit_key"]]
+                    child_id = child_ids[child_index - 1]
+                    semantic = next(
+                        item for item in plan if item["unit_key"] == piece["unit_key"]
+                    )
+                    values = (
+                        child_id,
+                        int(piece["chapter_number"]),
+                        int(piece["section_number"]),
+                        child_index,
+                        str(semantic["subsection_title"]),
+                        float(piece["start_video_time"]),
+                        float(piece["end_video_time"]),
+                        "agent_semantic_split",
+                        now,
+                    )
+                    if piece_index == 0:
+                        connection.execute(
+                            """
+                            UPDATE episode_outline_segments SET subsection_id=?,chapter_number=?,
+                                section_number=?,subsection_number=?,subsection_order=?,subsection_title=?,
+                                start_video_time=?,end_video_time=?,annotation_source=?,updated_at=?
+                            WHERE id=?
+                            """,
+                            (*values, source_id),
+                        )
+                    else:
+                        connection.execute(
+                            """
+                            INSERT INTO episode_outline_segments(
+                                episode_id,subsection_id,segment_order,chapter_title,section_title,
+                                subsection_title,chapter_order,section_order,subsection_order,
+                                chapter_number,section_number,subsection_number,start_video_time,
+                                end_video_time,annotation_source,annotation_confidence,annotated_at,
+                                created_at,updated_at
+                            ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                            """,
+                            (
+                                int(source["episode_id"]), child_id, -int(source_id) * 1000 - piece_index,
+                                str(source["chapter_title"]), str(source["section_title"]),
+                                str(semantic["subsection_title"]), int(source["chapter_order"]),
+                                int(source["section_order"]), child_index, int(piece["chapter_number"]),
+                                int(piece["section_number"]), child_index, float(piece["start_video_time"]),
+                                float(piece["end_video_time"]), "agent_semantic_split",
+                                float(source.get("annotation_confidence") or 0),
+                                str(source.get("annotated_at") or ""), str(source["created_at"]), now,
+                            ),
+                        )
+            for episode_id in all_episode_ids:
+                rows = connection.execute(
+                    "SELECT id FROM episode_outline_segments WHERE episode_id=? "
+                    "ORDER BY start_video_time,end_video_time,id",
+                    (episode_id,),
+                ).fetchall()
+                for order, row in enumerate(rows, start=1):
+                    connection.execute(
+                        "UPDATE episode_outline_segments SET segment_order=?,updated_at=? WHERE id=?",
+                        (order, now, int(row["id"])),
+                    )
+            connection.commit()
+            readback = connection.execute(
+                "SELECT id,subsection_number,annotation_source FROM course_subsections WHERE id IN (%s) ORDER BY subsection_number"
+                % ",".join("?" for _ in child_ids), child_ids,
+            ).fetchall()
+        if [int(row["id"]) for row in readback] != child_ids:
+            raise RuntimeError("自动拆分写后回读失败：子节目录不完整。")
+        emit(
+            f"材料包超过 30 MB；已备份数据库 {backup.name}，"
+            f"已按数学内容边界拆为 {len(child_ids)} 个写作节。"
+        )
+        return child_ids
+
+    def _rebuild_subsection_chatgpt_package_once(
+        self,
+        subsection_id: int,
+        emit: Callable[[str], None] | None = None,
+        *,
+        normalize_formulas: bool = True,
     ) -> dict[str, Any]:
         emit = emit or (lambda _message: None)
         rebuild_started = time.monotonic()
@@ -16039,6 +16764,99 @@ class OnlineCourseService:
             for subsection_id in subsection_ids
         ]
 
+    def _schedule_reference_package_refresh(self, episode_id: int) -> dict[str, Any]:
+        """Refresh mapped subsection ZIPs after the complete episode ZIP is ready.
+
+        Repeated requests coalesce, but a newer episode revision is always
+        processed. The existing mapper owns exact-cache checks and transactions;
+        the existing package writer owns index creation, atomic ZIP replacement
+        and CRC readback. A failed refresh never marks the episode ZIP failed.
+        """
+        episode_id = int(episode_id)
+        course_id = int(self._episode_material(episode_id)["episode"]["course_id"])
+        status_path = self.episode_package_path(episode_id).parent / "reference_refresh_status.json"
+
+        def report(status: str, message: str, **details: Any) -> None:
+            _atomic_json(status_path, {
+                "episode_id": episode_id, "status": status,
+                "updated_at": _now(), "message": message, **details,
+            })
+            self._emit_progress(episode_id, "reference_refresh", status, message)
+
+        def worker() -> None:
+            while True:
+                with self._lock:
+                    revision = self._reference_refresh_revisions[episode_id]
+                    episode_lock = self._episode_package_locks.setdefault(episode_id, threading.Lock())
+                    course_lock = self._reference_refresh_course_locks.setdefault(course_id, threading.RLock())
+                try:
+                    with episode_lock, course_lock:
+                        report("running", "本集材料已就绪；正在后台更新参考教材映射和小节材料包。")
+                        reference_started_at = _now()
+                        started = time.monotonic()
+                        packages = self._refresh_subsection_packages_for_episode(
+                            episode_id,
+                            lambda message: self._emit_progress(
+                                episode_id, "reference_refresh", "running", message
+                            ),
+                        )
+                        reference_finished_at = _now()
+                        reference_elapsed = time.monotonic() - started
+                        material = self._canonical_episode_material(
+                            self._episode_material(episode_id)
+                        )
+                        recording_started_at, recording_ended_at = (
+                            self._recording_wall_time_window(material)
+                        )
+                        recording_to_materials = self._elapsed_since_wall_time(
+                            recording_ended_at,
+                            reference_finished_at,
+                        )
+                        if recording_to_materials is None:
+                            completion_message = (
+                                "参考教材映射与小节材料包后台更新完成；"
+                                f"后台阶段耗时 {reference_elapsed:.1f} 秒。"
+                            )
+                        else:
+                            completion_message = (
+                                "参考教材映射与小节材料包后台更新完成；"
+                                f"后台阶段耗时 {reference_elapsed:.1f} 秒，"
+                                f"从录制结束到全部材料就绪 {recording_to_materials:.1f} 秒。"
+                            )
+                        report(
+                            "completed",
+                            completion_message,
+                            elapsed_seconds=round(reference_elapsed, 3),
+                            reference_refresh_started_at=reference_started_at,
+                            reference_refresh_completed_at=reference_finished_at,
+                            recording_started_at=recording_started_at,
+                            recording_ended_at=recording_ended_at,
+                            recording_to_all_materials_ready_elapsed_seconds=(
+                                round(recording_to_materials, 3)
+                                if recording_to_materials is not None
+                                else None
+                            ),
+                            subsection_packages=packages,
+                        )
+                except Exception as error:
+                    report("failed", f"参考教材后台更新失败；本集完整材料包仍可使用：{error}",
+                           error=str(error)[:4000])
+                finally:
+                    with self._lock:
+                        if self._reference_refresh_revisions[episode_id] == revision:
+                            self._reference_refresh_threads.pop(episode_id, None)
+                            return
+
+        with self._lock:
+            self._reference_refresh_revisions[episode_id] = self._reference_refresh_revisions.get(episode_id, 0) + 1
+            existing = self._reference_refresh_threads.get(episode_id)
+            if existing is None or not existing.is_alive():
+                report("queued", "本集材料已就绪；参考教材映射和小节材料包已排入后台。")
+                thread = threading.Thread(target=worker, name=f"online-course-reference-{episode_id}", daemon=True)
+                self._reference_refresh_threads[episode_id] = thread
+                thread.start()
+        return {"status": "queued", "status_path": str(status_path)}
+
     def schedule_episode_package(self, episode_id: int) -> Path:
         episode_id = int(episode_id)
         package_path = self.episode_package_path(episode_id)
@@ -16059,10 +16877,19 @@ class OnlineCourseService:
                 episode_id,
                 "package",
                 "queued",
-                "材料压缩包任务已排队；将先等待录制期增量处理完成。",
+                "材料压缩包任务已排队；收集增量转写，完整证据就绪后生成本集包，教材映射随后后台更新。",
             )
             try:
-                result = self.prepare_episode_chatgpt_package(episode_id)
+                try:
+                    result = self.prepare_episode_chatgpt_package(
+                        episode_id, defer_reference_refresh=True
+                    )
+                except TypeError as error:
+                    # Keep lightweight service subclasses written against the
+                    # pre-refresh signature compatible with the scheduler.
+                    if "defer_reference_refresh" not in str(error):
+                        raise
+                    result = self.prepare_episode_chatgpt_package(episode_id)
             except Exception as error:
                 with self.connect() as connection:
                     connection.execute(
@@ -16321,6 +17148,72 @@ class OnlineCourseService:
                 continue
         return ""
 
+    @staticmethod
+    def _empty_recording_session_ids(material: dict[str, Any]) -> set[str]:
+        """Identify startup-only sessions without discarding any captured evidence."""
+        sessions = list(material.get("sessions") or [])
+        populated = {
+            str(row["session_id"])
+            for row in material.get("chunks") or []
+        }
+        for row in material.get("frames") or []:
+            frame = dict(row)
+            session_id = str(frame.get("session_id") or "")
+            if not session_id:
+                session_id = OnlineCourseService._frame_session_id(
+                    Path(str(frame.get("path") or "")), sessions
+                )
+            if not session_id:
+                return set()  # Unassigned evidence must not be silently excluded.
+            populated.add(session_id)
+        if material.get("captions"):
+            return set()  # Legacy captions have no reliable session ownership.
+        empty: set[str] = set()
+        metadata_files = {
+            "source.json",
+            "derived/streaming_board_candidates.json",
+            "derived/recording_agent_windows.json",
+        }
+        for row in sessions:
+            session = dict(row)
+            session_id = str(session["id"])
+            if session_id in populated:
+                continue
+            start = session.get("started_video_time")
+            end = session.get("last_video_time")
+            if start is None or end is None or float(end) != float(start):
+                continue
+            directory = Path(str(session.get("session_dir") or ""))
+            if not session.get("session_dir") or not directory.is_dir():
+                continue
+            try:
+                stream_path = directory / "derived/streaming_board_candidates.json"
+                stream = (
+                    json.loads(stream_path.read_text(encoding="utf-8"))
+                    if stream_path.is_file() else {}
+                )
+                if not isinstance(stream, dict) or any(
+                    stream.get(key) for key in (
+                        "candidates", "received_frame_count", "first_video_time",
+                        "last_video_time", "gap_events",
+                    )
+                ):
+                    continue
+                window_path = directory / "derived/recording_agent_windows.json"
+                if window_path.is_file():
+                    windows = json.loads(window_path.read_text(encoding="utf-8"))
+                    if not isinstance(windows, dict) or windows.get("windows") or windows.get("candidate_count"):
+                        continue
+                if any(
+                    path.is_file() and path.relative_to(directory).as_posix() not in metadata_files
+                    for path in directory.rglob("*")
+                ):
+                    continue
+            except (OSError, ValueError):
+                continue
+            empty.add(session_id)
+        return empty
+
     def _canonical_episode_material(self, material: dict[str, Any]) -> dict[str, Any]:
         """Keep raw evidence intact while bounding continuation input by time.
 
@@ -16331,9 +17224,14 @@ class OnlineCourseService:
         """
 
         source_sessions = list(material.get("sessions") or [])
+        empty_session_ids = self._empty_recording_session_ids(material)
+        evidence_sessions = [
+            session for session in source_sessions
+            if str(session["id"]) not in empty_session_ids
+        ]
         restart_index = 0
         covered_before = 0.0
-        for index, session in enumerate(source_sessions):
+        for index, session in enumerate(evidence_sessions):
             session_start = max(
                 0.0, float(session["started_video_time"] or 0.0)
             )
@@ -16346,10 +17244,10 @@ class OnlineCourseService:
             if index and session_start <= 2.0 and covered_before >= 60.0:
                 restart_index = index
             covered_before = max(covered_before, session_end)
-        sessions = source_sessions[restart_index:]
+        sessions = evidence_sessions[restart_index:]
         active_session_ids = {str(row["id"]) for row in sessions}
         superseded_session_ids = [
-            str(row["id"]) for row in source_sessions[:restart_index]
+            str(row["id"]) for row in evidence_sessions[:restart_index]
         ]
         chunks = list(material.get("chunks") or [])
         frames = list(material.get("frames") or [])
@@ -16488,6 +17386,7 @@ class OnlineCourseService:
             "detected_ranges": overlap_ranges,
             "source_session_count": len(source_sessions),
             "canonical_session_count": len(sessions),
+            "ignored_empty_session_ids": sorted(empty_session_ids),
             "superseded_restart_session_ids": superseded_session_ids,
             "source_chunk_count": len(chunks),
             "canonical_chunk_count": len(canonical_chunks),
@@ -16992,6 +17891,42 @@ class OnlineCourseService:
             )
             covered_until = max(covered_until, ended)
         return ranges
+
+    @classmethod
+    def _recording_wall_time_window(
+        cls,
+        material: dict[str, Any],
+    ) -> tuple[str, str]:
+        """Return the wall-clock recording start/end for performance timing."""
+        ranges = cls._recording_session_ranges(material)
+        starts = [
+            value
+            for value in (cls._stored_datetime(item.get("started_at")) for item in ranges)
+            if value is not None
+        ]
+        ends = [
+            value
+            for value in (cls._stored_datetime(item.get("ended_at")) for item in ranges)
+            if value is not None
+        ]
+        if not starts or not ends:
+            return "", ""
+        return min(starts).isoformat(timespec="seconds"), max(ends).isoformat(timespec="seconds")
+
+    @classmethod
+    def _elapsed_since_wall_time(
+        cls,
+        started_at: str,
+        finished_at: str,
+    ) -> float | None:
+        started = cls._stored_datetime(started_at)
+        finished = cls._stored_datetime(finished_at)
+        if started is None or finished is None:
+            return None
+        if (started.tzinfo is None) != (finished.tzinfo is None):
+            started = started.replace(tzinfo=None)
+            finished = finished.replace(tzinfo=None)
+        return max(0.0, (finished - started).total_seconds())
 
     @classmethod
     def _recording_session_for_time(
@@ -17830,10 +18765,9 @@ class OnlineCourseService:
             lines.append(f"[{self._format_time(start_time)}] {transcript}")
         if missing_chunks:
             raise RuntimeError(
-                "录制期 ASR 未在停止前完成，且停止阶段有限重试后仍有缺口：有效音频分块 "
+                "录制期 ASR 未在停止前完成：音频分块 "
                 + ", ".join(missing_chunks)
-                + " 仍缺少真实转写。材料生成不会绕过这些缺口；"
-                "请检查录制期 ASR 工作进程或模型服务后重新生成。"
+                + " 仍缺少录制期间的真实转写。"
             )
         if not lines:
             raise RuntimeError("没有获得可用的字幕或音频转写。")
@@ -17943,10 +18877,9 @@ class OnlineCourseService:
             )
         if missing_chunks:
             raise RuntimeError(
-                "录制期 ASR 未在停止前完成，且停止阶段有限重试后仍有缺口：有效音频分块 "
+                "录制期 ASR 未在停止前完成：音频分块 "
                 + ", ".join(missing_chunks)
-                + " 仍缺少真实转写。材料生成不会绕过这些缺口；"
-                "请检查录制期 ASR 工作进程或模型服务后重新生成。"
+                + " 仍缺少录制期间的真实转写。"
             )
         return {
             "completed": 0,
@@ -18174,7 +19107,9 @@ class OnlineCourseService:
         def quality_score(profile: Any) -> tuple[int, int]:
             model = str(profile.model or "").casefold()
             score = 0
-            if "gpt-5.6-sol" in model:
+            if model == "deepseek-flash":
+                score = 110
+            elif "gpt-5.6-sol" in model:
                 score = 100
             elif "sol" in model:
                 score = 90
@@ -19776,15 +20711,6 @@ Return only LaTeX; do not print the classification or audit reasoning.
             target = latex_dir / folder
             if source.is_dir():
                 shutil.copytree(source, target, dirs_exist_ok=True)
-        chapter_style = latex_dir / "preamble" / "chapter.title.tex"
-        if chapter_style.is_file():
-            style_text = chapter_style.read_text(encoding="utf-8")
-            # The project template's Huge title is attractive for short problem
-            # set chapter names but overflows with ordinary lecture titles.
-            # Preserve every color and geometric detail while reducing only the
-            # copied lecture template's title font by one step.
-            style_text = style_text.replace("font=\\bfseries\\Huge", "font=\\bfseries\\huge")
-            _atomic_text(chapter_style, style_text)
         self._sync_online_course_layout(latex_dir)
         (latex_dir / "figures").mkdir(parents=True, exist_ok=True)
         source_cover = project_dir / "figures" / "cover.png"
@@ -19794,10 +20720,8 @@ Return only LaTeX; do not print the classification or audit reasoning.
     @staticmethod
     def _sync_online_course_layout(latex_dir: Path) -> Path:
         preamble_dir = latex_dir / "preamble"
-        theorem_path = preamble_dir / "theorems.tex"
-        if theorem_path.is_file():
-            sync_theorem_environments(preamble_dir)
-        return sync_document_layout(preamble_dir)
+        sync_theorem_environments(preamble_dir)
+        return sync_shared_latex_layout(preamble_dir)
 
     def _render_main_tex(self, course: sqlite3.Row, episode_files: list[str]) -> str:
         if str(course["course_domain"] or "math") == "english":
@@ -20255,6 +21179,11 @@ Ordinary exposition is written in English; Chinese appears only in explicitly ma
         imported_segments: list[dict[str, Any]] = []
         for entry in self.outline_segments(course_id):
             subsection_id = int(entry.get("subsection_id") or 0)
+            subsection_row = self.subsection(subsection_id) if subsection_id else None
+            entry_section_only = section_only and not (
+                subsection_row is not None
+                and self._is_auto_split_subsection(subsection_row)
+            )
             override_path = (
                 self._subsection_latex_override_path(course, subsection_id)
                 if subsection_id
@@ -20279,7 +21208,7 @@ Ordinary exposition is written in English; Chinese appears only in explicitly ma
                 "segment_order": int(entry["segment_order"]),
                 "subsection_number": (
                     f"{int(entry['chapter_number'])}.{int(entry['section_number'])}"
-                    if section_only
+                    if entry_section_only
                     else (
                         f"{int(entry['chapter_number'])}.{int(entry['section_number'])}."
                         f"{int(entry['subsection_number'])}"
@@ -20287,11 +21216,11 @@ Ordinary exposition is written in English; Chinese appears only in explicitly ma
                 ),
                 "subsection_title": str(
                     entry["section_title"]
-                    if section_only
+                    if entry_section_only
                     else entry["subsection_title"]
                     or ""
                 ).strip(),
-                "writing_unit_kind": "section" if section_only else "subsection",
+                "writing_unit_kind": "section" if entry_section_only else "subsection",
                 "source_path": str(effective_source_path),
                 "source_kind": (
                     "subsection_override"
@@ -20586,7 +21515,13 @@ Ordinary exposition is written in English; Chinese appears only in explicitly ma
             ensure_ascii=False,
         )
         suffix = hashlib.sha256(key_payload.encode("utf-8")).hexdigest()[:8]
-        if self._uses_reference_section_outline(course):
+        split_subsection = bool(
+            int(group.get("subsection_id") or 0)
+            and self._is_auto_split_subsection(
+                self.subsection(int(group["subsection_id"]))
+            )
+        )
+        if self._uses_reference_section_outline(course) and not split_subsection:
             return f"section_{chapter_number:03d}_{section_number:03d}_{suffix}"
         return (
             f"subsection_{chapter_number:03d}_{section_number:03d}_"
@@ -20604,6 +21539,9 @@ Ordinary exposition is written in English; Chinese appears only in explicitly ma
         stem = (
             f"section_{chapter_number:03d}_{section_number:03d}"
             if self._uses_reference_section_outline(course)
+            and not self._is_auto_split_subsection(
+                self.subsection(int(group["subsection_id"]))
+            )
             else (
                 f"subsection_{chapter_number:03d}_{section_number:03d}_"
                 f"{subsection_number:03d}"
@@ -20663,6 +21601,10 @@ Ordinary exposition is written in English; Chinese appears only in explicitly ma
             render_name = self._subsection_render_name(course, group)
             body_parts: list[str] = []
             subsection_id = int(group.get("subsection_id") or 0)
+            group_section_only = section_only and not (
+                subsection_id
+                and self._is_auto_split_subsection(self.subsection(subsection_id))
+            )
             reference_only = bool(
                 subsection_id
                 and not self.subsection_segments(subsection_id)
@@ -20683,7 +21625,7 @@ Ordinary exposition is written in English; Chinese appears only in explicitly ma
                     chapter_title,
                     section_title,
                     subsection_title,
-                    section_only=section_only,
+                    section_only=group_section_only,
                 )
                 override_body = str(normalized_override["source"]).strip()
                 if not override_body:
@@ -20818,7 +21760,7 @@ Ordinary exposition is written in English; Chinese appears only in explicitly ma
                     str(segment["chapter_title"]),
                     str(segment["section_title"]),
                     str(segment["subsection_title"]),
-                    section_only=self._uses_reference_section_outline(course),
+                    section_only=group_section_only,
                 )
                 body = str(normalized["source"])
                 body_parts.append(body.strip())
@@ -20852,7 +21794,7 @@ Ordinary exposition is written in English; Chinese appears only in explicitly ma
                         f"\\section{{{section_title}}}",
                     ]
                 )
-            if not section_only:
+            if not group_section_only:
                 heading_lines.extend(
                     [
                         f"\\setcounter{{subsection}}{{{subsection_number - 1}}}",
@@ -21003,33 +21945,24 @@ Ordinary exposition is written in English; Chinese appears only in explicitly ma
             self._render_subsection_preview_main_tex(course, render_name),
         )
 
-        latexmk = shutil.which("latexmk")
-        if not latexmk:
-            raise RuntimeError("找不到 latexmk，无法编译网课小节预览。")
-        command = [
-            latexmk,
-            "-gg",
-            "-xelatex",
-            "-synctex=1",
-            "-interaction=nonstopmode",
-            "-file-line-error",
-            "-halt-on-error",
-            "main.tex",
-        ]
         emit(f"[1/3] 正在隔离目录中编译当前小节预览：{preview_dir}")
-        emit("$ " + subprocess.list2cmdline(command))
-        return_code, log, timed_out = _run_streaming_subprocess(
-            command, preview_dir, emit, timeout=600
-        )
         log_path = preview_dir / "latex_compile.log"
-        _atomic_text(log_path, log)
-        pdf_path = preview_dir / "main.pdf"
-        if timed_out:
-            raise RuntimeError(
-                "小节预览编译超过 600 秒，已终止。\n" + log[-3000:]
-            )
-        if return_code != 0 or not pdf_path.is_file() or pdf_path.stat().st_size <= 0:
-            raise RuntimeError("小节预览编译失败。\n" + log[-3000:])
+        pipeline_result = run_unified_latex_build(
+            workdir=preview_dir,
+            main_tex="main.tex",
+            emit=emit,
+            log_path=log_path,
+            source_files=[chapters_dir / f"{render_name}.tex"],
+            normalize_semantic_paragraphs=True,
+            compile_once=lambda: run_latexmk(
+                preview_dir,
+                main_tex="main.tex",
+                emit=emit,
+                timeout=600,
+                force_full=True,
+            ),
+        )
+        pdf_path = pipeline_result.pdf_path
         source_path = chapters_dir / f"{render_name}.tex"
         source_text = source_path.read_text(encoding="utf-8")
         body_start = source_text.find(body.strip())
@@ -21688,6 +22621,7 @@ the private whole-unit plan, collision ledger, source checklist, or audit reason
         ]
         return "\n".join(lines).rstrip() + "\n"
 
+    @budgeted_task
     def prepare_episode_chatgpt_package(
         self,
         episode_id: int,
@@ -21696,9 +22630,11 @@ the private whole-unit plan, collision ledger, source checklist, or audit reason
         normalize_formulas: bool = True,
         refresh_subsection_packages: bool = True,
         force_outline_rebuild: bool = False,
+        defer_reference_refresh: bool = False,
     ) -> dict[str, Any]:
         episode_id = int(episode_id)
         package_started = time.monotonic()
+        package_started_at = _now()
         external_emit = emit or (lambda _message: None)
 
         # Evidence cleanup deliberately removes the recording-time source files
@@ -21843,11 +22779,20 @@ the private whole-unit plan, collision ledger, source checklist, or audit reason
                 episode_id,
                 progress_emit,
                 normalize_formulas=normalize_formulas,
-                refresh_subsection_packages=refresh_subsection_packages,
+                refresh_subsection_packages=(
+                    False if defer_reference_refresh else refresh_subsection_packages
+                ),
                 recording_window_refresh_session_ids=set(),
                 force_outline_rebuild=force_outline_rebuild,
             )
         elapsed = time.monotonic() - package_started
+        package_finished_at = _now()
+        completed_material = self._canonical_episode_material(
+            self._episode_material(int(episode_id))
+        )
+        recording_started_at, recording_ended_at = self._recording_wall_time_window(
+            completed_material
+        )
         recorded_duration = sum(
             max(
                 0.0,
@@ -21859,17 +22804,63 @@ the private whole-unit plan, collision ledger, source checklist, or audit reason
             )
         )
         performance_target = _package_performance_target_seconds(recorded_duration)
+        recording_to_package = self._elapsed_since_wall_time(
+            recording_ended_at,
+            package_finished_at,
+        )
+        performance_elapsed = (
+            recording_to_package if recording_to_package is not None else elapsed
+        )
+        timing_path = self.episode_package_path(episode_id).parent / "package_timing.json"
+        timing = {
+            "episode_id": episode_id,
+            "recording_started_at": recording_started_at,
+            "recording_ended_at": recording_ended_at,
+            "package_task_started_at": package_started_at,
+            "package_generated_at": package_finished_at,
+            "package_elapsed_seconds": round(elapsed, 3),
+            "recording_to_package_elapsed_seconds": (
+                round(recording_to_package, 3)
+                if recording_to_package is not None
+                else None
+            ),
+            "performance_elapsed_seconds": round(performance_elapsed, 3),
+            "recorded_duration_seconds": round(recorded_duration, 3),
+            "performance_target_seconds": round(performance_target, 3),
+            "target_basis": "5 minutes per 3 hours of recorded video",
+            "within_target": bool(performance_elapsed <= performance_target),
+        }
+        _atomic_json(timing_path, timing)
         result["elapsed_seconds"] = elapsed
         result["recorded_duration_seconds"] = recorded_duration
+        result["timing"] = timing
+        result["package_timing_path"] = str(timing_path)
+        if defer_reference_refresh and refresh_subsection_packages:
+            result["reference_refresh"] = self._schedule_reference_package_refresh(episode_id)
+        else:
+            result["reference_refresh"] = {"status": "inline"}
         result["performance_target_seconds"] = performance_target
-        if elapsed <= performance_target:
+        if recording_to_package is None:
             progress_emit(
-                f"材料压缩包总耗时 {elapsed:.1f} 秒，达到按录制时长折算的 "
+                "未找到完整的录制结束时间，无法计算录制结束到材料压缩包完成的总耗时；"
+                f"计时明细已写入 {timing_path}。"
+            )
+        else:
+            progress_emit(
+                f"录制结束到材料压缩包写后回读完成总耗时 {recording_to_package:.1f} 秒；"
+                f"录制结束 {recording_ended_at}，压缩包完成 {package_finished_at}；"
+                f"计时明细已写入 {timing_path}。"
+            )
+        if performance_elapsed <= performance_target:
+            progress_emit(
+                f"材料压缩包任务耗时 {elapsed:.1f} 秒，录制结束到压缩包完成 "
+                f"{performance_elapsed:.1f} 秒，达到按录制时长折算的 "
                 f"{performance_target:.1f} 秒目标。"
             )
         else:
             progress_emit(
-                f"材料压缩包总耗时 {elapsed:.1f} 秒，超过按录制时长折算的 "
+                f"材料压缩包任务耗时 {elapsed:.1f} 秒，录制结束到压缩包完成 "
+                f"{performance_elapsed:.1f} 秒，超过按录制时长折算的 "
                 f"{performance_target:.1f} 秒目标；"
                 "阶段耗时必须继续作为性能缺陷处理。"
             )
@@ -21905,7 +22896,10 @@ the private whole-unit plan, collision ledger, source checklist, or audit reason
         except (OSError, json.JSONDecodeError):
             previous_manifest = {}
         session_ranges = self._recording_session_ranges(material)
-        current_session_ids = {str(item["session_id"]) for item in session_ranges}
+        current_session_ids = {
+            str(item["session_id"])
+            for item in self._recording_session_ranges(self._canonical_episode_material(material))
+        }
         recording_window_refresh_session_ids = {
             str(value)
             for value in (recording_window_refresh_session_ids or set())
@@ -22070,6 +23064,12 @@ the private whole-unit plan, collision ledger, source checklist, or audit reason
         source_material = self._episode_material(int(episode_id))
         material = self._canonical_episode_material(source_material)
         overlap_info = dict(material["continuation_overlap"])
+        empty_session_ids = overlap_info.get("ignored_empty_session_ids") or []
+        if empty_session_ids:
+            emit(
+                f"已排除 {len(empty_session_ids)} 个仅启动、无媒体/字幕/截图/窗口证据的空会话；"
+                "原始记录保留，不要求空会话生成 Agent 窗口。"
+            )
         if int(overlap_info.get("source_session_count") or 0) > 1:
             ranges = list(overlap_info.get("detected_ranges") or [])
             emit(
@@ -22992,19 +23992,11 @@ the private whole-unit plan, collision ledger, source checklist, or audit reason
                         coverage_start=outline_coverage_start,
                         coverage_end=recorded_end,
                         prohibited_boundary_times=sorted(recording_window_boundaries),
-                        maximum_segments=max(
-                            1,
-                            int(
-                                max(0.0, recorded_end - outline_coverage_start)
-                                // MIN_AUTOMATIC_SUBSECTION_SECONDS
-                            )
-                            + (
-                                1
-                                if existing_episode_outline
-                                and not force_outline_rebuild
-                                else 0
-                            ),
-                        ),
+                        # Do not derive a directory quota from elapsed time.
+                        # The Agent must return the textbook's actual
+                        # mathematical units, however many or few the lecture
+                        # requires.
+                        maximum_segments=None,
                         existing_outline=[
                             {
                                 "existing_subsection_id": int(
@@ -23081,9 +24073,8 @@ the private whole-unit plan, collision ledger, source checklist, or audit reason
                     if isinstance(window, dict)
                 }
                 # The Agent owns the mathematical boundary proposal.  The local
-                # postcondition removes recording-window fragmentation and
-                # rejects every new formal Subsection whose accumulated lecture
-                # evidence is below ten minutes. It never invents a semantic merge.
+                # postcondition removes only repeated labels at evidence-window
+                # seams; it never invents a duration-based merge.
                 outline_segments_for_save = self._bounded_agent_outline_segments(
                     [dict(item) for item in single_pass_outline_segments],
                     coverage_start=outline_coverage_start,
@@ -23336,9 +24327,10 @@ the private whole-unit plan, collision ledger, source checklist, or audit reason
             },
         )
         _atomic_text(source_errors_path, source_errors_markdown)
-        _copy_file_verified(
-            GLOBAL_CHATGPT_WRITING_PROMPT_PATH,
+        _atomic_text(
             global_writing_rules_path,
+            GLOBAL_CHATGPT_WRITING_PROMPT_PATH.read_text(encoding="utf-8").rstrip()
+            + "\n\n" + shared_math_prose_rules(),
         )
         _copy_file_verified(
             LATEX_DRAWING_RULES_PATH,
@@ -24065,7 +25057,8 @@ the private whole-unit plan, collision ledger, source checklist, or audit reason
                 "录制期子窗口使用转写回退："
                 + "、".join(degraded_recording_windows)
                 + "。完整候选帧和时间范围均已保留；最终统一 Agent 将依据完整 ASR "
-                "补齐该窗口，不重复上传同一批图片，也不阻止材料包交付。"
+                "尝试补齐该窗口，不重复上传同一批图片；"
+                "只有数学还原与完整性校验通过后才可交付可写材料包。"
             )
         if review_recording_windows:
             emit(
@@ -24771,7 +25764,7 @@ the private whole-unit plan, collision ledger, source checklist, or audit reason
                     thread_name_prefix="lecture-quality-specialist",
                 ) as executor:
                     futures = {
-                        executor.submit(run_specialist, lane): lane
+                        submit_with_budget(executor, run_specialist, lane): lane
                         for lane in sorted(lanes)
                     }
                     for future in as_completed(futures):
@@ -25210,6 +26203,273 @@ the private whole-unit plan, collision ledger, source checklist, or audit reason
                 f"（物理页 {joined}）；上一份正式 PDF 未被覆盖。"
             )
 
+    @classmethod
+    def _pdf_heading_matches(
+        cls, page_text: str, title: str, stable_key: str = ""
+    ) -> bool:
+        """Return whether a PDF page starts with the requested outline heading.
+
+        The first lines are used deliberately.  A title can occur in prose or in
+        the table of contents on a later page, but the first occurrence near the
+        top of the page is the reliable target for navigation.
+        """
+
+        normalized_title = cls._normalize_pdf_heading(title)
+        normalized_key = cls._normalize_pdf_lookup_text(stable_key)
+        if not normalized_title and not normalized_key:
+            return False
+        # A stable subsection key is emitted by the lecture layout itself and
+        # is an exact anchor even when a heading starts at the bottom of a
+        # page.  Do this check over the complete page before applying the
+        # deliberately narrow title-at-the-top heuristic below.  The old
+        # first-24-lines limit rejected valid pages such as 1.1.8, whose
+        # heading was wrapped into the final lines of the preceding page.
+        all_lines = [
+            cls._normalize_pdf_lookup_text(raw_line)
+            for raw_line in str(page_text or "").splitlines()
+        ]
+        if normalized_key and len(normalized_key) > 1 and any(
+            re.search(rf"(?:^|\s){re.escape(normalized_key)}(?:\s|$)", line)
+            for line in all_lines
+        ):
+            return True
+
+        lines: list[str] = []
+        for line in all_lines[:24]:
+            if not line:
+                continue
+            lines.append(line)
+            if normalized_title and (
+                line == normalized_title
+                or line.startswith(normalized_title + " ")
+                or normalized_title in line
+            ):
+                return True
+        # Some imported subsection boundaries intentionally begin with the
+        # first theorem/definition after a page break rather than a standalone
+        # subsection heading.  Accept a distinctive title in that structural
+        # heading form anywhere on the page, while avoiding ordinary prose
+        # occurrences later in the page.
+        if normalized_title:
+            structural_prefix = re.compile(
+                r"^(?:definition|theorem|proposition|lemma|corollary|"
+                r"example|remark|exercise)\b"
+            )
+            if any(
+                normalized_title in line and structural_prefix.search(line)
+                for line in all_lines
+            ):
+                return True
+        # Chapter headings can wrap over two or more lines (for example,
+        # ``General Theory of`` / ``Limits``).  Match the compacted heading as
+        # a whole while still limiting the search to the top of the page.
+        joined = " ".join(lines)
+        if normalized_title and normalized_title in joined:
+            return True
+        return False
+
+    @classmethod
+    def _find_pdf_heading_page(
+        cls,
+        document: fitz.Document,
+        title: str,
+        stable_key: str = "",
+        start_page: int = 1,
+        end_page: int | None = None,
+    ) -> int | None:
+        start = max(1, int(start_page))
+        end = min(int(document.page_count), int(end_page or document.page_count))
+        for physical_page in range(start, end + 1):
+            if cls._pdf_heading_matches(
+                str(document[physical_page - 1].get_text("text") or ""),
+                title,
+                stable_key,
+            ):
+                return physical_page
+        return None
+
+    @classmethod
+    def validate_and_repair_pdf_navigation(
+        cls,
+        pdf_path: Path,
+        emit: Callable[[str], None] | None = None,
+    ) -> dict[str, Any]:
+        """Validate TOC and direct-location targets and repair one-page drift.
+
+        PyMuPDF exposes bookmark destinations as one-based physical pages while
+        the in-app viewer uses zero-based page indexes.  The compiled PDF can
+        nevertheless contain a stale bookmark one page before its printed
+        heading (the 1.3 case).  We repair the bookmark in the compile artifact,
+        then reopen it and verify every changed destination before allowing the
+        build to be reported as successful.
+        """
+
+        emit = emit or (lambda _message: None)
+        path = Path(pdf_path).resolve()
+        if not path.is_file() or path.stat().st_size <= 0:
+            raise RuntimeError(f"PDF 导航校验找不到有效编译产物：{path}")
+        try:
+            document = fitz.open(str(path))
+        except (OSError, RuntimeError) as error:
+            raise RuntimeError(f"PDF 导航校验无法打开编译产物：{path}") from error
+        changed: list[tuple[int, str, int, int]] = []
+        toc: list[list[Any]] = []
+        try:
+            # Use the portable three-column form when writing the repaired TOC.
+            # The extended destination dictionaries returned by
+            # ``get_toc(simple=False)`` contain xref-specific fields; feeding
+            # those stale fields back to ``set_toc`` can turn every page into
+            # ``-1`` after a save.
+            toc = [list(item) for item in (document.get_toc(simple=True) or [])]
+            page_count = int(document.page_count)
+            for index, entry in enumerate(toc):
+                if len(entry) < 3:
+                    continue
+                title = str(entry[1] or "").strip()
+                current_page = int(entry[2] or 0)
+                if not title or current_page <= 0 or current_page > page_count:
+                    continue
+                # A small forward window catches the known stale one-page
+                # destination without mistaking a later prose occurrence for a
+                # heading.  Entries which already land on their heading are
+                # left byte-for-byte alone.
+                if cls._pdf_heading_matches(
+                    str(document[current_page - 1].get_text("text") or ""),
+                    title,
+                ):
+                    continue
+                next_page = page_count
+                for later in toc[index + 1 :]:
+                    if len(later) >= 3 and int(later[2] or 0) > current_page:
+                        next_page = min(next_page, int(later[2] or 0))
+                        break
+                corrected = cls._find_pdf_heading_page(
+                    document,
+                    title,
+                    start_page=current_page,
+                    end_page=min(page_count, max(current_page + 3, next_page)),
+                )
+                if corrected is None or corrected == current_page:
+                    continue
+                entry[2] = corrected
+                changed.append((index, title, current_page, corrected))
+            if changed:
+                temporary = path.with_name(path.name + ".navigation.tmp")
+                temporary.unlink(missing_ok=True)
+                document.set_toc(toc)
+                document.save(str(temporary), garbage=4, deflate=True)
+                document.close()
+                os.replace(temporary, path)
+                emit(
+                    "[导航校验] 已自动修复 "
+                    + ", ".join(
+                        f"{title}: 第{old}页→第{new}页"
+                        for _index, title, old, new in changed
+                    )
+                )
+            else:
+                document.close()
+        except Exception:
+            try:
+                document.close()
+            except Exception:
+                pass
+            raise
+
+        try:
+            with fitz.open(str(path)) as verified:
+                verified_toc = verified.get_toc(simple=True) or []
+                for index, title, _old, corrected in changed:
+                    if index >= len(verified_toc):
+                        raise RuntimeError("自动修复后的 PDF 目录条目数量发生变化。")
+                    actual = int(verified_toc[index][2] or 0)
+                    if actual != corrected or not cls._pdf_heading_matches(
+                        str(verified[corrected - 1].get_text("text") or ""), title
+                    ):
+                        raise RuntimeError(
+                            f"PDF 导航自动修复回读失败：{title} 未定位到第{corrected}页。"
+                        )
+                # Validate direct-location semantics for every repaired target:
+                # the catalog and UI both consume this same one-based value.
+                for index, title, _old, corrected in changed:
+                    if not cls._pdf_heading_matches(
+                        str(verified[corrected - 1].get_text("text") or ""), title
+                    ):
+                        raise RuntimeError(f"PDF 直接定位复核失败：{title}。")
+                size = path.stat().st_size
+        except (OSError, RuntimeError) as error:
+            raise RuntimeError(f"PDF 导航自动修复后复核失败：{error}") from error
+        return {
+            "pdf_path": str(path),
+            "page_count": page_count,
+            "toc_count": len(toc),
+            "repaired_count": len(changed),
+            "repaired_entries": [
+                {"title": title, "old_page": old, "new_page": new}
+                for _index, title, old, new in changed
+            ],
+            "readback_verified": True,
+            "size_bytes": size,
+        }
+
+    def validate_direct_pdf_navigation(
+        self, course_id: int, pdf_path: Path
+    ) -> dict[str, Any]:
+        """Verify the one-based targets consumed by the in-app locator.
+
+        The locator subtracts one exactly once at the Qt boundary.  This check
+        therefore validates the service-side physical page against the actual
+        heading for every stable subsection, catching a direct-location drift
+        even when the PDF's bookmark table happens to look valid.
+        """
+
+        with self.connect_readonly(rows=True) as connection:
+            subsection_count = int(
+                connection.execute(
+                    "SELECT COUNT(*) FROM course_subsections WHERE course_id=?",
+                    (int(course_id),),
+                ).fetchone()[0]
+            )
+        if subsection_count <= 0:
+            return {
+                "pdf_path": str(Path(pdf_path).resolve()),
+                "outline_unit_count": 0,
+                "mapped_outline_unit_count": 0,
+                "readback_verified": True,
+                "skipped": True,
+            }
+        catalog = self.formal_lecture_outline_catalog(
+            int(course_id), pdf_path=Path(pdf_path)
+        )
+        failures: list[str] = []
+        with fitz.open(str(pdf_path)) as document:
+            for item in catalog["outline_units"]:
+                physical_page = int(item.get("physical_page_start") or 0)
+                if physical_page <= 0 or physical_page > int(document.page_count):
+                    # Progressive lecture imports intentionally compile only
+                    # the contiguous imported prefix.  A trailing subsection
+                    # that has not been imported yet therefore has no page in
+                    # the current formal PDF and is not an error by itself.
+                    continue
+                if not self._pdf_heading_matches(
+                    str(document[physical_page - 1].get_text("text") or ""),
+                    str(item.get("title") or ""),
+                    str(item.get("stable_key") or ""),
+                ):
+                    failures.append(
+                        f"{item['stable_key']}: 第{physical_page}页没有对应标题"
+                    )
+        if failures:
+            raise RuntimeError(
+                "PDF 直接定位自动复核失败：" + "；".join(failures[:8])
+            )
+        return {
+            "pdf_path": str(Path(pdf_path).resolve()),
+            "outline_unit_count": int(catalog["outline_unit_count"]),
+            "mapped_outline_unit_count": int(catalog["mapped_outline_unit_count"]),
+            "readback_verified": True,
+        }
+
     def build_course_pdf(
         self,
         course_id: int,
@@ -25257,22 +26517,6 @@ the private whole-unit plan, collision ledger, source checklist, or audit reason
                 + "。请先在‘分集与材料’窗口点击‘自动合并同一小节’，"
                 "再点击‘重新编译 PDF’。本次未启动 latexmk，上一份正式 PDF 未被覆盖。"
             )
-        latexmk = shutil.which("latexmk")
-        if not latexmk:
-            raise RuntimeError("找不到 latexmk，无法编译网课讲义 PDF。")
-        command = [latexmk]
-        if force_full_rebuild:
-            command.append("-gg")
-        command.extend(
-            [
-                "-xelatex",
-                "-synctex=1",
-                "-interaction=nonstopmode",
-                "-file-line-error",
-                "-halt-on-error",
-                "main.tex",
-            ]
-        )
         started = time.monotonic()
         build_mode = "清理派生缓存后完整编译" if force_full_rebuild else "标准编译"
         emit(
@@ -25280,26 +26524,47 @@ the private whole-unit plan, collision ledger, source checklist, or audit reason
             f"（{build_mode}）"
         )
         emit(f"LaTeX 工作目录：{latex_dir}")
-        emit("$ " + subprocess.list2cmdline(command))
-        emit("[2/4] latexmk 实时输出：")
-        return_code, log, timed_out = _run_streaming_subprocess(
-            command,
-            latex_dir,
-            emit,
-            timeout=600,
+        emit("[2/4] 进入统一 XeLaTeX 编译、排版修复和 PDF 校验")
+        pipeline_result = run_unified_latex_build(
+            workdir=latex_dir,
+            main_tex=main_tex,
+            emit=emit,
+            log_path=Path(str(course["storage_dir"])) / "logs" / "latex_compile.log",
+            repair_backup_dir=Path(str(course["storage_dir"])) / "backups" / "latex_overfull_repair",
+            normalize_semantic_paragraphs=True,
+            compile_once=lambda: run_latexmk(
+                latex_dir,
+                main_tex=main_tex,
+                emit=emit,
+                timeout=600,
+                force_full=force_full_rebuild,
+            ),
         )
-        _atomic_text(Path(str(course["storage_dir"])) / "logs" / "latex_compile.log", log)
-        built = latex_dir / "main.pdf"
-        built_synctex = latex_dir / "main.synctex.gz"
-        if timed_out:
-            raise RuntimeError("LaTeX 编译超过 600 秒，已终止；上一份正式 PDF 未被覆盖。\n" + log[-3000:])
-        if return_code != 0 or not built.is_file() or built.stat().st_size <= 0:
-            raise RuntimeError("LaTeX 编译失败；上一份正式 PDF 未被覆盖。\n" + log[-3000:])
-        if not built_synctex.is_file() or built_synctex.stat().st_size <= 0:
-            raise RuntimeError(
-                "LaTeX 编译没有生成 main.synctex.gz；上一份正式 PDF 未被覆盖。"
+        built = pipeline_result.pdf_path
+        built_synctex = pipeline_result.synctex_path
+        # Navigation is part of a successful lecture build.  Repair stale
+        # hyperref destinations in the compiled artifact before it is copied to
+        # the formal PDF; only a repaired-and-reread result may reach the
+        # success callback in the Qt window.
+        navigation = self.validate_and_repair_pdf_navigation(built, emit)
+        emit(
+            f"[3/4] PDF 导航校验完成：目录 {navigation['toc_count']} 项，"
+            f"自动修复 {navigation['repaired_count']} 项，已回读确认目录点击和直接定位页码。"
+        )
+        direct_navigation = self.validate_direct_pdf_navigation(int(course_id), built)
+        emit(
+            f"[3/4] 直接定位复核完成："
+            f"{direct_navigation['mapped_outline_unit_count']} 个小节页码均指向正文标题。"
+        )
+        pdf_layout_findings = inspect_pdf_layout(built)
+        if pdf_layout_findings:
+            sample = "; ".join(
+                f"第{finding.page}页{finding.line}行{finding.text[:24]}"
+                for finding in pdf_layout_findings[:5]
             )
-        self._validate_compiled_pdf_layout(built)
+            emit(
+                f"[3/4] PDF 行级排版复核发现 {len(pdf_layout_findings)} 项需人工确认（{sample}）。"
+            )
         emit(
             f"[3/4] latexmk 编译成功：{built} "
             f"({built.stat().st_size / 1024 / 1024:.2f} MB)"
@@ -25394,11 +26659,17 @@ class _RecorderRequestHandler(BaseHTTPRequestHandler):
             self._json_response({"ok": False, "error": "not_found"}, 404)
             return
         armed = self.service.armed_course()
+        active_sessions = (
+            self.service.active_recording_sessions(int(armed["course_id"]))
+            if armed else []
+        )
         self._json_response(
             {
                 "ok": True,
                 "armed": bool(armed),
                 "course": armed,
+                "active_session": active_sessions[0] if active_sessions else None,
+                "active_sessions": active_sessions,
                 "storage_root": str(self.service.root),
                 "required_recorder_protocol_version": RECORDER_PROTOCOL_VERSION,
                 "analysis_stream_version": STREAM_ANALYSIS_VERSION,
@@ -25418,7 +26689,9 @@ class _RecorderRequestHandler(BaseHTTPRequestHandler):
                         f"然后重试（需要协议 {RECORDER_PROTOCOL_VERSION}，当前 "
                         f"{protocol_version or '未报告'}）。"
                     )
-                result = self.service.start_recording(payload)
+                result = self.service.start_recording(
+                    payload, enforce_single_active_session=True
+                )
             elif path == "/session/event":
                 payload = self._json_body()
                 result = self.service.record_event(

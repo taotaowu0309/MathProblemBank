@@ -56,7 +56,7 @@ A project normally contains:
 Recommended durable customization:
 
 - Put macros, colors, notation, and TikZ settings in `notation/local_overrides.tex`; `main.tex` includes it and project generation preserves it.
-- Put images in the project's `figures/` or `pic/` directory and reference them with project-relative paths such as `\includegraphics{figures/my-figure.png}`. Avoid `C:/...`, `D:/...`, and `..` paths.
+- Put images in the project's `figures/` or `pic/` directory and reference them with project-relative paths such as `\includegraphics{figures/my-figure.png}`. Avoid absolute paths and `..` paths.
 - For deeper template changes, back up the project and edit its own `preamble/packages.tex`, `commands.tex`, or `geometry.tex`. Existing project files are not normally overwritten by the default template, but inspect differences after recreating or upgrading a project.
 - Use `project_pdf_meta.json` for title, cover, and theme metadata, then regenerate the PDF.
 

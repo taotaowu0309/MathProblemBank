@@ -38,6 +38,28 @@ def workspace_vocabulary_paths(
 
 DEFAULT_DATABASE, DEFAULT_BACKUP_DIR, DEFAULT_EXPORT_DIR = workspace_vocabulary_paths("math")
 
+# Canonical labels used by the existing vocabulary.  Import and display accept
+# common long-form aliases, but persist/return the majority spelling.
+VOCABULARY_POS_ALIASES = {
+    "noun": "n.",
+    "adjective": "adj.",
+    "verb": "v.",
+    "adverb": "adv.",
+    "preposition": "prep.",
+    "conjunction": "conj.",
+    "noun phrase": "n. phr.", "n phrase": "n. phr.", "n.phr.": "n. phr.",
+    "adjective phrase": "adj. phr.", "adj phrase": "adj. phr.", "adj.phr.": "adj. phr.",
+    "verb phrase": "v. phr.", "v phrase": "v. phr.", "v.phr.": "v. phr.",
+    "adverb phrase": "adv. phr.", "adv phrase": "adv. phr.", "adv.phr.": "adv. phr.",
+    "prepositional phrase": "prep. phr.", "preposition phrase": "prep. phr.", "prep phrase": "prep. phr.", "prep.phr.": "prep. phr.",
+    "conjunction phrase": "conj. phr.", "conj phrase": "conj. phr.", "conj.phr.": "conj. phr.",
+    "名词": "n.", "形容词": "adj.", "动词": "v.", "副词": "adv.", "介词": "prep.", "连词": "conj.",
+}
+
+def normalize_vocabulary_part_of_speech(value: str | None) -> str:
+    text = re.sub(r"\s+", " ", str(value or "")).strip()
+    return VOCABULARY_POS_ALIASES.get(text.casefold(), VOCABULARY_POS_ALIASES.get(text, text))
+
 VOCABULARY_SCHEMA = """
 CREATE TABLE IF NOT EXISTS vocabulary_entries (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -590,11 +612,18 @@ class VocabularyManager:
         familiarity: str = "all",
         *,
         limit: int | None = 200,
+        reading_only: bool = False,
     ) -> list[dict[str, Any]]:
         self.ensure_schema()
         familiarity = self._normalize_familiarity(familiarity, allow_all=True)
         clauses: list[str] = []
         arguments: list[Any] = []
+        if reading_only:
+            clauses.append(
+                "NOT (LOWER(COALESCE(source,'')) LIKE '%raydu_vocabulary%' "
+                "OR LOWER(COALESCE(source,'')) LIKE '%英文字彙%' "
+                "OR LOWER(COALESCE(source,'')) LIKE '%英文字汇%')"
+            )
         if str(query or "").strip():
             pattern = f"%{str(query).strip()}%"
             clauses.append("(term LIKE ? OR part_of_speech LIKE ? OR definition LIKE ? OR note LIKE ?)")
@@ -618,7 +647,10 @@ class VocabularyManager:
                 """,
                 arguments,
             ).fetchall()
-        return [dict(row) for row in rows]
+        result = [dict(row) for row in rows]
+        for row in result:
+            row["part_of_speech"] = normalize_vocabulary_part_of_speech(row.get("part_of_speech"))
+        return result
 
     def lookup_pdf_selection(self, selected_text: str, *, limit: int = 8) -> list[dict[str, Any]]:
         """Read-only lookup for text selected in either in-app PDF viewer."""
@@ -714,11 +746,52 @@ class VocabularyManager:
             ).fetchall()
         return [dict(row) for row in rows]
 
+    @staticmethod
+    def _read_entries_by_ids(
+        connection: sqlite3.Connection,
+        entry_ids: Iterable[int],
+    ) -> list[dict[str, Any]]:
+        ids = sorted(set(entry_ids))
+        if not ids:
+            return []
+        rows = connection.execute(
+            """
+            SELECT id,term,part_of_speech,definition,familiarity,note,source,
+                   entry_kind,pronunciation,created_at,updated_at
+            FROM vocabulary_entries WHERE id IN ("""
+            + ",".join("?" for _ in ids)
+            + ") ORDER BY term COLLATE NOCASE,id",
+            ids,
+        ).fetchall()
+        return [dict(row) for row in rows]
+
+    def _read_committed_entries(
+        self, entry_ids: Iterable[int], backup: Path, operation: str,
+    ) -> list[dict[str, Any]]:
+        try:
+            return self.resolve_entries(entry_ids=entry_ids)
+        except Exception as error:
+            raise RuntimeError(
+                f"{operation}已提交，但写后回读失败；未覆盖数据库。恢复备份：{backup}"
+            ) from error
+
+    @staticmethod
+    def _entries_match_expected(
+        rows: list[dict[str, Any]], expected: dict[int, dict[str, Any]],
+    ) -> bool:
+        return len(rows) == len(expected) and all(
+            int(row["id"]) in expected and all(
+                row[field] == value for field, value in expected[int(row["id"])].items()
+            )
+            for row in rows
+        )
+
     def import_entries(
         self,
         entries: Iterable[dict[str, Any]],
         *,
         merge_definitions: bool = False,
+        max_entries: int = 500,
     ) -> dict[str, Any]:
         normalized: list[dict[str, Any]] = []
         seen: set[tuple[str, str]] = set()
@@ -730,7 +803,7 @@ class VocabularyManager:
             definition = str(raw.get("definition") or "").strip()
             if not term or not definition:
                 raise ValueError("每个词条都必须包含非空 term 和 definition。")
-            part_of_speech = str(raw.get("part_of_speech") or "").strip()
+            part_of_speech = normalize_vocabulary_part_of_speech(raw.get("part_of_speech"))
             term_key = term.casefold()
             key = (term_key, part_of_speech.casefold())
             if key in seen:
@@ -771,111 +844,115 @@ class VocabularyManager:
             )
         if not normalized:
             raise ValueError("没有可导入的词条。")
-        if len(normalized) > 500:
-            raise ValueError("单次最多批量导入 500 个词条。")
+        entry_limit = max(1, int(max_entries))
+        if len(normalized) > entry_limit:
+            raise ValueError(f"单次最多批量导入 {entry_limit} 个词条。")
         backup = self.backup("vocabulary_import")
         inserted = 0
         updated = 0
         definitions_appended = 0
         new_part_of_speech_entries = 0
         affected_ids: list[int] = []
-        try:
-            with closing(self.connect()) as connection:
-                connection.execute("BEGIN IMMEDIATE")
-                for item in normalized:
-                    same_term = connection.execute(
+        expected_rows: dict[int, dict[str, Any]] = {}
+        entry_fields = (
+            "term", "part_of_speech", "definition", "familiarity", "note", "source",
+            "entry_kind", "pronunciation",
+        )
+        # Roll back this transaction on failure; restoring the backup file
+        # would also erase unrelated commits made after that snapshot.
+        with closing(self.connect(rows=True)) as connection, connection:
+            connection.execute("BEGIN IMMEDIATE")
+            for item in normalized:
+                same_term = connection.execute(
+                    """
+                    SELECT id,term,part_of_speech,definition,familiarity,note,source,
+                           entry_kind,pronunciation
+                    FROM vocabulary_entries
+                    WHERE term=? COLLATE NOCASE
+                    ORDER BY id
+                    """,
+                    (item["term"],),
+                ).fetchall()
+                exact = [
+                    row
+                    for row in same_term
+                    if str(row[2] or "").casefold()
+                    == item["part_of_speech"].casefold()
+                ]
+                existing = exact[0] if exact else None
+                if existing is None and item["part_of_speech"]:
+                    if len(same_term) == 1 and not str(same_term[0][2] or "").strip():
+                        existing = same_term[0]
+                elif existing is None and not item["part_of_speech"]:
+                    if len(same_term) == 1:
+                        existing = same_term[0]
+                        item["part_of_speech"] = str(existing[2] or "").strip()
+                    elif len(same_term) > 1:
+                        raise ValueError(
+                            f"词条 {item['term']} 已有多个词性，导入时必须明确 part_of_speech。"
+                        )
+                if existing is None:
+                    expected = {field: item[field] for field in entry_fields}
+                    cursor = connection.execute(
                         """
-                        SELECT id,term,part_of_speech,definition,familiarity,note,source,
-                               entry_kind,pronunciation
-                        FROM vocabulary_entries
-                        WHERE term=? COLLATE NOCASE
-                        ORDER BY id
+                        INSERT INTO vocabulary_entries(
+                            term,part_of_speech,definition,familiarity,note,source,
+                            entry_kind,pronunciation
+                        ) VALUES(?,?,?,?,?,?,?,?)
                         """,
-                        (item["term"],),
-                    ).fetchall()
-                    exact = [
-                        row
-                        for row in same_term
-                        if str(row[2] or "").casefold()
-                        == item["part_of_speech"].casefold()
-                    ]
-                    existing = exact[0] if exact else None
-                    if existing is None and item["part_of_speech"]:
-                        if len(same_term) == 1 and not str(same_term[0][2] or "").strip():
-                            existing = same_term[0]
-                    elif existing is None and not item["part_of_speech"]:
-                        if len(same_term) == 1:
-                            existing = same_term[0]
-                            item["part_of_speech"] = str(existing[2] or "").strip()
-                        elif len(same_term) > 1:
-                            raise ValueError(
-                                f"词条 {item['term']} 已有多个词性，导入时必须明确 part_of_speech。"
-                            )
-                    if existing is None:
-                        cursor = connection.execute(
-                            """
-                            INSERT INTO vocabulary_entries(
-                                term,part_of_speech,definition,familiarity,note,source,
-                                entry_kind,pronunciation
-                            ) VALUES(?,?,?,?,?,?,?,?)
-                            """,
-                            tuple(item[key] for key in (
-                                "term", "part_of_speech", "definition", "familiarity", "note", "source",
-                                "entry_kind", "pronunciation"
-                            )),
-                        )
-                        affected_ids.append(int(cursor.lastrowid))
-                        inserted += 1
-                        if same_term:
-                            new_part_of_speech_entries += 1
-                    else:
-                        effective_familiarity = (
-                            item["familiarity"]
-                            if item["familiarity_provided"]
-                            else str(existing[4] or "unfamiliar")
-                        )
-                        definition = item["definition"]
-                        note = item["note"]
-                        source = item["source"]
-                        if merge_definitions:
-                            definition = _merge_semicolon_segments(existing[3], definition)
-                            note = _merge_semicolon_segments(existing[5], note)
-                            source = _merge_semicolon_segments(existing[6], source)
-                            if definition != str(existing[3] or ""):
-                                definitions_appended += 1
-                        connection.execute(
-                            """
-                            UPDATE vocabulary_entries
-                            SET term=?,part_of_speech=?,definition=?,familiarity=?,note=?,source=?,
-                                entry_kind=?,pronunciation=?,
-                                updated_at=CURRENT_TIMESTAMP
-                            WHERE id=?
-                            """,
-                            (
-                                str(existing[1] or item["term"]),
-                                item["part_of_speech"],
-                                definition,
-                                effective_familiarity,
-                                note,
-                                source,
-                                item["entry_kind"] or str(existing[7] or "word"),
-                                item["pronunciation"] or str(existing[8] or ""),
-                                int(existing[0]),
-                            ),
-                        )
-                        affected_ids.append(int(existing[0]))
-                        updated += 1
-                integrity = str(connection.execute("PRAGMA integrity_check").fetchone()[0])
-                if integrity != "ok":
-                    raise RuntimeError(f"词汇库完整性检查失败：{integrity}")
-                connection.commit()
-        except Exception:
-            shutil.copy2(backup, self.database)
-            raise
-        readback = self.resolve_entries(entry_ids=affected_ids)
-        if len(readback) != len(normalized):
-            shutil.copy2(backup, self.database)
-            raise RuntimeError("词汇批量导入写后回读数量不一致，已从备份恢复。")
+                        tuple(expected[field] for field in entry_fields),
+                    )
+                    affected_ids.append(int(cursor.lastrowid))
+                    expected_rows[int(cursor.lastrowid)] = expected
+                    inserted += 1
+                    if same_term:
+                        new_part_of_speech_entries += 1
+                else:
+                    effective_familiarity = (
+                        item["familiarity"]
+                        if item["familiarity_provided"]
+                        else str(existing[4] or "unfamiliar")
+                    )
+                    definition = item["definition"]
+                    note = item["note"]
+                    source = item["source"]
+                    if merge_definitions:
+                        definition = _merge_semicolon_segments(existing[3], definition)
+                        note = _merge_semicolon_segments(existing[5], note)
+                        source = _merge_semicolon_segments(existing[6], source)
+                        if definition != str(existing[3] or ""):
+                            definitions_appended += 1
+                    expected = dict(zip(entry_fields, (
+                        str(existing[1] or item["term"]), item["part_of_speech"], definition,
+                        effective_familiarity, note, source,
+                        item["entry_kind"] or str(existing[7] or "word"),
+                        item["pronunciation"] or str(existing[8] or ""),
+                    )))
+                    connection.execute(
+                        """
+                        UPDATE vocabulary_entries
+                        SET term=?,part_of_speech=?,definition=?,familiarity=?,note=?,source=?,
+                            entry_kind=?,pronunciation=?,
+                            updated_at=CURRENT_TIMESTAMP
+                        WHERE id=?
+                        """,
+                        (*[expected[field] for field in entry_fields], int(existing[0])),
+                    )
+                    affected_ids.append(int(existing[0]))
+                    expected_rows[int(existing[0])] = expected
+                    updated += 1
+            integrity = str(connection.execute("PRAGMA integrity_check").fetchone()[0])
+            if integrity != "ok":
+                raise RuntimeError(f"词汇库完整性检查失败：{integrity}")
+            pending = self._read_entries_by_ids(connection, affected_ids)
+            if len(pending) != len(normalized) or not self._entries_match_expected(pending, expected_rows):
+                raise RuntimeError("词汇批量导入回读内容不一致，事务已取消。")
+            connection.commit()
+        readback = self._read_committed_entries(affected_ids, backup, "词汇批量导入")
+        if len(readback) != len(normalized) or not self._entries_match_expected(readback, expected_rows):
+            raise RuntimeError(
+                f"词汇批量导入已提交，但写后回读内容不一致；未覆盖数据库。恢复备份：{backup}"
+            )
         return {
             "inserted": inserted,
             "updated": updated,
@@ -908,6 +985,18 @@ class VocabularyManager:
         entries = self.resolve_entries(entry_ids=[int(vocabulary_entry_id)])
         if not entries:
             raise ValueError("词汇条目不存在。")
+        expected = {
+            "vocabulary_entry_id": int(vocabulary_entry_id),
+            "definition_zh": str(definition_zh).strip(),
+            "definition_en": str(definition_en).strip(),
+            "domain": str(domain or "general").strip(),
+            "register_note": str(register_note).strip(),
+            "collocations": str(collocations).strip(),
+            "source_kind": str(source_kind or "user").strip(),
+            "source_material_id": source_material_id,
+            "source_page": source_page,
+            "confidence": str(confidence or "confirmed").strip(),
+        }
         backup = self.backup("vocabulary_sense")
         with closing(self.connect(rows=True)) as connection:
             try:
@@ -920,26 +1009,33 @@ class VocabularyManager:
                         source_page,confidence
                     ) VALUES(?,?,?,?,?,?,?,?,?,?)
                     """,
-                    (
-                        int(vocabulary_entry_id), str(definition_zh).strip(),
-                        str(definition_en).strip(), str(domain or "general").strip(),
-                        str(register_note).strip(), str(collocations).strip(),
-                        str(source_kind or "user").strip(), source_material_id,
-                        source_page, str(confidence or "confirmed").strip(),
-                    ),
+                    tuple(expected.values()),
                 )
                 sense_id = int(cursor.lastrowid)
                 integrity = str(connection.execute("PRAGMA integrity_check").fetchone()[0])
                 if integrity != "ok":
                     raise RuntimeError(f"词汇库完整性检查失败：{integrity}")
+                pending = connection.execute(
+                    "SELECT * FROM vocabulary_senses WHERE id=?", (sense_id,)
+                ).fetchone()
+                if pending is None or any(pending[field] != value for field, value in expected.items()):
+                    raise RuntimeError("词义回读不一致，事务已取消。")
                 connection.commit()
             except Exception:
                 connection.rollback()
-                shutil.copy2(backup, self.database)
                 raise
-            row = connection.execute(
-                "SELECT * FROM vocabulary_senses WHERE id=?", (sense_id,)
-            ).fetchone()
+            try:
+                row = connection.execute(
+                    "SELECT * FROM vocabulary_senses WHERE id=?", (sense_id,)
+                ).fetchone()
+            except Exception as error:
+                raise RuntimeError(
+                    f"词义已提交，但写后回读失败；未覆盖数据库。恢复备份：{backup}"
+                ) from error
+        if row is None or any(row[field] != value for field, value in expected.items()):
+            raise RuntimeError(
+                f"词义已提交，但写后回读不一致；未覆盖数据库。恢复备份：{backup}"
+            )
         return {
             "sense": dict(row),
             "backup_path": str(backup),
@@ -1075,27 +1171,32 @@ class VocabularyManager:
             raise ValueError("没有找到要设置熟悉度的词条。")
         ids = [int(item["id"]) for item in selected]
         backup = self.backup("vocabulary_familiarity")
-        try:
-            with closing(self.connect()) as connection:
-                connection.execute("BEGIN IMMEDIATE")
-                cursor = connection.execute(
-                    "UPDATE vocabulary_entries SET familiarity=?,updated_at=CURRENT_TIMESTAMP WHERE id IN ("
-                    + ",".join("?" for _ in ids)
-                    + ")",
-                    [familiarity, *ids],
-                )
-                connection.commit()
-                affected = int(cursor.rowcount)
-        except Exception:
-            shutil.copy2(backup, self.database)
-            raise
-        readback = self.resolve_entries(ids, None)
+        with closing(self.connect(rows=True)) as connection, connection:
+            connection.execute("BEGIN IMMEDIATE")
+            cursor = connection.execute(
+                "UPDATE vocabulary_entries SET familiarity=?,updated_at=CURRENT_TIMESTAMP WHERE id IN ("
+                + ",".join("?" for _ in ids)
+                + ")",
+                [familiarity, *ids],
+            )
+            affected = int(cursor.rowcount)
+            integrity = str(connection.execute("PRAGMA integrity_check").fetchone()[0])
+            if integrity != "ok":
+                raise RuntimeError(f"词汇库完整性检查失败：{integrity}")
+            pending = self._read_entries_by_ids(connection, ids)
+            if affected != len(ids) or len(pending) != len(ids) or any(
+                str(item["familiarity"]) != familiarity for item in pending
+            ):
+                raise RuntimeError("熟悉度回读不一致，事务已取消。")
+            connection.commit()
+        readback = self._read_committed_entries(ids, backup, "熟悉度修改")
         verified = len(readback) == len(ids) and all(
             str(item["familiarity"]) == familiarity for item in readback
         )
         if not verified:
-            shutil.copy2(backup, self.database)
-            raise RuntimeError("熟悉度写后回读不一致，已从备份恢复。")
+            raise RuntimeError(
+                f"熟悉度修改已提交，但写后回读不一致；未覆盖数据库。恢复备份：{backup}"
+            )
         return {
             "affected": affected,
             "familiarity": familiarity,
@@ -1116,27 +1217,26 @@ class VocabularyManager:
             raise ValueError("没有找到要删除的词条。")
         ids = [int(item["id"]) for item in selected]
         backup = self.backup("vocabulary_delete")
-        try:
-            with closing(self.connect()) as connection:
-                connection.execute("BEGIN IMMEDIATE")
-                cursor = connection.execute(
-                    "DELETE FROM vocabulary_entries WHERE id IN ("
-                    + ",".join("?" for _ in ids)
-                    + ")",
-                    ids,
-                )
-                integrity = str(connection.execute("PRAGMA integrity_check").fetchone()[0])
-                if integrity != "ok":
-                    raise RuntimeError(f"词汇库完整性检查失败：{integrity}")
-                connection.commit()
-                affected = int(cursor.rowcount)
-        except Exception:
-            shutil.copy2(backup, self.database)
-            raise
-        remaining = self.resolve_entries(ids, None)
+        with closing(self.connect(rows=True)) as connection, connection:
+            connection.execute("BEGIN IMMEDIATE")
+            cursor = connection.execute(
+                "DELETE FROM vocabulary_entries WHERE id IN ("
+                + ",".join("?" for _ in ids)
+                + ")",
+                ids,
+            )
+            integrity = str(connection.execute("PRAGMA integrity_check").fetchone()[0])
+            if integrity != "ok":
+                raise RuntimeError(f"词汇库完整性检查失败：{integrity}")
+            affected = int(cursor.rowcount)
+            if affected != len(ids) or self._read_entries_by_ids(connection, ids):
+                raise RuntimeError("删除回读不一致，事务已取消。")
+            connection.commit()
+        remaining = self._read_committed_entries(ids, backup, "词汇删除")
         if remaining or affected != len(ids):
-            shutil.copy2(backup, self.database)
-            raise RuntimeError("删除写后回读不一致，已从备份恢复。")
+            raise RuntimeError(
+                f"词汇删除已提交，但写后回读不一致；未覆盖数据库。恢复备份：{backup}"
+            )
         return {
             "affected": affected,
             "deleted_entries": selected,
@@ -1164,9 +1264,14 @@ class VocabularyManager:
             lines.append(" | ".join(str(value).replace("\n", " ").strip() for value in values))
         return "\n".join(lines).rstrip() + "\n"
 
-    def export_txt(self, familiarity: str = "all") -> dict[str, Any]:
+    def export_txt(
+        self,
+        familiarity: str = "all",
+        *,
+        reading_only: bool = False,
+    ) -> dict[str, Any]:
         familiarity = self._normalize_familiarity(familiarity, allow_all=True)
-        rows = self.list_entries("", familiarity, limit=None)
+        rows = self.list_entries("", familiarity, limit=None, reading_only=reading_only)
         self.export_dir.mkdir(parents=True, exist_ok=True)
         target = self.export_dir / f"vocabulary_{familiarity}.txt"
         temporary = target.with_suffix(".txt.tmp")
@@ -1216,9 +1321,14 @@ class VocabularyManager:
 \end{{document}}
 """
 
-    def export_pdf(self, familiarity: str = "all") -> dict[str, Any]:
+    def export_pdf(
+        self,
+        familiarity: str = "all",
+        *,
+        reading_only: bool = False,
+    ) -> dict[str, Any]:
         familiarity = self._normalize_familiarity(familiarity, allow_all=True)
-        rows = self.list_entries("", familiarity, limit=None)
+        rows = self.list_entries("", familiarity, limit=None, reading_only=reading_only)
         latexmk = shutil.which("latexmk")
         if not latexmk:
             raise RuntimeError("未找到 latexmk，无法导出词汇库 PDF。")

@@ -17,11 +17,25 @@ from pathlib import Path
 from typing import Any, Callable
 
 from shared.scripts.ai_agent_config import ProviderProfile
+from shared.scripts.ai_agent_api_policy import budgeted_task
 from shared.scripts.ai_agent_operation_registry import FORMAL_WRITE_TOOL_NAMES
 
 
 ProgressCallback = Callable[[str], None]
 ToolCallback = Callable[[str, dict[str, Any]], dict[str, Any]]
+
+# Some relay pools briefly return HTTP 400/5xx while a healthy sibling is already
+# serving the same model.  These failures happen before inference and are safe
+# to retry independently of the ordinary transport budget (which a caller may
+# deliberately set to zero for slow 504/524 requests).
+TRANSIENT_MODEL_ROUTE_RETRIES = 3
+TRANSIENT_MODEL_ROUTE_ERRORS = (
+    "unknown provider for model",
+    "no provider available for model",
+    "provider unavailable for model",
+    "no available channel",
+    "可用渠道不存在",
+)
 
 
 def _message_images(message: dict[str, Any]) -> list[tuple[str, str]]:
@@ -241,10 +255,24 @@ def _join_endpoint(base_url: str, suffix: str) -> str:
 
 
 def _concrete_reasoning_effort(value: str) -> str:
-    """Resolve the UI-only adaptive preset before sending provider payloads."""
+    """Apply the application-wide high-reasoning policy at the wire boundary."""
 
-    normalized = str(value or "auto").casefold()
-    return "medium" if normalized == "adaptive" else normalized
+    # Older saved profiles and specialized callers can still carry
+    # auto/low/medium. Every provider payload that exposes an effort control
+    # must nevertheless request high reasoning.
+    return "high"
+
+
+def _supports_responses_reasoning(model: str) -> bool:
+    """Whether this Responses model family exposes an effort control."""
+    name = str(model or "").casefold()
+    return (
+        name.startswith("deepseek")
+        or name.startswith("gpt-5")
+        or name.startswith("o1")
+        or name.startswith("o3")
+        or name.startswith("o4")
+    )
 
 
 def _tool_budget_fallback_answer(traces: list[ToolTrace]) -> str:
@@ -291,7 +319,7 @@ def _raise_if_cancelled(progress: ProgressCallback | None) -> None:
         raise RuntimeError("请求已取消。")
 
 
-def _json_request(
+def _json_request_unbudgeted(
     url: str,
     payload: dict[str, Any],
     headers: dict[str, str],
@@ -307,7 +335,7 @@ def _json_request(
     raw = ""
     retry_limit = max(0, int(max_retries))
 
-    def retry_delay(error: Exception, retry_index: int) -> float:
+    def retry_delay(error: Exception, retry_index: int, *, route: bool = False) -> float:
         headers = getattr(error, "headers", None)
         if headers is not None:
             retry_after_ms = str(headers.get("retry-after-ms", "") or "").strip()
@@ -330,7 +358,9 @@ def _json_request(
                         seconds = -1.0
                 if 0.0 <= seconds <= 60.0:
                     return seconds
-        base = min(0.5 * (2**retry_index), 8.0)
+        # A missing route needs time for the relay pool to recover. Immediate
+        # retries exhaust the entire budget against the same unavailable pool.
+        base = min(5.0 * (2**retry_index), 20.0) if route else min(0.5 * (2**retry_index), 8.0)
         return base * (1.0 - 0.25 * random.random())
 
     def wait_before_retry(error: Exception, attempt: int) -> None:
@@ -347,7 +377,9 @@ def _json_request(
         time.sleep(delay)
         _raise_if_cancelled(progress)
 
-    for attempt in range(retry_limit + 1):
+    transport_retries_used = 0
+    model_route_retries_used = 0
+    while True:
         try:
             with urllib.request.urlopen(request, timeout=timeout, context=ssl.create_default_context()) as response:
                 unregister = _register_cancel(progress, getattr(response, "close", lambda: None))
@@ -358,10 +390,6 @@ def _json_request(
             _raise_if_cancelled(progress)
             break
         except urllib.error.HTTPError as error:
-            retryable_status = error.code in {408, 409, 429} or error.code >= 500
-            if attempt < retry_limit and retryable_status:
-                wait_before_retry(error, attempt)
-                continue
             raw = error.read().decode("utf-8", errors="replace")
             message = raw
             try:
@@ -373,6 +401,36 @@ def _json_request(
                     message = str(detail)
             except json.JSONDecodeError:
                 pass
+            normalized_message = message.casefold()
+            transient_model_route = (error.code == 400 or 500 <= error.code < 600) and any(
+                marker in normalized_message
+                for marker in TRANSIENT_MODEL_ROUTE_ERRORS
+            )
+            if (
+                transient_model_route
+                and model_route_retries_used < (0 if urllib.parse.urlparse(url).hostname == "api.deepseek.com" else TRANSIENT_MODEL_ROUTE_RETRIES)
+            ):
+                model_route_retries_used += 1
+                delay = retry_delay(error, model_route_retries_used - 1, route=True)
+                if progress:
+                    try:
+                        progress(
+                            "上游模型路由节点暂时未就绪；"
+                            f"{delay:.1f} 秒后进行第 {model_route_retries_used + 1}/"
+                            f"{TRANSIENT_MODEL_ROUTE_RETRIES + 1} 次路由尝试。"
+                        )
+                    except (OSError, UnicodeError):
+                        pass
+                _raise_if_cancelled(progress)
+                time.sleep(delay)
+                _raise_if_cancelled(progress)
+                continue
+            retryable_status = error.code in {408, 409, 429} or error.code >= 500
+            # Do not give an exhausted route another ordinary transport budget.
+            if not transient_model_route and transport_retries_used < retry_limit and retryable_status:
+                wait_before_retry(error, transport_retries_used)
+                transport_retries_used += 1
+                continue
             raise ProviderError(
                 _redact(f"API 请求失败（HTTP {error.code}）：{message[:1800]}", secrets or []),
                 status_code=error.code,
@@ -387,8 +445,9 @@ def _json_request(
             TimeoutError,
             ssl.SSLError,
         ) as error:
-            if attempt < retry_limit:
-                wait_before_retry(error, attempt)
+            if transport_retries_used < retry_limit:
+                wait_before_retry(error, transport_retries_used)
+                transport_retries_used += 1
                 continue
             reason = getattr(error, "reason", error)
             if isinstance(error, TimeoutError):
@@ -407,10 +466,52 @@ def _json_request(
     try:
         parsed = json.loads(raw)
     except json.JSONDecodeError:
-        raise ProviderError(f"模型 API 返回了无法解析的 JSON：{raw[:1000]}") from None
+        # Responses occasionally wrap the JSON in Markdown fences or add a
+        # short prefix/suffix.  Recover only a complete JSON object; never
+        # invent missing fields when the payload is genuinely truncated.
+        candidate = raw.strip()
+        if "```" in candidate:
+            candidate = candidate.replace("```json", "").replace("```", "").strip()
+        start, end = candidate.find("{"), candidate.rfind("}")
+        if start >= 0 and end > start:
+            try:
+                parsed = json.loads(candidate[start : end + 1])
+            except json.JSONDecodeError:
+                raise ProviderError(f"模型 API 返回了不完整或损坏的 JSON：{raw[:1000]}") from None
+        else:
+            raise ProviderError(f"模型 API 返回了不完整或损坏的 JSON：{raw[:1000]}") from None
     if not isinstance(parsed, dict):
         raise ProviderError("模型 API 返回的顶层数据不是 JSON 对象。")
     return parsed
+
+
+def _json_request(url, payload, headers, timeout, secrets=None, progress=None, max_retries=1):
+    if urllib.parse.urlparse(url).hostname != "api.deepseek.com":
+        return _json_request_unbudgeted(url, payload, headers, timeout, secrets, progress, max_retries)
+    for attempt in range(min(1, max(0, int(max_retries))) + 1):
+        _raise_if_cancelled(progress)
+        effective = dict(payload)
+        # Let the provider choose its own output budget.  The desktop client
+        # must not impose max_output_tokens/max_tokens on the request.  Keep
+        # explicit high-reasoning controls for both Responses and Chat
+        # payloads; otherwise an old saved profile could silently fall back to
+        # a provider's lower default.
+        effective.pop("max_output_tokens", None)
+        effective.pop("max_tokens", None)
+        ticket = (None, "unlimited")
+        effort = "unmanaged"
+        try:
+            data = _json_request_unbudgeted(url, effective, headers, timeout, secrets, progress, 0)
+        except ProviderError as error:
+            # Only explicit temporary HTTP failures are retried. A disconnect may
+            # already have completed inference, so never replay it automatically.
+            if attempt == 0 and max_retries and getattr(error, "status_code", None) in {429, 502, 503}:
+                _raise_if_cancelled(progress)
+                time.sleep(2.0)
+                continue
+            raise
+        return data
+    raise ProviderError("API 重试预算已用尽。")
 
 
 def _json_get_request(
@@ -777,6 +878,7 @@ class BaseProvider:
         self.profile = profile
         self.api_key = api_key
 
+    @budgeted_task
     def run_turn(
         self,
         messages: list[dict[str, Any]],
@@ -789,6 +891,7 @@ class BaseProvider:
 
 
 class OpenAIResponsesProvider(BaseProvider):
+    @budgeted_task
     def run_turn(
         self,
         messages: list[dict[str, Any]],
@@ -840,7 +943,12 @@ class OpenAIResponsesProvider(BaseProvider):
             concrete_effort = _concrete_reasoning_effort(
                 self.profile.reasoning_effort
             )
-            if concrete_effort != "auto":
+            if self.profile.model.casefold().startswith("deepseek"):
+                concrete_effort = {
+                    "minimal": "low", "medium": "high", "xhigh": "high",
+                    "ultra": "max",
+                }.get(concrete_effort, concrete_effort)
+            if concrete_effort != "auto" and _supports_responses_reasoning(self.profile.model):
                 reasoning["effort"] = concrete_effort
             if reasoning:
                 payload["reasoning"] = reasoning
@@ -865,6 +973,7 @@ class OpenAIResponsesProvider(BaseProvider):
                     getattr(self.profile, "transport_retries", 0) or 0
                 ),
             )
+            concrete_effort = str(data.get("_effective_reasoning_effort") or concrete_effort)
             last_usage = data.get("usage") if isinstance(data.get("usage"), dict) else {}
             last_response_model = str(data.get("model") or "")
             last_response_id = str(data.get("id") or "")
@@ -880,7 +989,7 @@ class OpenAIResponsesProvider(BaseProvider):
                         tool_traces=traces,
                         usage=last_usage,
                         route="responses",
-                        reasoning_effort=self.profile.reasoning_effort,
+                        reasoning_effort=concrete_effort,
                         reasoning_mode="standard" if supports_gpt_56_controls else "",
                         text_verbosity=self.profile.text_verbosity,
                         response_model=last_response_model,
@@ -935,13 +1044,22 @@ class OpenAIResponsesProvider(BaseProvider):
                             text_parts.append(str(block.get("text") or ""))
                 answer = "\n".join(part for part in text_parts if part.strip()).strip()
             if not answer:
-                raise ProviderError("模型没有返回可显示的文本回答。")
+                detail = data.get("incomplete_details") or {}
+                reason = detail.get("reason", "") if isinstance(detail, dict) else ""
+                usage_detail = last_usage.get("output_tokens_details") or {}
+                thinking_tokens = usage_detail.get("reasoning_tokens", 0) if isinstance(usage_detail, dict) else 0
+                raise ProviderError(
+                    "模型没有返回可显示的文本回答。"
+                    f" status={last_response_status}; reason={reason}; "
+                    f"output_tokens={last_usage.get('output_tokens', 0)}; "
+                    f"reasoning_tokens={thinking_tokens}"
+                )
             return ProviderResult(
                 answer=answer,
                 tool_traces=traces,
                 usage=last_usage,
                 route="responses",
-                reasoning_effort=self.profile.reasoning_effort,
+                reasoning_effort=concrete_effort,
                 reasoning_mode="standard" if supports_gpt_56_controls else "",
                 text_verbosity=self.profile.text_verbosity,
                 response_model=last_response_model,
@@ -953,6 +1071,7 @@ class OpenAIResponsesProvider(BaseProvider):
 
 
 class OpenAICompatibleProvider(BaseProvider):
+    @budgeted_task
     def run_turn(
         self,
         messages: list[dict[str, Any]],
@@ -992,15 +1111,12 @@ class OpenAICompatibleProvider(BaseProvider):
                 "max_tokens": self.profile.max_output_tokens,
                 "stream": False,
             }
-            effective_effort = ""
-            if self.profile.model.casefold().startswith("gpt-5.6"):
-                effective_effort = (
-                    "none"
-                    if chat_tools
-                    else _concrete_reasoning_effort(self.profile.reasoning_effort)
-                )
-                if effective_effort != "auto":
-                    payload["reasoning_effort"] = effective_effort
+            effective_effort = _concrete_reasoning_effort(self.profile.reasoning_effort)
+            model_lower = self.profile.model.casefold()
+            if model_lower.startswith("gpt-5.6") or model_lower.startswith("deepseek"):
+                payload["reasoning_effort"] = effective_effort
+                if model_lower.startswith("deepseek"):
+                    payload["thinking"] = {"type": "enabled"}
             if chat_tools:
                 payload["tools"] = chat_tools
                 payload["tool_choice"] = (
@@ -1111,6 +1227,7 @@ class QualityFirstOpenAIProvider(BaseProvider):
     """
 
     _ENDPOINT_COMPATIBILITY_STATUS_CODES = {404, 405, 415, 501}
+    @budgeted_task
     def run_turn(
         self,
         messages: list[dict[str, Any]],
@@ -1155,6 +1272,7 @@ class QualityFirstOpenAIProvider(BaseProvider):
 
 
 class AnthropicProvider(BaseProvider):
+    @budgeted_task
     def run_turn(
         self,
         messages: list[dict[str, Any]],
@@ -1193,6 +1311,17 @@ class AnthropicProvider(BaseProvider):
                 "max_tokens": self.profile.max_output_tokens,
                 "stream": False,
             }
+            if (
+                _concrete_reasoning_effort(self.profile.reasoning_effort) == "high"
+                and int(self.profile.max_output_tokens) >= 2048
+            ):
+                payload["thinking"] = {
+                    "type": "enabled",
+                    "budget_tokens": max(
+                        1024,
+                        min(16000, int(self.profile.max_output_tokens) // 2),
+                    ),
+                }
             if anthropic_tools:
                 payload["tools"] = anthropic_tools
                 payload["tool_choice"] = {"type": "auto"}
@@ -1208,6 +1337,7 @@ class AnthropicProvider(BaseProvider):
                         answer=_tool_budget_fallback_answer(traces),
                         tool_traces=traces,
                         usage=last_usage,
+                        reasoning_effort=_concrete_reasoning_effort(self.profile.reasoning_effort),
                     )
                 anthropic_messages.append({"role": "assistant", "content": content})
                 result_blocks = []
@@ -1262,7 +1392,12 @@ class AnthropicProvider(BaseProvider):
             ).strip()
             if not answer:
                 raise ProviderError("模型没有返回可显示的文本回答。")
-            return ProviderResult(answer=answer, tool_traces=traces, usage=last_usage)
+            return ProviderResult(
+                answer=answer,
+                tool_traces=traces,
+                usage=last_usage,
+                reasoning_effort=_concrete_reasoning_effort(self.profile.reasoning_effort),
+            )
         raise ProviderError("模型工具循环未能结束。")
 
 
@@ -1279,6 +1414,7 @@ def _gemini_schema(value: Any) -> Any:
 
 
 class GeminiProvider(BaseProvider):
+    @budgeted_task
     def run_turn(
         self,
         messages: list[dict[str, Any]],
@@ -1334,6 +1470,18 @@ class GeminiProvider(BaseProvider):
                 "contents": contents,
                 "generationConfig": {"maxOutputTokens": self.profile.max_output_tokens},
             }
+            if _concrete_reasoning_effort(self.profile.reasoning_effort) == "high":
+                if "gemini-3" in self.profile.model.casefold():
+                    payload["generationConfig"]["thinkingConfig"] = {
+                        "thinkingLevel": "HIGH"
+                    }
+                elif int(self.profile.max_output_tokens) >= 2048:
+                    payload["generationConfig"]["thinkingConfig"] = {
+                        "thinkingBudget": max(
+                            1024,
+                            min(8192, int(self.profile.max_output_tokens) // 2),
+                        )
+                    }
             if gemini_tools:
                 payload["tools"] = gemini_tools
                 payload["toolConfig"] = {"functionCallingConfig": {"mode": "AUTO"}}
@@ -1356,6 +1504,7 @@ class GeminiProvider(BaseProvider):
                         answer=_tool_budget_fallback_answer(traces),
                         tool_traces=traces,
                         usage=last_usage,
+                        reasoning_effort=_concrete_reasoning_effort(self.profile.reasoning_effort),
                     )
                 contents.append({"role": "model", "parts": parts})
                 response_parts = []
@@ -1402,11 +1551,19 @@ class GeminiProvider(BaseProvider):
             ).strip()
             if not answer:
                 raise ProviderError("模型没有返回可显示的文本回答。")
-            return ProviderResult(answer=answer, tool_traces=traces, usage=last_usage)
+            return ProviderResult(
+                answer=answer,
+                tool_traces=traces,
+                usage=last_usage,
+                reasoning_effort=_concrete_reasoning_effort(self.profile.reasoning_effort),
+            )
         raise ProviderError("模型工具循环未能结束。")
 
 
 def create_provider(profile: ProviderProfile, api_key: str) -> BaseProvider:
+    # Enforce the global quality policy for every API entry point, including
+    # legacy services that still pass a saved low/adaptive profile directly.
+    profile = replace(profile, reasoning_effort="high")
     if (
         profile.routing_strategy == "quality_first"
         and profile.provider_kind in {"openai_responses", "openai_compatible"}

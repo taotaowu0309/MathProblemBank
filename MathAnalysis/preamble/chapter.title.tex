@@ -11,11 +11,12 @@
       \setlength{\fboxsep}{0pt}%
       \noindent
       \fcolorbox{BlueMain}{BlueMain!10}{%
-        \parbox[c][1.35cm][c]
+        \parbox[c][2.7cm][c]
           {\dimexpr\linewidth-2\fboxrule\relax}{%
             \hspace*{0.45cm}%
-            {\color{BlueDark}\bfseries\Huge
-              第\thechapter 章\quad \chaptertitletext}%
+            \parbox[t]{\dimexpr\linewidth-0.9cm\relax}{\raggedright
+              {\color{BlueDark}\bfseries\Huge
+                第\thechapter 章\quad \chaptertitletext}}%
           }%
       }%
     \endgroup

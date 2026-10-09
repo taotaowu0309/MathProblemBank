@@ -20,3 +20,16 @@
   \par\addvspace{0.35\baselineskip}%
   \noindent\textbf{Solution.}\par\nobreak
 }
+
+% Permit ordinary prose to wrap before it reaches a frame edge.
+\setlength{\emergencystretch}{2em}
+
+% Keep a hyphenated word, and a one-line paragraph orphan, from being split
+% across a page boundary.  This preserves sentence continuity in generated
+% textbook prose; displays and structured environments retain their own
+% natural breaks.
+\brokenpenalty=10000
+\clubpenalty=10000
+\widowpenalty=10000
+\displaywidowpenalty=10000
+

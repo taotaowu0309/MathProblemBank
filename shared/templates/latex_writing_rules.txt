@@ -11,7 +11,8 @@ LaTeX 书写规范（复制给 ChatGPT，导入前必须遵守）
    普通“暂时没有写答案”必须使用 Deferred，不能使用 Open；Answered 的 [Solution] 不得为空。
 5. Chapter/Section 的 code 和 name 必须从“章/节清单”逐字复制。不得根据“第一章”、CH01、DM01、MA01 或类似编号猜测、翻译或改写章节名称；同一个 Chapter Code 已存在时，Chapter Name 必须完全一致。
 6. [Problem Summary] / [问题简述] 是标准题库界面直接显示的自足描述，必须填写。[Problem Statement] / [标准题干] 用于保存更完整的原题；可以省略，导入器会把 [Problem Summary] 原文自动复制为题干。只有当完整题干确实比简述包含更多内容时，才需要单独提供 [Problem Statement]。
-7. [Problem Summary] 必须用英文写成标准定理、命题或引理式的陈述，而不是解释性摘要。这里的“简短”只表示删除重复叙述、证明过程、解释和提示，绝不表示省略数学概念的定义性内容。它应当近似“删除证明过程、解释和提示后的压缩题干”，条件与结论的数学细节不得比原题明显减少。严格按 Setting（对象与所在结构）→ Definitions（定义记号）→ Hypotheses（关键假设）→ Conclusions（完整结论）的顺序组织。
+7. 标准题库中的 [Problem Summary] / [问题简述] 和 [Problem Statement] / [标准题干] 一律使用英文叙述。即使题目来自中文教材，也必须将完整题意准确翻译为英文；不得把中文原题直接写入标准题库。数学公式、变量、集合、映射和专有名称保留准确的 LaTeX 表达，公式中的文字也使用英文。
+8. [Problem Summary] 必须用英文写成标准定理、命题或引理式的陈述，而不是解释性摘要；[Problem Statement] 也必须用英文保存完整题干。这里的“简短”只表示删除重复叙述、证明过程、解释和提示，绝不表示省略数学概念的定义性内容。它应当近似“删除证明过程、解释和提示后的压缩题干”，条件与结论的数学细节不得比原题明显减少。严格按 Setting（对象与所在结构）→ Definitions（定义记号）→ Hypotheses（关键假设）→ Conclusions（完整结论）的顺序组织。
 8. 问题简述中使用的关键定义、量词条件、集合、映射、范数、收敛、上下极限等概念，凡能公式化都必须详细展开成公式。若连续性、收敛性、有界性、可测性、同态性质或其他数学概念是识别本题、表达假设或陈述结论所必需的内容，必须写出本题实际使用的定义性条件、量词、等式或不等式，不能只写概念名称。重要定义和最终结论使用独占一行、居中的行间公式 `\[...\]`；多个等价条件、恒等式、极限或估计使用 `\[\begin{aligned}...\end{aligned}\]`。不得只用 “prove convergence”“characterize continuity”“show it is bounded” 等文字代替具体公式。
 9. 问题简述必须让读者不打开标题和完整题干也能识别本题，并逐项写全需要证明、计算或构造的结论。删除所有与条件和结论无关的内容，包括证明步骤、建议采用的序列或辅助对象、解题方法、哪里使用某假设、动机、历史背景和答案。所有非通用记号必须在简述中定义。题目很长时，纵向长度只增加标准题库卡片高度，不会缩小字体；因此应使用 `aligned` 等可换行结构压缩重复文字，把过长公式主动拆成多行。问题简述禁止使用 `\resizebox`、`\scalebox`、`\fontsize`、`\small`、`\scriptsize`、`\tiny` 等命令改变统一字号，也禁止使用超宽 `array` 迫使整段内容缩放。
 10. 可直接复用的问题简述提示词：
@@ -34,7 +35,7 @@ Assume <all essential hypotheses>. Prove/Determine/Construct
 \]
 
 对于单结论只保留一行；对于多问、反例或构造任务，应继续用行间公式准确写出目标对象及其必须满足的性质。不要在最终导入文本中保留任何 `<...>` 占位符。
-11. [Notes] 只能写普通文本说明，例如 Source、Purpose、Common pitfalls。不要在 [Notes] 后面再写 \begin{remark}...\end{remark}、\begin{definition}...\end{definition} 等 LaTeX 环境。
+11. [Notes] / 备注是可选字段，不是每道题都必须填写；如果没有真正有用的补充数学内容，应省略整个 [Notes] 分节，也不要为了凑格式生成 remark。只有在补充内容能帮助理解或使用本题时才填写，例如本题直接用到的定义、关键性质、等价条件、适用范围、边界情形、典型反例、易错的数学条件、证明中容易遗漏的逻辑环节或自然推广。备注必须紧扣本题并具有实质数学内容，不能写“回原书查看”“见讲义”“与原书一致”“本题来源于某书”、整理过程、录入说明、写作说明、泛泛的学习建议或其他与题目数学内容无关的话。题目来自习题集时，书名、页码、题号等出处信息只能作为必要的来源元数据，不得充当 remark；不要把来源说明伪装成数学备注。不要在 [Notes] 后面再写 \begin{remark}...\end{remark}、\begin{definition}...\end{definition} 等 LaTeX 环境。
 12. 题干只写题干，解答只写解答；不要把“后续小问”“补充命题”“答案提纲”混进题干。
 13. 所有学科和新建项目共用同一套问题简述卡片渲染流程。导入器不再用字符串规则猜测 LaTeX 是否合法，只在备份和数据库写入之前实际执行 XeLaTeX→SVG 编译；问题简述为空或真实编译失败时，整批导入失败且不写库。只使用项目公共导言区支持的命令。
 
@@ -48,7 +49,7 @@ Assume <all essential hypotheses>. Prove/Determine/Construct
      \item ...
    \end{enumerate}
    或在自然段中写“(1) ... (2) ...”。
-3. 不要让题干从 13、14、15 这种奇怪数字开始计数；如果是一道题内的小问，应从 (1) 开始并保持连续。
+3. Title、[Problem Summary] 和 [Problem Statement] 一律去掉原书题号，包括 11.、第11题、Exercise 4.2.11 等前缀；保留原题措辞不包括保留原书编号。讲义题号由系统生成。原书题号只能放在已有来源元数据中；一道题内的 (1)、(2) 等小问编号应保留。
 4. 不要把解答步骤写成一串粗体小标题。可以用自然段、enumerate，或必要时用“Step 1.”这样的普通句子，但不要伪造章节标题。
 
 三、公式定界符
@@ -56,7 +57,7 @@ Assume <all essential hypotheses>. Prove/Determine/Construct
 2. 展示公式只用 \[ ... \]、equation、align、align*、gather 等标准环境。
 3. 禁止三个美元符号或多余美元符号，例如 $$$...$$$、$$$、$x$$。
 4. 不要混用定界符，例如禁止 \[ ... $$ 或 $$ ... \]。
-5. 短公式应放在句子中，例如 \(p\in U\cap V\)、\(f\colon M\to N\)。不要把每个短符号都单独展示成一行。
+5. 所有数学变量、集合名、函数名和条件都必须处于数学模式，包括单个字母；例如“证明 \(A\) 是 \(f\) 在 \(a\) 处的极限”，禁止把 A、f、a 当普通正文直接写入。短公式应放在句子中，例如 \(p\in U\cap V\)、\(f\colon M\to N\)。不要把每个短符号都单独展示成一行。
 
 四、常见非法 LaTeX
 1. 禁止写 \mathrel{\left|} 或 \mathrel{\middle|}。\mathrel{...} 会创建局部分组，使其中的 \left 或 \middle 无法与外层定界符正确配对。集合条件分隔符应直接写成：
@@ -74,6 +75,19 @@ Assume <all essential hypotheses>. Prove/Determine/Construct
 3. 多行推导用 align*，分段定义用 cases，多个条件用 enumerate/itemize。
 4. 不要为了“看起来正式”堆砌定理、命题、备注环境。只有题目真正需要独立编号的数学陈述时，才使用 theorem/proposition/lemma/remark 等环境。
 5. 每道题的 Title 应是题目标题，不要包含“Problem 12”“Exercise 1.1.8”这类重复编号，编号由题库系统生成。
+6. 题干、解答和备注统一采用适度紧凑的教材排版：短变量、取值范围、简单定义和附属条件融入句子；关键估计、需要逐步核对的等式链、长公式和主要结论独立展示。即使公式很短，承担关键推理步骤时也可以独立展示。不要把全文改为行间公式，也不要把所有推导压进一个长段。
+7. 按逻辑层次分段：新小问、分类讨论、新证明方向或重要阶段另起自然段；同一步里的“任取—选择—满足”连续叙述，不为一个符号或短条件另起段。保留正常段间距和公式间距；禁止用负间距、缩小字号、挤压行距来压缩页数。长行内公式应改为独立公式，等式链用 aligned/align* 合理断行。
+8. 排版示例（学习正文写法，不要把示例本身放入导入结果）：
+任取 \(\varepsilon>0\)。由 \(a_n\to A\)，存在正整数 \(N\)，使得当 \(n>N\) 时，\(|a_n-A|<\varepsilon/2\)。同理选取另一个界后，对于充分大的 \(n\)，有
+\[
+|a_n+b_n-A-B|
+\le |a_n-A|+|b_n-B|
+<\varepsilon.
+\]
+因此 \(a_n+b_n\to A+B\)。
+9. 数学内容完整性优先：调整排版只改变公式定界符、换行和分段，不得删去条件、量词、推导或小问。问题简述要求“公式完整展开”不等于每个公式必须独占一行；重要定义和主要结论之外的短条件遵守本节规则。
+10. 行首和行尾禁断规则：中文或英文的句号、逗号、分号、冒号、问号、感叹号、顿号、右括号、右方括号、右引号和其他闭合定界符不得孤立在新行开头；左括号、左方括号、左引号和其他开放定界符不得孤立在行尾。编译后必须检查实际 PDF 的视觉行，而不能只看 TeX 源文件换行。能够安全定位到源文本的显式断行应使用不可断行处理并复编译；无法安全映射的自然换行只报告并人工确认，不得用 `\sloppy`、缩小字号或删除标点掩盖。
+11. 等式、比较符和箭头链不得因断行而让 `=`, `\le`, `\ge`, `\to` 等关系符孤立在新行开头；长链使用 `aligned`、`align` 或 `split` 在关系符处整齐换行，并保持原有数学语义。
 
 六、导入前自检
 1. 搜索并确认没有：$$$、\mathrel{\left|}、\mathrel{\middle|}、\textbf{1.、\textbf{13.、\begin{remark} 出现在 [Notes] 之后。
@@ -82,6 +96,7 @@ Assume <all essential hypotheses>. Prove/Determine/Construct
 4. 如果填写了 [Problem Statement]，确认它和 [Solution] 没有互相串内容。
 5. 确认所有 \begin{...} 都有对应 \end{...}。
 6. 确认 PDF 编译不会因为非法分隔符、未闭合公式、未闭合环境而失败。
+7. 逐题检查原书题号已删除、所有数学字母已进入数学模式、短条件未无故独占一行、关键推导未挤入正文、逻辑分段正常。编译成功只说明语法可接受，不代表排版验收通过；导入后还须检查正式 PDF 的新增题目页面和行宽溢出。
 七、批量直接导入
 1. 单题和批量题目使用完全相同的字段结构。批量时，每一道题都必须是自足的完整题目块，不得让后一题继承前一题的 Chapter、Section、Title、Status 或任何分节内容。
 2. 相邻题目之间必须使用独占一行的分隔符：
@@ -123,9 +138,7 @@ Assume <every essential hypothesis>. Prove/Determine/Construct
 <完整解答或证明；Deferred/Open 可以留空>
 
 [Notes]
-Source:
-Purpose:
-Common pitfalls:
+<可选：只有确实有用的补充数学内容才填写；没有则删除整个 [Notes] 分节。禁止写回原书、来源说明或与数学无关的内容>
 
 [Method Tags]
 <方法标签；多个标签用分号分隔>
@@ -163,3 +176,49 @@ Common pitfalls:
 5. 可以为数学环境手写更语义化的标签，例如 \label{thm:zorn-lemma}；系统会保留它，并额外补充统一标签。不要手写或覆盖系统的 prob:/thm:/lem:/prop:/cor:/def:/ex:/exer:/rem: 永久编号标签。
 6. 所有手写标签只使用 ASCII 字母、数字、冒号、连字符和下划线；不得包含空格、中文或中文标点。同一 PDF 中标签必须唯一。
 7. 跨题引用只引用已经存在并明确提供的永久题目编号；如果编号未知，保留自然语言描述并提示用户补充编号，不要自行推测。
+
+九、所有讲义共用的中英文正文排版合同 / Shared prose layout contract
+BEGIN_SHARED_MATH_PROSE_LAYOUT
+Apply these rules equally to Chinese and English problem sets, lecture notes, and translations. Language changes wording, not the choice between inline and display mathematics.
+1. Put every mathematical symbol in math mode, including a single letter. Write “证明 \(A\) 是 \(f\) 的极限” / “Show that \(A\) is the limit of \(f\)”. Never use plain-text mathematical letters or Unicode approximations in place of LaTeX.
+2. Put short notation, domains, assumptions, and subsidiary conditions inside complete prose sentences. Keep principal conclusions, essential estimates, long expressions, cases, and calculation chains displayed. A short formula may still deserve a display when it is the key proof step. Do not impose a display quota or force every formula inline.
+3. Use one paragraph per logical step, case, or direction of proof. Do not make a new paragraph for each symbol or connective, and do not squeeze a proof into one long paragraph. Retain normal font size, line spacing, and display spacing; never reduce them or insert negative space merely to reduce page count.
+4. For translations, preserve the source paragraph sequence, mathematical content, equation numbers, labels, and references. Do not merge separate source paragraphs. Only move an unnumbered subsidiary display into its own surrounding paragraph when its mathematical role permits it. Numbered or referenced equations must remain displayed.
+5. For problem sets and exercise companions, remove original-book exercise-number prefixes from titles and problem statements; let the application number the problems. Preserve internal subquestion numbering. For faithful translations, retain source numbering required by the translation contract.
+6. Preserve every assumption, quantifier, negation, conclusion, proof step, and symbol. Layout editing is not mathematical rewriting. Do not silently shorten, expand, or simplify the mathematics.
+7. Before returning the final body, inspect each paragraph for bare mathematical letters, isolated short conditions, overlong inline formulas, and fragmented or overcompressed prose. After import, inspect the actual new PDF pages and line-overflow diagnostics. Successful compilation alone is not layout approval.
+English example from the current latest problem \(DM\text{-}P000039\) (copy the layout pattern, not the mathematical content):
+We first construct a countable coordinate cover whose members have compact
+closures. Fix \(p\in M\), choose a coordinate neighborhood \((W,\varphi)\)
+of \(p\), and put \(a=\varphi(p)\). Since \(\varphi(W)\) is open in
+\(\mathbb R^m\) and contains \(a\), choose \(r>0\) such that
+\[
+\overline{B_r(a)}\subset\varphi(W).
+\]
+Define \(U=\varphi^{-1}(B_r(a))\). Then \(U\) is an open coordinate neighborhood
+of \(p\).
+This is the required style: the short definitions and conditions remain in
+complete prose sentences, while the essential geometric inclusion is displayed.
+Do not copy the mathematical content into an unrelated problem, and do not
+turn every short formula into a separate display.
+END_SHARED_MATH_PROSE_LAYOUT
+
+十、交给 ChatGPT 生成或修改现有章节 TeX 时的强制排版合同
+1. 先判断任务类型，不得混用以下两种输出：
+   - “直接导入题目”：只输出本规范第一、七节规定的字段块，不输出 `\begin{problem}`、章节包装、数据库编号或整章 TeX。
+   - “修改现有章节 TeX”：用户已经提供了 `chapter*.tex` 或一个现有题目环境时，只修改用户指定的题目块；必须保留原文件已有的 `problem`、`problemnote`、标签、题号宏、章节结构和导言区约定，不得把整章改写成另一种模板。
+2. “修改现有章节 TeX”任务的输出必须是可直接替换的完整目标块。除非用户明确要求追加，否则不得追加新题、复制旧题或同时保留旧版本。目标题目锚点在输出中必须恰好出现一次。
+3. 以自然段为排版基本单位。一个完整句子必须保持在同一个自然段中；TeX 源代码可以为了可读性换行，但句子中间不得插入空行、`\par` 或独立的段落命令。
+4. 以下内容不得单独成为一行或一个自然段：`Set`、`Let`、`Then`、`Since`、`Thus`、`Hence`、`where`、`for all`、`such that`、`Choose` 等句子开头或连接词；它们必须和后面的对象、公式及后续句子组成完整正文。例如必须写成：
+   `Set \(F=...\). Since \(...\), we have ... .`
+   不得写成把 `Set`、`F=...`、`Since ...` 分成三个段落，或把短定义单独做成展示公式。
+5. 短变量、集合、取值范围、映射、定义和附属条件优先写在完整句子中，例如 `Let \(F=...\).`、`where \(x\in U\)`、`for every \(p\in M\)`。只有长公式、分段函数、多行等式链、关键估计或主要结论才使用展示公式。
+6. 展示公式前后必须有承接它的完整句子。不得连续堆放“文字一行—短公式一行—文字一行”；不得为了视觉整齐把每个短等式、符号或条件都独占一行。展示公式承担句子中的语法成分时，公式后的句子必须继续完成原句，不能把连接词或谓语遗留在下一段。
+7. 证明按逻辑阶段分自然段：一个小问、一个分类、一个证明方向或一个关键阶段可以另起一段；同一阶段内的“任取—选择—满足—推出”必须连续叙述。不要给每个符号、连接词或中间等式另起一段。
+8. 禁止为了“修复排版”擅自加入 `\newpage`、`\clearpage`、`\vspace`、负间距、字号缩小、`\sloppy`、`\resizebox`、`\scalebox`、`\fontsize`、`\small`、`\scriptsize` 或 `\tiny`。长公式使用 `aligned`、`split`、`cases` 或 `align*` 合理换行，并保持数学语义不变。
+9. 修改已有 TeX 时，先读取并模仿相邻题目的实际写法。不能凭记忆发明项目没有定义的环境、命令、颜色、标签格式或版式参数；不能改动导言区来掩盖正文排版问题。
+10. 返回前必须静默完成以下检查：目标锚点恰好一次；所有 `\begin{...}` 与 `\end{...}` 配对；没有 Markdown 解释混入正文；没有裸数学字母；没有句子残片或孤立连接词；没有不必要的短展示公式；没有重复的旧题目块。然后再交给 XeLaTeX 编译，并以实际 PDF 的新增页面和行宽结果作为最终排版验收。
+11. 不能声称“完全保证排版正确”。如果没有实际项目导言区、相邻 TeX 示例和编译后的 PDF，就只能保证遵守源代码合同，不能保证字体、分页、行宽和断行结果。最可靠的输入必须同时包含：目标文件、相邻题目样例、项目导言区/版式文件、需要替换的唯一锚点以及“替换而不是追加”的明确指令。
+
+给 ChatGPT 的推荐任务前缀（修改现有章节时直接复制）
+“你不是在重新设计模板，而是在维护一个已有 XeLaTeX 项目。请先遵守下面的规则：只修改我指定的题目块，保留项目已有环境、标签和版式；输出完整可替换目标块，不要追加旧版本。短定义和短公式必须嵌入完整自然句；不要把 `Set`、`Let`、`Since`、`Then`、`Thus` 或 `where` 单独成段；不要在完整句子中插入空行或 `\\par`。特别检查 `Set \\(F=...\\). Since ...` 必须保持为同一段连续正文。完成后检查环境配对、目标锚点唯一、没有重复题块，并实际编译 PDF 验证。”

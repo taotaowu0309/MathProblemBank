@@ -1,5 +1,4 @@
 from __future__ import annotations
-
 import json
 import os
 from pathlib import Path
@@ -8,6 +7,7 @@ import shutil
 import sqlite3
 import subprocess
 import sys
+import threading
 import unicodedata
 from typing import Any
 
@@ -495,7 +495,7 @@ def _outline_heading_page(
 
 class PDFPreviewWindow:
     """
-    题库内部的单实例 PDF 预览窗口。
+    题库内部的 PDF 预览窗口。
 
     每次渲染只临时打开 PDF，渲染完成后立即关闭，
     避免 Windows 下占用 PDF 文件而妨碍下一次重新编译。
@@ -520,33 +520,40 @@ class PDFPreviewWindow:
         self.window = tk.Toplevel(owner.root)
         self.window.withdraw()
         self.window.title("标准题 PDF 定位")
+        self._translation_base_title = self.window.title()
+        self._translation_in_progress = False
         self.window.geometry("1120x880")
         self.window.minsize(760, 560)
         self.window.protocol(
             "WM_DELETE_WINDOW",
             self.close,
         )
+        self.window.bind(
+            "<FocusIn>",
+            self._on_focus_in,
+            add="+",
+        )
 
         # 与 VS Code 内置 PDF 查看器一致：
         # 左方向键切换到上一页，右方向键切换到下一页。
-        # 使用 bind_all，确保焦点位于 Canvas、滚动条或工具栏时
-        # 仍然可以直接翻页；窗口关闭时会解除绑定。
-        self.window.bind_all(
+        # Toplevel 位于其子控件的 bindtags 中，因此用窗口级绑定
+        # 即可覆盖 Canvas、滚动条和工具栏，且不会影响其他 PDF 窗口。
+        self.window.bind(
             "<Left>",
             self._on_previous_page_key,
             add="+",
         )
-        self.window.bind_all(
+        self.window.bind(
             "<Right>",
             self._on_next_page_key,
             add="+",
         )
-        self.window.bind_all(
+        self.window.bind(
             "<Alt-Left>",
             self._on_pdf_navigation_back,
             add="+",
         )
-        self.window.bind_all(
+        self.window.bind(
             "<Alt-Right>",
             self._on_pdf_navigation_forward,
             add="+",
@@ -603,6 +610,7 @@ class PDFPreviewWindow:
         self.page_image_items: dict[int, int] = {}
         self.page_layouts: list[dict[str, float]] = []
         self.pdf_links: list[dict[str, Any]] = []
+        self.pdf_links_scan_generation = 0
         self.hover_link_index: int | None = None
         self.pressed_link_index: int | None = None
         self.link_highlight_item: int | None = None
@@ -677,7 +685,7 @@ class PDFPreviewWindow:
             column=0,
             sticky=tk.EW,
         )
-        toolbar.columnconfigure(14, weight=1)
+        toolbar.columnconfigure(16, weight=1)
 
         ttk.Button(
             toolbar,
@@ -736,13 +744,28 @@ class PDFPreviewWindow:
         )
         self.copy_selection_button.grid(row=0, column=8, padx=5)
 
+        self.translate_selection_button = ttk.Button(
+            toolbar,
+            text="翻译句 / 段",
+            command=self.translate_selected_text,
+            state=tk.DISABLED,
+        )
+        self.translate_selection_button.grid(row=0, column=9, padx=5)
+
+        self.translate_document_button = ttk.Button(
+            toolbar,
+            text="翻译全文",
+            command=self.translate_full_document,
+        )
+        self.translate_document_button.grid(row=0, column=10, padx=5)
+
         self.previous_search_button = ttk.Button(
             toolbar,
             text="上一个位置",
             command=lambda: self.change_search_result(-1),
             state=tk.DISABLED,
         )
-        self.previous_search_button.grid(row=0, column=9, padx=(14, 5))
+        self.previous_search_button.grid(row=0, column=11, padx=(14, 5))
 
         self.next_search_button = ttk.Button(
             toolbar,
@@ -750,22 +773,22 @@ class PDFPreviewWindow:
             command=lambda: self.change_search_result(1),
             state=tk.DISABLED,
         )
-        self.next_search_button.grid(row=0, column=10, padx=5)
+        self.next_search_button.grid(row=0, column=12, padx=5)
 
         ttk.Label(
             toolbar,
             textvariable=self.search_var,
-        ).grid(row=0, column=11, padx=(8, 5))
+        ).grid(row=0, column=13, padx=(8, 5))
 
         ttk.Label(
             toolbar,
             textvariable=self.page_var,
-        ).grid(row=0, column=12, padx=(14, 5))
+        ).grid(row=0, column=14, padx=(14, 5))
 
         ttk.Label(
             toolbar,
             textvariable=self.zoom_var,
-        ).grid(row=0, column=13, padx=5)
+        ).grid(row=0, column=15, padx=5)
 
         ttk.Label(
             toolbar,
@@ -773,7 +796,7 @@ class PDFPreviewWindow:
             anchor=tk.E,
         ).grid(
             row=0,
-            column=14,
+            column=16,
             sticky=tk.E,
             padx=(16, 0),
         )
@@ -881,10 +904,291 @@ class PDFPreviewWindow:
         self.canvas.bind("<B1-Motion>", self._on_selection_drag, add="+")
         self.canvas.bind("<ButtonRelease-1>", self._on_selection_end, add="+")
         self.canvas.bind("<Double-Button-1>", self._on_selection_double_click, add="+")
-        self.window.bind_all("<Up>", self._on_scroll_up_key, add="+")
-        self.window.bind_all("<Down>", self._on_scroll_down_key, add="+")
-        self.window.bind_all("<Control-c>", self._on_copy_key, add="+")
-        self.window.bind_all("<Control-C>", self._on_copy_key, add="+")
+        self.window.bind("<Up>", self._on_scroll_up_key, add="+")
+        self.window.bind("<Down>", self._on_scroll_down_key, add="+")
+        self.window.bind("<Control-c>", self._on_copy_key, add="+")
+        self.window.bind("<Control-C>", self._on_copy_key, add="+")
+        self._speech_controls_hide_after_id: str | None = None
+        self._speech_controls_pointer_poll_id: str | None = None
+        self._speech_controls_visible = False
+        # Speech controls belong to the English workspace, not every PDF reader.
+        if str(getattr(owner, "workspace", "math") or "math") != "english":
+            return
+        self.speech_control_status_var = tk.StringVar(value="未播放")
+        self.speech_speed_var = tk.StringVar(value="1.0×")
+        self.speech_controls = tk.Frame(
+            self.window,
+            # Tk cannot apply alpha to a child frame without making the
+            # entire reader window translucent. This cool, low-contrast fill
+            # gives the same lightweight glass effect while keeping text crisp.
+            background="#F5F9FC",
+            padx=24,
+            pady=14,
+            borderwidth=0,
+            relief=tk.FLAT,
+            highlightthickness=1,
+            highlightbackground="#C7D6E2",
+            highlightcolor="#C7D6E2",
+        )
+        self._speech_controls_height = 128
+        self.speech_controls.configure(width=980, height=self._speech_controls_height)
+        self.speech_controls.pack_propagate(False)
+        self.speech_controls.place(relx=0.5, rely=1.0, anchor="s", y=12)
+        controls_top = tk.Frame(self.speech_controls, background="#F5F9FC")
+        controls_top.pack(fill=tk.X)
+        tk.Label(
+            controls_top,
+            text="英语朗读",
+            background="#F5F9FC",
+            foreground="#183B56",
+            font=("Microsoft YaHei UI", 15, "bold"),
+        ).pack(side=tk.LEFT, padx=(0, 18))
+        self.speech_continuous_var = tk.BooleanVar(value=True)
+        tk.Checkbutton(
+            controls_top,
+            text="连续播放",
+            variable=self.speech_continuous_var,
+            background="#F5F9FC",
+            activebackground="#F5F9FC",
+            foreground="#52606D",
+            selectcolor="#FFFFFF",
+            font=("Microsoft YaHei UI", 13),
+            borderwidth=0,
+            highlightthickness=0,
+        ).pack(side=tk.LEFT, padx=(0, 18))
+        tk.Label(
+            controls_top,
+            text="速度",
+            background="#F5F9FC",
+            foreground="#7B8794",
+            font=("Microsoft YaHei UI", 13),
+        ).pack(side=tk.LEFT, padx=(0, 6))
+        self.speech_speed_combo = ttk.Combobox(
+            controls_top,
+            textvariable=self.speech_speed_var,
+            values=("0.75×", "0.9×", "1.0×", "1.15×", "1.3×"),
+            state="readonly",
+            width=7,
+            font=("Microsoft YaHei UI", 13),
+        )
+        self.speech_speed_combo.current(2)
+        self.speech_speed_combo.bind("<<ComboboxSelected>>", self._on_speech_speed_selected, add="+")
+        self.speech_speed_combo.pack(side=tk.LEFT, padx=(0, 18))
+        self.speech_status_badge = tk.Label(
+            controls_top,
+            text="声音已开启",
+            background="#E7F6EC",
+            foreground="#217A4B",
+            padx=9,
+            pady=3,
+            font=("Microsoft YaHei UI", 12),
+        )
+        self.speech_status_badge.pack(side=tk.LEFT, padx=(0, 8))
+        tk.Label(
+            controls_top,
+            textvariable=self.speech_control_status_var,
+            background="#F5F9FC",
+            foreground="#7B8794",
+            font=("Microsoft YaHei UI", 12),
+        ).pack(side=tk.LEFT)
+        controls_bottom = tk.Frame(self.speech_controls, background="#F5F9FC")
+        controls_bottom.pack(fill=tk.X, pady=(14, 0))
+        self.speech_play_button = tk.Button(
+            controls_bottom,
+            text="▶",
+            width=4,
+            font=("Segoe UI Symbol", 15),
+            padx=10,
+            pady=5,
+            background="#E8F0F6",
+            activebackground="#D6E3EC",
+            foreground="#183B56",
+            relief=tk.FLAT,
+            borderwidth=0,
+            command=lambda: self._speech_control_callback("toggle_pdf_speech", "当前窗口未提供播放控制。"),
+        )
+        self.speech_play_button.pack(side=tk.LEFT, padx=(0, 8))
+        self.speech_stop_button = tk.Button(
+            controls_bottom,
+            text="■",
+            width=4,
+            font=("Segoe UI Symbol", 14),
+            padx=10,
+            pady=5,
+            background="#E8F0F6",
+            activebackground="#D6E3EC",
+            foreground="#52606D",
+            relief=tk.FLAT,
+            borderwidth=0,
+            command=lambda: self._speech_control_callback("stop_pdf_speech", "当前窗口未提供停止控制。"),
+        )
+        self.speech_stop_button.pack(side=tk.LEFT, padx=(0, 10))
+        self.speech_progress = ttk.Progressbar(
+            controls_bottom,
+            mode="indeterminate",
+            length=300,
+        )
+        self.speech_progress.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 10))
+        tk.Label(
+            controls_bottom,
+            text="🔊",
+            background="#F5F9FC",
+            foreground="#52606D",
+            font=("Segoe UI Symbol", 11),
+        ).pack(side=tk.LEFT)
+        self.speech_controls.bind("<Enter>", self._on_speech_controls_enter, add="+")
+        self.speech_controls.bind("<Leave>", self._on_speech_controls_leave, add="+")
+        self.window.bind("<Motion>", self._on_speech_window_motion, add="+")
+        self.window.bind("<Configure>", self._on_speech_window_resize, add="+")
+        self.window.after_idle(self._hide_speech_controls)
+
+    def _speech_control_callback(self, method_name: str, fallback_text: str) -> None:
+        callback = getattr(self.owner, method_name, None)
+        if callable(callback):
+            callback()
+            return
+        self.set_speech_status(fallback_text)
+
+    def _on_speech_speed_selected(self, _event: tk.Event | None = None) -> None:
+        text = str(self.speech_speed_var.get()).replace("×", "").strip()
+        try:
+            speed = float(text)
+        except ValueError:
+            return
+        callback = getattr(self.owner, "set_pdf_speech_speed", None)
+        if callable(callback):
+            callback(speed)
+        self.set_speech_status(f"倍速 {speed:g}×（下一句起生效）")
+
+    def _schedule_hide_speech_controls(self) -> None:
+        if self._speech_pointer_is_in_active_area():
+            self._show_speech_controls()
+            return
+        if self._speech_controls_hide_after_id is not None:
+            try:
+                self.window.after_cancel(self._speech_controls_hide_after_id)
+            except tk.TclError:
+                pass
+        self._speech_controls_hide_after_id = self.window.after(650, self._hide_speech_controls)
+
+    def _speech_pointer_is_in_active_area(self) -> bool:
+        try:
+            pointer_x = int(self.window.winfo_pointerx())
+            pointer_y = int(self.window.winfo_pointery())
+            window_x = int(self.window.winfo_rootx())
+            window_y = int(self.window.winfo_rooty())
+            window_width = max(int(self.window.winfo_width()), 1)
+            window_height = max(int(self.window.winfo_height()), 1)
+            local_x = pointer_x - window_x
+            local_y = pointer_y - window_y
+            controls_x = int(self.speech_controls.winfo_rootx())
+            controls_y = int(self.speech_controls.winfo_rooty())
+            controls_width = max(int(self.speech_controls.winfo_width()), 1)
+            controls_height = max(int(self.speech_controls.winfo_height()), 1)
+            if (
+                controls_x <= pointer_x < controls_x + controls_width
+                and controls_y <= pointer_y < controls_y + controls_height
+            ):
+                return True
+            hot_zone_height = max(self._speech_controls_height + 48, 160)
+            return (
+                0 <= local_x <= window_width
+                and window_height - hot_zone_height <= local_y <= window_height
+            )
+        except (tk.TclError, TypeError, ValueError):
+            return False
+
+    def _poll_speech_pointer(self) -> None:
+        self._speech_controls_pointer_poll_id = None
+        if not self._speech_controls_visible:
+            return
+        if self._speech_pointer_is_in_active_area():
+            self._speech_controls_pointer_poll_id = self.window.after(100, self._poll_speech_pointer)
+        else:
+            self._schedule_hide_speech_controls()
+
+    def _show_speech_controls(self) -> None:
+        if self._speech_controls_hide_after_id is not None:
+            try:
+                self.window.after_cancel(self._speech_controls_hide_after_id)
+            except tk.TclError:
+                pass
+            self._speech_controls_hide_after_id = None
+        if self._speech_controls_pointer_poll_id is not None:
+            try:
+                self.window.after_cancel(self._speech_controls_pointer_poll_id)
+            except tk.TclError:
+                pass
+            self._speech_controls_pointer_poll_id = None
+        self.speech_controls.place_configure(y=0)
+        self.speech_controls.lift()
+        self._speech_controls_visible = True
+        if self._speech_controls_pointer_poll_id is None:
+            self._speech_controls_pointer_poll_id = self.window.after(100, self._poll_speech_pointer)
+
+    def _on_speech_window_resize(self, _event: tk.Event | None = None) -> None:
+        try:
+            window_width = max(int(self.window.winfo_width()), 1)
+            # Keep the card broad on large readers while leaving a readable
+            # margin around it on smaller windows.
+            card_width = max(760, min(1240, int(window_width * 0.72)))
+            self.speech_controls.place_configure(width=card_width)
+        except (tk.TclError, TypeError, ValueError):
+            pass
+
+    def _hide_speech_controls(self) -> None:
+        self._speech_controls_hide_after_id = None
+        self._speech_controls_visible = False
+        if self._speech_controls_pointer_poll_id is not None:
+            try:
+                self.window.after_cancel(self._speech_controls_pointer_poll_id)
+            except tk.TclError:
+                pass
+            self._speech_controls_pointer_poll_id = None
+        # Move the card below the reader while idle. The bottom hot zone still
+        # lets the user bring it back without needing a visible tab.
+        self.speech_controls.place_configure(y=self._speech_controls_height + 6)
+
+    def _on_speech_window_motion(self, event: tk.Event) -> None:
+        try:
+            if self._speech_pointer_is_in_active_area():
+                self._show_speech_controls()
+            else:
+                self._schedule_hide_speech_controls()
+        except tk.TclError:
+            pass
+
+    def _on_speech_controls_enter(self, _event: tk.Event | None = None) -> None:
+        self._show_speech_controls()
+
+    def _on_speech_controls_leave(self, _event: tk.Event | None = None) -> None:
+        self._schedule_hide_speech_controls()
+
+    def set_speech_status(self, message: str) -> None:
+        if not hasattr(self, "speech_controls"):
+            return
+        try:
+            text = str(message)
+            self.speech_control_status_var.set(text)
+            lowered = text.lower()
+            if "暂停" in text:
+                self.speech_status_badge.configure(text="已暂停", background="#FFF4E5", foreground="#9C6500")
+                self.speech_play_button.configure(text="▶")
+                self.speech_progress.stop()
+            elif any(token in text for token in ("停止", "未播放", "失败", "完成")):
+                self.speech_status_badge.configure(text="声音已开启", background="#E7F6EC", foreground="#217A4B")
+                self.speech_play_button.configure(text="▶")
+                self.speech_progress.stop()
+            elif "正在" in text or "继续" in text:
+                self.speech_status_badge.configure(text="正在朗读", background="#E8F1FB", foreground="#1F5D91")
+                self.speech_play_button.configure(text="Ⅱ")
+                self.speech_progress.start(12)
+            elif "倍速" in lowered:
+                # A speed change applies to the next chunk; keep the current
+                # playing/paused visual state while acknowledging the change.
+                pass
+        except tk.TclError:
+            pass
 
     def _refresh_display_metrics(self) -> None:
         try:
@@ -993,6 +1297,20 @@ class PDFPreviewWindow:
         except tk.TclError:
             return False
 
+    def _activate_owner_preview(self) -> None:
+        callback = getattr(self.owner, "activate_pdf_preview_window", None)
+        if callable(callback):
+            callback(self)
+        else:
+            self.owner.pdf_preview = self
+
+    def _on_focus_in(
+        self,
+        _event: tk.Event | None = None,
+    ) -> None:
+        """Keep legacy owner callbacks associated with the focused PDF window."""
+        self._activate_owner_preview()
+
     def maximize_window(self) -> None:
         """Maximize the PDF preview window on the current desktop."""
         try:
@@ -1024,6 +1342,20 @@ class PDFPreviewWindow:
             pass
 
     def close(self) -> None:
+        stop_callback = getattr(self.owner, "stop_pdf_speech", None)
+        if callable(stop_callback):
+            try:
+                stop_callback()
+            except Exception:
+                # Closing the reader must not depend on an optional speech
+                # backend or on the current workspace having English services.
+                pass
+        if self._speech_controls_hide_after_id is not None:
+            try:
+                self.window.after_cancel(self._speech_controls_hide_after_id)
+            except tk.TclError:
+                pass
+            self._speech_controls_hide_after_id = None
         callback = getattr(self.owner, "on_pdf_preview_position_changed", None)
         if callable(callback) and self.pdf_path is not None:
             try:
@@ -1038,17 +1370,13 @@ class PDFPreviewWindow:
                 pass
         self._close_vocabulary_popup()
         try:
-            self.window.unbind_all("<Left>")
-            self.window.unbind_all("<Right>")
-            self.window.unbind_all("<Alt-Left>")
-            self.window.unbind_all("<Alt-Right>")
-            self.window.unbind_all("<Up>")
-            self.window.unbind_all("<Down>")
-            self.window.unbind_all("<Control-c>")
-            self.window.unbind_all("<Control-C>")
             self.window.destroy()
         finally:
-            self.owner.pdf_preview = None
+            unregister = getattr(self.owner, "unregister_pdf_preview_window", None)
+            if callable(unregister):
+                unregister(self)
+            elif getattr(self.owner, "pdf_preview", None) is self:
+                self.owner.pdf_preview = None
 
     def _on_previous_page_key(
         self,
@@ -1248,6 +1576,7 @@ class PDFPreviewWindow:
             self.canvas.delete(item)
         self.selection_highlight_items = []
         self.copy_selection_button.configure(state=tk.DISABLED)
+        self.translate_selection_button.configure(state=tk.DISABLED)
 
     def clear_search(
         self,
@@ -1814,6 +2143,7 @@ class PDFPreviewWindow:
         )
         state = tk.NORMAL if self.selected_text else tk.DISABLED
         self.copy_selection_button.configure(state=state)
+        self.translate_selection_button.configure(state=state)
 
     def _update_selection_end_from_pointer(
         self,
@@ -2142,6 +2472,61 @@ class PDFPreviewWindow:
         ]
         return re.sub(r"\s+", " ", " ".join(line for line in context_lines if line))[:800]
 
+    def _speech_text_for_selection(self, selected: str, mode: str) -> str:
+        """Resolve one teaching-sized range from the current PDF selection."""
+
+        value = str(selected or "").strip()
+        if mode == "word":
+            return value
+        if self.pdf_path is None:
+            return value
+        try:
+            document = fitz.open(str(self.pdf_path))
+        except Exception:
+            return value
+        try:
+            current_page = max(0, min(int(self.page_index), int(document.page_count) - 1))
+            page = document.load_page(current_page)
+            if mode == "document":
+                return "\n\n".join(
+                    str(document.load_page(index).get_text("text") or "").strip()
+                    for index in range(int(document.page_count))
+                ).strip()
+            page_text = str(page.get_text("text") or "").strip()
+            if mode == "paragraph":
+                blocks = page.get_text("blocks") or []
+                for block in blocks:
+                    block_text = str(block[4] if len(block) > 4 else "").strip()
+                    if value.casefold() in block_text.casefold() and block_text:
+                        return re.sub(r"\s+", " ", block_text)
+                return re.sub(r"\s+", " ", page_text)
+            compact = re.sub(r"\s+", " ", page_text)
+            position = compact.casefold().find(value.casefold())
+            if position < 0:
+                return self._selected_pdf_context(value) or value
+            sentence_spans = list(re.finditer(r"[^.!?]*[.!?](?:[\"’']+)?|[^.!?]+$", compact))
+            for span in sentence_spans:
+                if span.start() <= position < span.end():
+                    return span.group(0).strip()
+            return value
+        finally:
+            document.close()
+
+    def _start_speech_action(self, selected: str, mode: str, context: str, page_number: int) -> None:
+        text = self._speech_text_for_selection(selected, mode)
+        callback = getattr(self.owner, "speak_pdf_text", None)
+        if not callable(callback):
+            callback = getattr(self.owner, "speak_pdf_selection", None)
+        if not callable(callback):
+            status_setter = getattr(self.owner, "set_status", None)
+            if callable(status_setter):
+                status_setter("当前窗口暂未提供朗读通道")
+            return
+        try:
+            callback(text, mode, context, page_number)
+        except TypeError:
+            callback(text, context, page_number)
+
     def _query_selected_vocabulary_with_agent(
         self,
         selected: str,
@@ -2158,6 +2543,8 @@ class PDFPreviewWindow:
         request_id = self.vocabulary_agent_request_id
         selection_generation = self.selection_generation
         selection_document_generation = self.selection_document_generation
+        previous_entry = dict(self.vocabulary_agent_entry or {})
+        previous_add_state = str(add_button.cget("state"))
         self.vocabulary_agent_entry = None
         self.vocabulary_agent_context = self._selected_pdf_context(selected)
         query_button.configure(state=tk.DISABLED)
@@ -2165,7 +2552,7 @@ class PDFPreviewWindow:
         domain = str(getattr(self.owner, "workspace", "math") or "math")
         self._set_tk_label_text(
             status_label,
-            "Agent 正在判断当前英语语境中的词义与用法…" if domain == "english" else "Agent 正在查询数学语境词义…",
+            "Agent 正在查询中文含义…" if domain == "english" else "Agent 正在查询数学语境词义…",
             foreground="#6941C6",
         )
         self._set_tk_label_text(result_label, "")
@@ -2196,6 +2583,8 @@ class PDFPreviewWindow:
                 )
             }
             display = str(payload.get("display") or self.vocabulary_agent_entry.get("definition") or "")
+            if domain == "english":
+                display = str(self.vocabulary_agent_entry.get("definition") or "")
             self._set_tk_label_text(result_label, display)
             status_text = (
                 "已恢复上一次相同词汇的查询结果，未再次消耗 token。"
@@ -2203,12 +2592,17 @@ class PDFPreviewWindow:
                 else "Agent 查询完成。"
             )
             self._set_tk_label_text(status_label, status_text, foreground="#027A48")
-            query_button.configure(state=tk.NORMAL, text="重新查询")
-            add_button.configure(state=tk.NORMAL if self.vocabulary_agent_entry.get("definition") else tk.DISABLED)
+            query_button.configure(state=tk.NORMAL, text="Agent 查词" if domain == "english" else "重新查询")
+            add_button.configure(
+                state=tk.NORMAL if self.vocabulary_agent_entry.get("definition") else tk.DISABLED,
+                text="添加到词汇库" if domain == "english" else "添加该词义到词汇库",
+            )
 
         def failure(message: str) -> None:
             if not alive():
                 return
+            self.vocabulary_agent_entry = previous_entry or None
+            add_button.configure(state=previous_add_state)
             self._set_tk_label_text(status_label, short(message, 120), foreground="#B42318")
             query_button.configure(state=tk.NORMAL)
 
@@ -2274,7 +2668,11 @@ class PDFPreviewWindow:
     ) -> None:
         entry = dict(self.vocabulary_agent_entry or {})
         callback = getattr(self.owner, "import_pdf_agent_vocabulary", None)
-        if not entry.get("term") or not entry.get("definition") or not callable(callback):
+        if not callable(callback):
+            self._set_tk_label_text(status_label, "当前控制中心未提供词汇入库通道。", foreground="#B42318")
+            return
+        if not entry.get("term") or not entry.get("definition"):
+            self._set_tk_label_text(status_label, "请先使用 Agent 查词，获得释义后再添加。", foreground="#B42318")
             return
         selection_generation = self.selection_generation
         selection_document_generation = self.selection_document_generation
@@ -2297,13 +2695,22 @@ class PDFPreviewWindow:
             elif new_pos:
                 outcome = f"已新增 {new_pos} 个不同词性的独立词条"
             else:
-                outcome = f"已写入并回读验证 {affected} 条"
+                outcome = (
+                    f"已收藏并回读验证 {affected} 条"
+                    if str(getattr(self.owner, "workspace", "math") or "math") == "english"
+                    else f"已写入并回读验证 {affected} 条"
+                )
             self._set_tk_label_text(
                 status_label,
                 f"{outcome}；备份：{backup or '已创建'}。",
                 foreground="#027A48",
             )
-            add_button.configure(text="已加入词汇库", state=tk.DISABLED)
+            completed_text = (
+                "已收藏到词汇库"
+                if str(getattr(self.owner, "workspace", "math") or "math") == "english"
+                else "已加入词汇库"
+            )
+            add_button.configure(text=completed_text, state=tk.DISABLED)
 
         def failure(message: str) -> None:
             if (
@@ -2384,7 +2791,9 @@ class PDFPreviewWindow:
                     pass
             return
         try:
-            shared_lookup = getattr(self.owner, "lookup_pdf_vocabulary_entries", None)
+            shared_lookup = getattr(self.owner, "lookup_pdf_chinese_entries", None)
+            if not callable(shared_lookup):
+                shared_lookup = getattr(self.owner, "lookup_pdf_vocabulary_entries", None)
             matches = (
                 shared_lookup(selected, limit=6)
                 if callable(shared_lookup)
@@ -2418,24 +2827,216 @@ class PDFPreviewWindow:
             anchor=tk.W,
             font=("Microsoft YaHei UI", 17, "bold"),
         ).pack(fill=tk.X, pady=(0, 8))
-        source_text = "PDF 文字层已精确选中"
+        if not english_mode:
+            tk.Label(
+                shell,
+                text="PDF 文字层已精确选中",
+                background="#FFFDF8",
+                foreground="#027A48",
+                anchor=tk.W,
+                font=("Microsoft YaHei UI", 12),
+            ).pack(fill=tk.X, pady=(0, 10))
+        if english_mode:
+            chinese_entries: list[dict[str, Any]] = []
+            chinese_seen: set[tuple[str, str]] = set()
+            for row in matches:
+                for raw_entry in row.get("chinese_dictionary_entries") or []:
+                    if not isinstance(raw_entry, dict):
+                        continue
+                    entry = dict(raw_entry)
+                    definition = str(entry.get("definition_zh") or "").strip()
+                    entry_key = (
+                        str(entry.get("term") or selected).strip().casefold(),
+                        definition,
+                    )
+                    if not definition or entry_key in chinese_seen:
+                        continue
+                    chinese_seen.add(entry_key)
+                    chinese_entries.append(entry)
+            if not chinese_entries:
+                tk.Label(
+                    shell,
+                    text="暂未找到中文释义",
+                    background="#FFFDF8",
+                    foreground="#667085",
+                    anchor=tk.W,
+                    font=("Microsoft YaHei UI", 13),
+                ).pack(fill=tk.X, pady=(2, 0))
+            else:
+                for index, entry in enumerate(chinese_entries):
+                    header = str(entry.get("term") or selected).strip()
+                    pos = str(entry.get("part_of_speech") or "").strip()
+                    phonetic = str(entry.get("phonetic") or "").strip()
+                    if pos:
+                        header += f"  {pos}"
+                    if phonetic:
+                        header += f"  /{phonetic}/"
+                    tk.Label(
+                        shell,
+                        text=header,
+                        background="#FFFDF8",
+                        foreground="#0F766E",
+                        anchor=tk.W,
+                        justify=tk.LEFT,
+                        font=("Microsoft YaHei UI", 13, "bold"),
+                    ).pack(fill=tk.X, pady=(2 if index else 0, 0))
+                    tk.Label(
+                        shell,
+                        text=str(entry.get("definition_zh") or "").strip(),
+                        background="#FFFDF8",
+                        foreground="#344054",
+                        anchor=tk.W,
+                        justify=tk.LEFT,
+                        wraplength=520,
+                        font=("Microsoft YaHei UI", 14),
+                    ).pack(fill=tk.X, pady=(2, 0))
+            action_row = tk.Frame(shell, background="#FFFDF8")
+            action_row.pack(fill=tk.X, pady=(8, 0))
+
+            speech_button = tk.Menubutton(
+                action_row, text="朗读 ▾", font=("Microsoft YaHei UI", 12, "bold"), padx=14, pady=8,
+                relief=tk.FLAT, borderwidth=0, highlightthickness=1,
+                highlightbackground="#B8C7D9", highlightcolor="#7AA7D8",
+                background="#EEF4FB", activebackground="#DCEBFA", foreground="#244B73",
+                cursor="hand2",
+            )
+            speech_menu = tk.Menu(speech_button, tearoff=False)
+            for caption, mode in (("选中单词/短语", "word"), ("当前句", "sentence"), ("当前段", "paragraph"), ("全文连续朗读", "document")):
+                speech_menu.add_command(
+                    label=caption,
+                    command=lambda selected_mode=mode: self._start_speech_action(
+                        selected, selected_mode, context, self.page_index + 1
+                    ),
+                )
+            speech_button.configure(menu=speech_menu)
+            speech_button.pack(side=tk.LEFT, padx=(0, 7))
+
+            learning_row = tk.Frame(shell, background="#FFFDF8")
+            learning_row.pack(fill=tk.X, pady=(10, 0))
+            if chinese_entries:
+                local_entry = chinese_entries[0]
+                self.vocabulary_agent_entry = {
+                    "term": str(local_entry.get("term") or selected).strip(),
+                    "part_of_speech": str(local_entry.get("part_of_speech") or ""),
+                    "definition": str(local_entry["definition_zh"]).strip(),
+                    "pronunciation": str(local_entry.get("phonetic") or ""),
+                    "source": str(local_entry.get("source") or "本地英汉词典"),
+                    "note": f"PDF 第 {self.page_index + 1} 页：{context}",
+                }
+            status_label = tk.Label(
+                shell,
+                text=("可添加首条本地释义，或使用 Agent 按语境查词。"
+                      if chinese_entries else "暂无本地释义，请先使用 Agent 查词。"),
+                background="#FFFDF8", foreground="#667085",
+                anchor=tk.W, justify=tk.LEFT, wraplength=520,
+                font=("Microsoft YaHei UI", 12),
+            )
+            status_label.pack(fill=tk.X, pady=(6, 0))
+            result_label = tk.Label(
+                shell, text="", background="#FFFDF8", foreground="#344054",
+                anchor=tk.W, justify=tk.LEFT, wraplength=520,
+                font=("Microsoft YaHei UI", 14),
+            )
+            result_label.pack(fill=tk.X, pady=(6, 0))
+
+            def resize_learning_labels(event: Any) -> None:
+                wraplength = max(1, int(event.width) - 34)
+                status_label.configure(wraplength=wraplength)
+                result_label.configure(wraplength=wraplength)
+
+            shell.bind("<Configure>", resize_learning_labels, add="+")
+            learning_actions = (
+                ("收藏到词汇库", "#E8F6F1", "#D8F0E5", "#13795B", "#A9D9C2"),
+                ("Agent 查词", "#E8F1FF", "#D8E8FF", "#245EA8", "#A8C7F0"),
+            )
+            learning_buttons = []
+            for index, (caption, background, active_background, foreground, border) in enumerate(learning_actions):
+                learning_row.columnconfigure(index, weight=1, uniform="learning_action")
+                button = tk.Button(
+                    learning_row,
+                    text=caption,
+                    font=("Microsoft YaHei UI", 12, "bold"),
+                    padx=10,
+                    pady=10,
+                    background=background,
+                    activebackground=active_background,
+                    foreground=foreground,
+                    activeforeground=foreground,
+                    relief=tk.FLAT,
+                    borderwidth=0,
+                    highlightthickness=1,
+                    highlightbackground=border,
+                    highlightcolor=border,
+                    cursor="hand2",
+                )
+                button.grid(row=0, column=index, sticky="ew", padx=(0, 4) if index == 0 else (4, 0))
+                learning_buttons.append(button)
+            add_button, query_button = learning_buttons
+            add_button.configure(
+                state=tk.NORMAL if chinese_entries else tk.DISABLED,
+                command=lambda: self._add_agent_vocabulary_entry(status_label, add_button),
+            )
+            query_button.configure(command=lambda: self._query_selected_vocabulary_with_agent(
+                selected, status_label, result_label, query_button, add_button
+            ))
+            self._place_vocabulary_popup_shell(shell, event_x, event_y)
+            return
         tk.Label(
             shell,
-            text=source_text,
-            background="#FFFDF8",
-            foreground="#027A48",
-            anchor=tk.W,
-            font=("Microsoft YaHei UI", 12),
-        ).pack(fill=tk.X, pady=(0, 10))
-        tk.Label(
-            shell,
-            text="① 词汇库匹配",
+            text="① 构词分析",
             background="#FFFDF8",
             foreground="#1D4E89",
             anchor=tk.W,
             font=("Microsoft YaHei UI", 14, "bold"),
         ).pack(fill=tk.X, pady=(0, 7))
-        if not matches:
+        # Local WordNet results are already sense-aggregated.  Merge any
+        # personal-vocabulary rows with the same headword so the reader sees
+        # one card and one etymology instead of a repeated block per sense.
+        display_matches: list[dict[str, Any]] = []
+        display_by_term: dict[str, dict[str, Any]] = {}
+        for raw_row in matches:
+            row = dict(raw_row)
+            term_key = str(row.get("term") or selected).strip().casefold()
+            existing = display_by_term.get(term_key)
+            if existing is None:
+                existing = dict(row)
+                existing["senses"] = [dict(sense) for sense in (row.get("senses") or []) if isinstance(sense, dict)]
+                if not existing["senses"] and str(row.get("definition") or "").strip():
+                    existing["senses"] = [{
+                        "part_of_speech": str(row.get("part_of_speech") or "").strip(),
+                        "definition": str(row.get("definition") or "").strip(),
+                    }]
+                display_by_term[term_key] = existing
+                display_matches.append(existing)
+                continue
+            known_senses = {
+                (
+                    str(sense.get("part_of_speech") or "").strip().casefold(),
+                    str(sense.get("definition") or sense.get("definition_en") or "").strip().casefold(),
+                )
+                for sense in existing.get("senses") or []
+                if isinstance(sense, dict)
+            }
+            incoming_senses = row.get("senses") or []
+            if not incoming_senses and str(row.get("definition") or "").strip():
+                incoming_senses = [{
+                    "part_of_speech": str(row.get("part_of_speech") or "").strip(),
+                    "definition": str(row.get("definition") or "").strip(),
+                }]
+            for sense in incoming_senses:
+                if not isinstance(sense, dict):
+                    continue
+                sense_key = (
+                    str(sense.get("part_of_speech") or "").strip().casefold(),
+                    str(sense.get("definition") or sense.get("definition_en") or "").strip().casefold(),
+                )
+                if sense_key not in known_senses:
+                    existing.setdefault("senses", []).append(dict(sense))
+                    known_senses.add(sense_key)
+            if not str(existing.get("etymology") or "").strip() and str(row.get("etymology") or "").strip():
+                existing["etymology"] = row.get("etymology")
+
+        if not display_matches:
             tk.Label(
                 shell,
                 text="暂无匹配词条",
@@ -2445,7 +3046,27 @@ class PDFPreviewWindow:
                 font=("Microsoft YaHei UI", 14),
             ).pack(fill=tk.X)
         else:
-            for index, row in enumerate(matches):
+            english_display_matches = [
+                row
+                for row in display_matches
+                if str(row.get("definition") or "").strip()
+                or row.get("senses")
+                or str(row.get("local_definition_zh") or "").strip()
+                or (
+                    isinstance(row.get("morphology"), dict)
+                    and bool(row["morphology"].get("parts"))
+                )
+            ]
+            if not english_display_matches:
+                tk.Label(
+                    shell,
+                    text="本地英文词典暂未找到这个词。",
+                    background="#FFFDF8",
+                    foreground="#667085",
+                    anchor=tk.W,
+                    font=("Microsoft YaHei UI", 13),
+                ).pack(fill=tk.X)
+            for index, row in enumerate(english_display_matches):
                 if index:
                     tk.Frame(shell, height=1, background="#E5E7EB").pack(fill=tk.X, pady=8)
                 header = str(row.get("term") or "").strip()
@@ -2461,9 +3082,22 @@ class PDFPreviewWindow:
                     justify=tk.LEFT,
                     font=("Microsoft YaHei UI", 14, "bold"),
                 ).pack(fill=tk.X)
+                body_lines: list[str] = []
+                morphology = row.get("morphology")
+                if isinstance(morphology, dict) and morphology.get("parts"):
+                    body_lines.extend([
+                        "构词拆解",
+                        f"拆分：{morphology.get('segments') or ''}",
+                    ])
+                else:
+                    local_definition = str(row.get("local_definition_zh") or "").strip()
+                    if local_definition:
+                        body_lines.append(f"本地词源词典释义\n{local_definition}")
+                    else:
+                        body_lines.append("本地构词词典暂未确认拆分。")
                 tk.Label(
                     shell,
-                    text=short(row.get("definition", ""), 132),
+                    text="\n".join(body_lines),
                     background="#FFFDF8",
                     foreground="#344054",
                     anchor=tk.W,
@@ -2477,7 +3111,7 @@ class PDFPreviewWindow:
         tk.Label(
             agent_header,
             text=(
-                "② Agent 释义（先回答此处含义，再给搭配、语域与构词信息）"
+                "③ Agent 释义（先回答此处含义，再给搭配、语域与构词信息）"
                 if english_mode else "② Agent 释义（数学词义会补充定义/定理内容）"
             ),
             background="#FFFDF8",
@@ -2550,24 +3184,49 @@ class PDFPreviewWindow:
                 except (OSError, RuntimeError, ValueError, sqlite3.Error) as error:
                     self._set_tk_label_text(status_label, short(error, 120), foreground="#B42318")
 
-            for caption, method_name, success_text in (
-                ("朗读", "speak_pdf_selection", "已启动本地朗读。"),
-                ("稍后查", "mark_pdf_selection_for_later", "已标记为稍后查。"),
-                ("保存 Usage", "save_pdf_selection_usage", "已保存并保留来源页码。"),
-                ("保存句型", "save_pdf_grammar_encounter", "已保存句型 encounter。"),
-            ):
-                tk.Button(
-                    action_row, text=caption, font=("Microsoft YaHei UI", 11), padx=9, pady=5,
-                    command=lambda name=method_name, message=success_text: run_action(name, message),
-                ).pack(side=tk.LEFT, padx=(0, 7))
-            analysis_button = tk.Button(
-                action_row, text="Agent 句型分析", font=("Microsoft YaHei UI", 11), padx=9, pady=5,
+            speech_button = tk.Menubutton(
+                action_row, text="朗读 ▾", font=("Microsoft YaHei UI", 11), padx=10, pady=5,
+                relief=tk.RAISED,
             )
-            analysis_button.configure(
-                command=lambda: self._analyze_selected_sentence_with_agent(
-                    selected, context, self.page_index + 1, status_label, result_label, analysis_button
+            speech_menu = tk.Menu(speech_button, tearoff=False)
+            for caption, mode in (("选中单词/短语", "word"), ("当前句", "sentence"), ("当前段", "paragraph"), ("全文连续朗读", "document")):
+                speech_menu.add_command(
+                    label=caption,
+                    command=lambda selected_mode=mode: self._start_speech_action(
+                        selected, selected_mode, context, self.page_index + 1
+                    ),
                 )
+            speech_button.configure(menu=speech_menu)
+            speech_button.pack(side=tk.LEFT, padx=(0, 7))
+
+            record_button = tk.Menubutton(
+                action_row, text="学习记录 ▾", font=("Microsoft YaHei UI", 11), padx=10, pady=5,
+                relief=tk.RAISED,
             )
+            record_menu = tk.Menu(record_button, tearoff=False)
+            record_menu.add_command(
+                label="稍后查",
+                command=lambda: run_action("mark_pdf_selection_for_later", "已标记为稍后查。"),
+            )
+            record_menu.add_command(
+                label="保存 Usage",
+                command=lambda: run_action("save_pdf_selection_usage", "已保存并保留来源页码。"),
+            )
+            record_menu.add_command(
+                label="保存句型",
+                command=lambda: run_action("save_pdf_grammar_encounter", "已保存句型 encounter。"),
+            )
+            record_button.configure(menu=record_menu)
+            record_button.pack(side=tk.LEFT, padx=(0, 7))
+
+            analysis_button = tk.Menubutton(
+                action_row, text="更多 ▾", font=("Microsoft YaHei UI", 11), padx=10, pady=5,
+            )
+            more_menu = tk.Menu(analysis_button, tearoff=False)
+            more_menu.add_command(label="Agent 句型分析", command=lambda: self._analyze_selected_sentence_with_agent(
+                selected, context, self.page_index + 1, status_label, result_label, analysis_button
+            ))
+            analysis_button.configure(menu=more_menu)
             analysis_button.pack(side=tk.LEFT, padx=(0, 7))
         self._place_vocabulary_popup_shell(shell, event_x, event_y)
 
@@ -2579,6 +3238,146 @@ class PDFPreviewWindow:
         self.window.clipboard_clear()
         self.window.clipboard_append(self.selected_text)
         self.window.update_idletasks()
+
+    def _show_translation_result(self, payload: dict[str, Any]) -> None:
+        """Show a translation beside the reader without replacing source text."""
+
+        dialog = tk.Toplevel(self.window)
+        dialog.title("Agent 翻译结果（原文保留）")
+        dialog.geometry("920x720")
+        dialog.minsize(720, 520)
+        root = ttk.Frame(dialog, padding=14)
+        root.pack(fill=tk.BOTH, expand=True)
+        mode = str(payload.get("mode") or "selection")
+        mode_label = {"sentence": "句子", "paragraph": "段落", "document": "全文"}.get(mode, "选区")
+        ttk.Label(
+            root,
+            text=f"{mode_label}翻译 · 原文与译文分栏保留",
+            font=("Microsoft YaHei UI", 18, "bold"),
+        ).pack(anchor=tk.W, pady=(0, 8))
+        quality = str(payload.get("quality_report") or "")
+        if quality:
+            ttk.Label(
+                root,
+                text=quality,
+                foreground="#6941C6",
+                wraplength=860,
+                font=("Microsoft YaHei UI", 13),
+            ).pack(anchor=tk.W, pady=(0, 8))
+        panes = ttk.PanedWindow(root, orient=tk.HORIZONTAL)
+        panes.pack(fill=tk.BOTH, expand=True)
+        source_frame = ttk.Labelframe(panes, text="English 原文", padding=8)
+        translation_frame = ttk.Labelframe(panes, text="中文译文（Agent 质检后）", padding=8)
+        source_text = tk.Text(
+            source_frame,
+            wrap=tk.WORD,
+            font=("Georgia", 16),
+            padx=10,
+            pady=10,
+            spacing1=3,
+            spacing3=6,
+        )
+        translation_text = tk.Text(
+            translation_frame,
+            wrap=tk.WORD,
+            font=("Microsoft YaHei UI", 16),
+            padx=10,
+            pady=10,
+            spacing1=3,
+            spacing3=6,
+        )
+        source_text.pack(fill=tk.BOTH, expand=True)
+        translation_text.pack(fill=tk.BOTH, expand=True)
+        source_text.insert("1.0", str(payload.get("source") or ""))
+        translation_text.insert("1.0", str(payload.get("translation") or payload.get("answer") or ""))
+        source_text.configure(state=tk.DISABLED)
+        translation_text.configure(state=tk.DISABLED)
+        panes.add(source_frame, weight=1)
+        panes.add(translation_frame, weight=1)
+        buttons = ttk.Frame(root)
+        buttons.pack(fill=tk.X, pady=(10, 0))
+
+        def copy_translation() -> None:
+            dialog.clipboard_clear()
+            dialog.clipboard_append(str(payload.get("translation") or payload.get("answer") or ""))
+            dialog.update_idletasks()
+
+        ttk.Button(buttons, text="复制译文", command=copy_translation).pack(side=tk.LEFT)
+        ttk.Button(buttons, text="关闭", command=dialog.destroy).pack(side=tk.RIGHT)
+
+    def _set_translation_status(self, message: str = "") -> None:
+        """Keep translation progress visible while the PDF window is focused."""
+
+        clean = re.sub(r"\s+", " ", str(message or "")).strip()
+        self._translation_in_progress = bool(clean)
+        if clean:
+            self.window.title(f"翻译中 · {clean}")
+        else:
+            self.window.title(self._translation_base_title or "PDF 文本定位")
+
+    def _set_translation_buttons_idle(self) -> None:
+        self.translate_selection_button.configure(
+            state=tk.NORMAL if self.selected_text else tk.DISABLED
+        )
+        self.translate_document_button.configure(state=tk.NORMAL)
+
+    def _start_translation(self, mode: str, selected: str = "") -> None:
+        callback = getattr(self.owner, "translate_pdf_selection_with_agent", None)
+        if not callable(callback):
+            self.owner.set_status("当前控制中心未提供英语翻译通道。")
+            return
+        clean_selected = re.sub(
+            r"[ \t]+", " ", str(selected or self.selected_text or "")
+        ).strip()
+        clean_selected = re.sub(r"\n\s*\n\s*\n+", "\n\n", clean_selected)
+        context = self._selected_pdf_context(clean_selected) if clean_selected else ""
+        page_number = self.page_index + 1
+        self.translate_selection_button.configure(state=tk.DISABLED)
+        self.translate_document_button.configure(state=tk.DISABLED)
+        self._set_translation_status("正在准备…")
+        self.owner.set_status("Agent 正在翻译，并执行数字、专名和段落完整性检查…", force=True)
+
+        def progress(message: str) -> None:
+            try:
+                self._set_translation_status(message)
+                self.owner.set_status(short(message, 120), force=True)
+            except (AttributeError, tk.TclError):
+                pass
+
+        def success(payload: dict[str, Any]) -> None:
+            self._set_translation_buttons_idle()
+            self._set_translation_status("")
+            self._show_translation_result(payload)
+
+        def failure(message: str) -> None:
+            self._set_translation_buttons_idle()
+            self._set_translation_status("")
+            try:
+                self.owner.set_status(short(message, 140), force=True)
+            except (AttributeError, tk.TclError):
+                pass
+
+        try:
+            callback(
+                mode,
+                clean_selected,
+                context,
+                page_number,
+                lambda message: self._dispatch_tk_callback(progress, message),
+                lambda payload: self._dispatch_tk_callback(success, payload),
+                lambda message: self._dispatch_tk_callback(failure, message),
+            )
+        except Exception as error:
+            # A synchronous setup failure (for example a missing material or
+            # invalid Agent configuration) must not leave both buttons disabled.
+            failure(f"翻译启动失败：{error}")
+
+    def translate_selected_text(self) -> None:
+        if self.selected_text:
+            self._start_translation("selection", self.selected_text)
+
+    def translate_full_document(self) -> None:
+        self._start_translation("document", "")
 
     def toggle_outline(
         self,
@@ -3023,7 +3822,19 @@ class PDFPreviewWindow:
         self.canvas.configure(scrollregion=(0, 0, self.content_width, self.content_height))
 
     def _draw_page_placeholders(self) -> None:
-        for index, layout in enumerate(self.page_layouts):
+        # Large reading PDFs used to create two Canvas items for every page
+        # before the first page became visible.  Keep the continuous scroll
+        # geometry, but materialize backgrounds only for the current viewport.
+        visible = self._visible_page_indices()
+        if not visible and self.page_layouts:
+            visible = list(range(
+                max(0, int(self.page_index) - 1),
+                min(len(self.page_layouts), int(self.page_index) + 3),
+            ))
+        for index in visible:
+            layout = self.page_layouts[index]
+            if self.canvas.find_withtag(f"page-bg-{index}"):
+                continue
             x0 = float(layout["x"])
             y0 = float(layout["y"])
             x1 = x0 + float(layout["scaled_width"])
@@ -3065,6 +3876,7 @@ class PDFPreviewWindow:
         if self.pdf_path is None or not self.page_layouts:
             return
         visible = set(self._visible_page_indices())
+        self._draw_page_placeholders()
         for page_index in list(self.page_image_items):
             if page_index not in visible:
                 self.canvas.delete(self.page_image_items.pop(page_index))
@@ -3098,6 +3910,40 @@ class PDFPreviewWindow:
             self.canvas.tag_raise(self.selection_preview_item)
         if self.link_highlight_item is not None:
             self.canvas.tag_raise(self.link_highlight_item)
+
+    def _schedule_pdf_links_scan(self, pdf_path: Path) -> None:
+        """Scan PDF links off the Tk thread; first-page reading must stay responsive."""
+        self.pdf_links_scan_generation += 1
+        generation = self.pdf_links_scan_generation
+        path = pdf_path.resolve()
+
+        def worker() -> None:
+            links: list[dict[str, Any]] = []
+            try:
+                document = fitz.open(str(path))
+                try:
+                    links = self._load_pdf_links(document)
+                finally:
+                    document.close()
+            except Exception:
+                links = []
+
+            def finish() -> None:
+                if generation != self.pdf_links_scan_generation or self.pdf_path != path:
+                    return
+                self.pdf_links = links
+                self._redraw_link_hover()
+
+            try:
+                self.window.after(0, finish)
+            except Exception:
+                pass
+
+        threading.Thread(
+            target=worker,
+            name="pdf-link-scan",
+            daemon=True,
+        ).start()
         if self.vocabulary_popup_item is not None:
             self.canvas.tag_raise(self.vocabulary_popup_item)
 
@@ -3354,6 +4200,7 @@ class PDFPreviewWindow:
             f"{problem_code}  {problem_title}".strip()
         )
         self.window.title("标准题 PDF 定位")
+        self._translation_base_title = "标准题 PDF 定位"
 
         self.render_page()
 
@@ -3391,6 +4238,7 @@ class PDFPreviewWindow:
         self._load_pdf_outline(pdf_path)
         self.problem_var.set(self.problem_title or pdf_path.name)
         self.window.title("讲义 PDF 定位")
+        self._translation_base_title = "讲义 PDF 定位"
 
         self.render_page()
         target_page = self.page_index
@@ -3432,6 +4280,7 @@ class PDFPreviewWindow:
         self.current_search_index = 0
         self.problem_var.set(title or f"PDF 词汇定位：{query}")
         self.window.title("PDF 文本定位")
+        self._translation_base_title = "PDF 文本定位"
         self._clear_pdf_navigation_history()
         self._set_search_navigation_state()
         self._load_pdf_outline(pdf_path)
@@ -3562,13 +4411,17 @@ class PDFPreviewWindow:
                 min(self.page_index, self.page_count - 1),
             )
             self._build_continuous_layout(document)
-            self.pdf_links = self._load_pdf_links(document)
+            # Link extraction walks every page and can be expensive for a
+            # book-sized PDF.  It is not needed to paint or select the first
+            # page, so defer it to a worker after the reader is visible.
+            self.pdf_links = []
         finally:
             document.close()
 
         self._draw_page_placeholders()
         self._render_visible_pages()
         self._redraw_search_highlights()
+        self._schedule_pdf_links_scan(self.pdf_path)
 
         self.page_var.set(
             f"PDF 第 {self.page_index + 1} / {self.page_count} 页"

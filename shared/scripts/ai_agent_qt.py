@@ -21,7 +21,6 @@ from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,
     QDialog,
-    QDoubleSpinBox,
     QFileDialog,
     QFormLayout,
     QFrame,
@@ -59,11 +58,6 @@ from shared.scripts.ai_agent_attachments import (
     store_files,
     store_image_bytes,
 )
-from shared.scripts.ai_agent_acceptance import (
-    load_acceptance_suite,
-    run_offline_acceptance,
-    summarize_acceptance_results,
-)
 from shared.scripts.ai_agent_history import ConversationHistoryStore, ConversationViewStateStore
 from shared.scripts.ai_agent_learner_profile import (
     clear_learner_profile,
@@ -87,7 +81,10 @@ from shared.scripts.ai_agent_reliability import (
 
 
 _ACCOUNT_USAGE_COMPAT: Any | None = None
-if not APP_PATHS.public_release:
+if (
+    not APP_PATHS.public_release
+    and os.environ.get("STUDY_BANK_WORKSPACE", "math").strip().casefold() != "english"
+):
     try:
         from shared.scripts import ai_agent_account_usage as _ACCOUNT_USAGE_COMPAT
     except ImportError:
@@ -108,6 +105,26 @@ MIN_CHAT_COLUMN_WIDTH = 520
 MIN_MESSAGE_CONTENT_WIDTH = 436
 HISTORY_OVERLAY_BACKGROUND_ALPHA = 204
 HISTORY_OVERLAY_ANIMATION_MS = 240
+
+
+def load_acceptance_suite(*args: Any, **kwargs: Any) -> list[dict[str, Any]]:
+    """Load math acceptance cases only when the math diagnostics dialog opens."""
+
+    from shared.scripts.ai_agent_acceptance import load_acceptance_suite as _load
+
+    return _load(*args, **kwargs)
+
+
+def run_offline_acceptance(*args: Any, **kwargs: Any) -> Any:
+    from shared.scripts.ai_agent_acceptance import run_offline_acceptance as _run
+
+    return _run(*args, **kwargs)
+
+
+def summarize_acceptance_results(*args: Any, **kwargs: Any) -> Any:
+    from shared.scripts.ai_agent_acceptance import summarize_acceptance_results as _summarize
+
+    return _summarize(*args, **kwargs)
 
 
 def expanded_chat_column_width(
@@ -1582,8 +1599,16 @@ class AnswerFeedbackDialog(QDialog):
 
 
 class LocalRewriteDialog(QDialog):
-    def __init__(self, excerpt: str, parent: QWidget | None = None) -> None:
+    def __init__(
+        self,
+        excerpt: str,
+        parent: QWidget | None = None,
+        *,
+        discipline: str = "math",
+    ) -> None:
         super().__init__(parent)
+        requested_discipline = str(discipline).casefold()
+        self.discipline = requested_discipline if requested_discipline in {"math", "physics", "english"} else "math"
         self.setWindowTitle("局部改写")
         self.resize(620, 460)
         layout = QVBoxLayout(self)
@@ -1597,10 +1622,29 @@ class LocalRewriteDialog(QDialog):
         layout.addWidget(preview)
         layout.addWidget(QLabel("希望怎样处理？"))
         self.action = QComboBox()
-        self.action.addItems(("讲得更细，补足连接步骤", "用更基础的语言解释", "简化并删除无关内容", "严格沿当前教材重写", "检查并纠正数学错误"))
+        if self.discipline == "english":
+            self.action.addItems((
+                "讲得更清楚，补足语法或语义连接",
+                "用更基础的英语解释",
+                "简化并删除无关内容",
+                "严格沿当前教材重写",
+                "检查并纠正语法、用词和表达",
+            ))
+        else:
+            self.action.addItems((
+                "讲得更细，补足连接步骤",
+                "用更基础的语言解释",
+                "简化并删除无关内容",
+                "严格沿当前教材重写",
+                "检查并纠正数学错误" if self.discipline == "math" else "检查并纠正物理错误",
+            ))
         layout.addWidget(self.action)
         self.note = QTextEdit()
-        self.note.setPlaceholderText("可选：指出你具体没看懂的句子，或说明希望保留哪些公式。")
+        self.note.setPlaceholderText(
+            "可选：指出你具体没看懂的句子，或说明希望保留哪些例句。"
+            if self.discipline == "english"
+            else "可选：指出你具体没看懂的句子，或说明希望保留哪些公式。"
+        )
         self.note.setMaximumHeight(110)
         layout.addWidget(self.note)
         buttons = QHBoxLayout()
@@ -1628,8 +1672,10 @@ class ReferenceLibraryDialog(QDialog):
     ) -> None:
         super().__init__(parent)
         self.store = store
-        self.discipline = "physics" if str(discipline).casefold() == "physics" else "math"
-        subject_label = "物理" if self.discipline == "physics" else "数学"
+        requested_discipline = str(discipline).casefold()
+        self.discipline = requested_discipline if requested_discipline in {"math", "physics", "english"} else "math"
+        subject_label = {"physics": "物理", "english": "英语"}.get(self.discipline, "数学")
+        self.subject_label = subject_label
         self.rebuild_requested = False
         self.setWindowTitle(f"{subject_label}资料库")
         self.resize(780, 520)
@@ -1685,7 +1731,7 @@ class ReferenceLibraryDialog(QDialog):
         self.status_label.setText(
             f"已启用 {status['enabled_root_count']} 个目录，可检索 {status['file_count']} 个文件"
             + (f"（{suffixes}）" if suffixes else "")
-            + "。目录变化会在下一次数学检索前自动更新索引。"
+            + f"。目录变化会在下一次{self.subject_label}检索前自动更新索引。"
         )
 
     def _toggle_root(self, item: QListWidgetItem) -> None:
@@ -1696,7 +1742,7 @@ class ReferenceLibraryDialog(QDialog):
         self._refresh()
 
     def _add_root(self) -> None:
-        subject_label = "物理" if self.discipline == "physics" else "数学"
+        subject_label = {"physics": "物理", "english": "英语"}.get(self.discipline, "数学")
         path = QFileDialog.getExistingDirectory(self, f"选择{subject_label}资料目录")
         if not path:
             return
@@ -1733,8 +1779,10 @@ class LearningMemoryDialog(QDialog):
         super().__init__(parent)
         self.service = service
         self.store = service.memory_store
-        self.discipline = "physics" if str(discipline).casefold() == "physics" else "math"
-        self.setWindowTitle("物理学习记忆" if self.discipline == "physics" else "数学学习记忆")
+        requested_discipline = str(discipline).casefold()
+        self.discipline = requested_discipline if requested_discipline in {"math", "physics", "english"} else "math"
+        subject_label = {"physics": "物理", "english": "英语"}.get(self.discipline, "数学")
+        self.setWindowTitle(f"{subject_label}学习记忆")
         self.setModal(True)
         self.resize(820, 720)
         layout = QVBoxLayout(self)
@@ -1790,10 +1838,8 @@ class LearningMemoryDialog(QDialog):
     def _profile_tab(self) -> QWidget:
         page = QWidget()
         layout = QVBoxLayout(page)
-        hint = QLabel(
-            f"{('物理' if self.discipline == 'physics' else '数学')}学习画像默认留空，"
-            "仅在用户显式导入后用于后续回答。"
-        )
+        subject_label = {"physics": "物理", "english": "英语"}.get(self.discipline, "数学")
+        hint = QLabel(f"{subject_label}学习画像默认留空，仅在用户显式导入后用于后续回答。")
         hint.setWordWrap(True)
         layout.addWidget(hint)
         self.profile_status_label = QLabel()
@@ -1831,8 +1877,10 @@ class LearningMemoryDialog(QDialog):
         editor_layout.addWidget(hint)
         self.explicit_memory_edit = QTextEdit()
         self.explicit_memory_edit.setPlaceholderText(
-            "例如：场论推导要先声明度规号差，并始终检查量纲。"
+            "例如：回答物理推导时先声明约定，并始终检查量纲。"
             if self.discipline == "physics"
+            else "例如：解释句子时先给出直译，再说明语法和语气。"
+            if self.discipline == "english"
             else "例如：数学证明要沿教材原有顺序解释，不要拆成很多小标题。"
         )
         editor_layout.addWidget(self.explicit_memory_edit, 1)
@@ -1860,7 +1908,8 @@ class LearningMemoryDialog(QDialog):
         layout.addWidget(self.signal_list, 2)
         editor = QWidget()
         editor_layout = QVBoxLayout(editor)
-        editor_layout.addWidget(QLabel(f"AI 应记住的{('物理' if self.discipline == 'physics' else '数学')}学习状态"))
+        subject_label = {"physics": "物理", "english": "英语"}.get(self.discipline, "数学")
+        editor_layout.addWidget(QLabel(f"AI 应记住的{subject_label}学习状态"))
         self.signal_state = QComboBox()
         self.signal_state.addItem("需要补足或重新解释", "needs_explanation")
         self.signal_state.addItem("已经掌握", "understood")
@@ -1869,6 +1918,8 @@ class LearningMemoryDialog(QDialog):
         self.signal_edit.setPlaceholderText(
             "例如：我还不熟悉规范固定对自由度计数的作用。"
             if self.discipline == "physics"
+            else "例如：我还不熟悉现在完成时和一般过去时的区别。"
+            if self.discipline == "english"
             else "例如：我还不熟悉商拓扑中饱和开集的作用。"
         )
         editor_layout.addWidget(self.signal_edit, 1)
@@ -2494,7 +2545,7 @@ class ModelSettingsDialog(QDialog):
         outer.setSpacing(13)
         title = QLabel("模型与 API")
         _set_font(title, 18, QFont.Weight.DemiBold)
-        note = QLabel("这里的设置只控制内置数学顾问。API Key 使用 Windows DPAPI 加密，不进入 Git。")
+        note = QLabel("这里的设置只控制内置 AI 助手。API Key 使用 Windows DPAPI 加密，不进入 Git。")
         note.setWordWrap(True)
         _set_font(note, 9)
         outer.addWidget(title)
@@ -2512,6 +2563,8 @@ class ModelSettingsDialog(QDialog):
         self.provider_kind_combo.addItems(list(PROVIDER_KINDS.values()))
         self.reasoning_combo = QComboBox()
         self.reasoning_combo.addItems(list(REASONING_EFFORTS.values()))
+        self.reasoning_combo.setCurrentText(REASONING_EFFORTS.get("high", "高"))
+        self.reasoning_combo.setEnabled(False)
         self.text_verbosity_combo = QComboBox()
         self.text_verbosity_combo.addItems(list(TEXT_VERBOSITIES.values()))
         self.routing_combo = QComboBox()
@@ -2606,9 +2659,9 @@ class ModelSettingsDialog(QDialog):
         self.tools_checkbox.setChecked(True)
         self.tools_checkbox.setToolTip("默认只读；仅在你明确要求时允许修改学习项目内的 TeX，并自动备份和编译回滚。")
         self.reasoning_combo.setToolTip(
-            "推荐使用“自动按任务”：数学解释、推导和证明默认 high，极难长证明才升级到 xhigh。"
+            "全局质量策略：所有支持推理控制的 API 调用固定使用高推理强度。"
         )
-        self.text_verbosity_combo.setToolTip("自动模式下数学回答使用 high，其他任务使用 medium。")
+        self.text_verbosity_combo.setToolTip("自动模式会根据任务类型调整回答详略。")
         self.routing_combo.setToolTip("质量优先会先调用 Responses；只有中转站明确不兼容且尚未执行任何本地工具时才降级。")
         self.max_rounds_edit.setToolTip("复杂的读取、TeX 写入和编译任务需要更多轮次；默认 24，允许范围 1–64。")
         outer.addWidget(self.tools_checkbox)
@@ -2663,9 +2716,11 @@ class ModelSettingsDialog(QDialog):
 
     def _refresh_profile_combo(self, selected_id: str = "") -> None:
         target = selected_id or self.settings_store.active_profile_id
+        resolved = self.settings_store.profile_for_selection(target)
+        target = resolved.id if resolved is not None else target
         self.profile_combo.blockSignals(True)
         self.profile_combo.clear()
-        for profile in self.settings_store.profiles:
+        for profile in self.settings_store.selectable_profiles():
             self.profile_combo.addItem(profile.name, profile.id)
         index = self.profile_combo.findData(target)
         self.profile_combo.setCurrentIndex(max(0, index))
@@ -2725,7 +2780,7 @@ class ModelSettingsDialog(QDialog):
         reasoning_label = self.reasoning_combo.currentText()
         reasoning_effort = next(
             (value for value, label in REASONING_EFFORTS.items() if label == reasoning_label),
-            "auto",
+            "high",
         )
         verbosity_label = self.text_verbosity_combo.currentText()
         text_verbosity = next(
@@ -2854,7 +2909,7 @@ class ModelSettingsDialog(QDialog):
             current_model = self.model_edit.currentText().strip()
             self.model_edit.clear()
             self.model_edit.addItems(model_names)
-            preferred_model = current_model if current_model in model_names else "gpt-5.6-sol"
+            preferred_model = current_model if current_model in model_names else "deepseek-flash"
             if preferred_model not in model_names and model_names:
                 preferred_model = model_names[0]
             self.model_edit.setEditText(preferred_model)
@@ -3249,8 +3304,8 @@ class ReliabilityCenterDialog(QDialog):
         task_layout.addWidget(retry)
         tabs.addTab(task_tab, "后台任务")
 
-        budget_tab = QWidget()
-        budget_layout = QFormLayout(budget_tab)
+        usage_tab = QWidget()
+        usage_layout = QFormLayout(usage_tab)
         policy = policy_store.policy
         self.confirm_mutations = QCheckBox("每次具体写入前显示文件和差异（固定开启）")
         self.confirm_mutations.setChecked(True)
@@ -3258,22 +3313,10 @@ class ReliabilityCenterDialog(QDialog):
         self.confirm_mutations.setToolTip("读取本机资料无需确认；创建、修改、编译或重建本地内容必须逐次确认。")
         self.auto_notify = QCheckBox("任务完成时显示系统通知")
         self.auto_notify.setChecked(policy.auto_notify)
-        self.single_limit = QDoubleSpinBox()
-        self.single_limit.setRange(0, 10000)
-        self.single_limit.setDecimals(3)
-        self.single_limit.setValue(policy.single_request_limit)
-        self.single_limit.setPrefix("¥")
-        self.daily_limit = QDoubleSpinBox()
-        self.daily_limit.setRange(0, 100000)
-        self.daily_limit.setDecimals(3)
-        self.daily_limit.setValue(policy.daily_limit)
-        self.daily_limit.setPrefix("¥")
-        budget_layout.addRow(self.confirm_mutations)
-        budget_layout.addRow(self.auto_notify)
-        budget_layout.addRow("单次硬上限（0 表示不限制）", self.single_limit)
-        budget_layout.addRow("每日硬上限（0 表示不限制）", self.daily_limit)
-        budget_layout.addRow("今日已记录", QLabel(f"¥{ledger.today_total():.6f}"))
-        tabs.addTab(budget_tab, "费用与确认")
+        usage_layout.addRow(self.confirm_mutations)
+        usage_layout.addRow(self.auto_notify)
+        usage_layout.addRow("今日已记录", QLabel(f"¥{ledger.today_total():.6f}"))
+        tabs.addTab(usage_tab, "用量与确认")
 
         recovery_tab = QWidget()
         recovery_layout = QVBoxLayout(recovery_tab)
@@ -3336,8 +3379,8 @@ class ReliabilityCenterDialog(QDialog):
         policy.confirm_mutations = True
         policy.show_preflight = False
         policy.auto_notify = self.auto_notify.isChecked()
-        policy.single_request_limit = float(self.single_limit.value())
-        policy.daily_limit = float(self.daily_limit.value())
+        policy.single_request_limit = 0.0
+        policy.daily_limit = 0.0
         self.policy_store.save()
         self.accept()
 
@@ -3592,7 +3635,7 @@ class RunDetailsDialog(QDialog):
                 f"推理模式：{latest.get('actual_reasoning_mode') or '-'}（请求：{latest.get('requested_reasoning_mode') or '-'}）",
                 f"推理强度：{latest.get('actual_reasoning_effort') or '-'}（请求：{latest.get('requested_reasoning_effort') or '-'}）",
                 f"回答详略：{latest.get('actual_text_verbosity') or '-'}",
-                f"数学回答方式：{latest.get('math_response_mode') or '-'}",
+                f"回答格式：{latest.get('math_response_mode') or '-'}",
                 f"响应状态：{latest.get('response_status') or '-'}",
                 f"耗时：{latest.get('elapsed_seconds', 0)} 秒",
                 "",
@@ -3767,8 +3810,9 @@ class AiAgentPanel(QWidget):
         discipline: str = "math",
     ) -> None:
         super().__init__(parent)
-        self.discipline = "physics" if str(discipline).casefold() == "physics" else "math"
-        self.subject_label = "物理" if self.discipline == "physics" else "数学"
+        requested_discipline = str(discipline).casefold()
+        self.discipline = requested_discipline if requested_discipline in {"math", "physics", "english"} else "math"
+        self.subject_label = {"physics": "物理", "english": "英语"}.get(self.discipline, "数学")
         self.current_context_provider = current_context
         self.palette_provider = palette_provider
         self.reference_handler = reference_handler
@@ -3781,6 +3825,14 @@ class AiAgentPanel(QWidget):
                 auto_add_default=False,
             )
             memory_store = LearningMemoryStore(CACHE_DIR / "ai_physics_agent_memory.json")
+        elif self.discipline == "english":
+            self.history_store = ConversationHistoryStore(CACHE_DIR / "ai_english_agent_history.json")
+            self.view_state_store = ConversationViewStateStore(CACHE_DIR / "ai_english_agent_history_view_state.json")
+            self.reference_library_store = ReferenceLibraryStore(
+                CACHE_DIR / "ai_english_reference_library.json",
+                auto_add_default=False,
+            )
+            memory_store = LearningMemoryStore(CACHE_DIR / "ai_english_agent_memory.json")
         else:
             self.history_store = ConversationHistoryStore()
             self.view_state_store = ConversationViewStateStore()
@@ -3799,7 +3851,11 @@ class AiAgentPanel(QWidget):
         self.approval_broker.requested.connect(self._show_operation_approval)
         self._tray_icon: QSystemTrayIcon | None = None
         self.account_usage_monitor: Any | None = None
-        if _ACCOUNT_USAGE_COMPAT is not None:
+        # Account usage is a math-provider diagnostic and creates a persistent
+        # QtWebEngine profile.  Do not initialize that browser just to open the
+        # English learning assistant; it adds noticeable first-click latency
+        # and can emit network callbacks while the panel is being switched.
+        if self.discipline != "english" and _ACCOUNT_USAGE_COMPAT is not None:
             monitor_type = getattr(
                 _ACCOUNT_USAGE_COMPAT,
                 "ProviderAccountUsageMonitor",
@@ -3871,7 +3927,11 @@ class AiAgentPanel(QWidget):
         toolbar_layout = QHBoxLayout(toolbar)
         toolbar_layout.setContentsMargins(18, 12, 18, 12)
         toolbar_layout.setSpacing(9)
-        title = QLabel(f"AI {self.subject_label}顾问")
+        title_text = {
+            "physics": "AI 物理顾问",
+            "english": "AI 英语助教",
+        }.get(self.discipline, "AI 数学顾问")
+        title = QLabel(title_text)
         title.setObjectName("aiTitle")
         _set_font(title, 13, QFont.Weight.DemiBold)
         self.context_label = QLabel("")
@@ -3892,7 +3952,7 @@ class AiAgentPanel(QWidget):
         more_menu = QMenu(self.more_button)
         export_action = more_menu.addAction("导出对话")
         details_action = more_menu.addAction("运行详情")
-        self.tasks_action = more_menu.addAction("任务与预算")
+        self.tasks_action = more_menu.addAction("任务与用量")
         reference_library_action = more_menu.addAction(f"{self.subject_label}资料库")
         more_menu.addSeparator()
         settings_action = more_menu.addAction("模型与 API")
@@ -4011,11 +4071,10 @@ class AiAgentPanel(QWidget):
         self.conversation_layout = QVBoxLayout(self.conversation_host)
         self.conversation_layout.setContentsMargins(24, 24, 24, 18)
         self.conversation_layout.setSpacing(16)
-        empty_text = (
-            "可以询问物理概念、推导、计算、量纲、近似与实验含义，搜索相关题目或论文，或绘制物理图形。"
-            if self.discipline == "physics"
-            else "可以询问定义、定理、具体数学问题，搜索相关题目，或要求绘制数学图形。"
-        )
+        empty_text = {
+            "physics": "可以询问物理概念、推导、计算、量纲、近似与实验含义，搜索相关题目或论文，或绘制物理图形。",
+            "english": "可以询问教材句子、词汇、文法、阅读理解和写作表达，也可以让 AI 结合原书内容解释和练习。",
+        }.get(self.discipline, "可以询问定义、定理、具体数学问题，搜索相关题目，或要求绘制数学图形。")
         self.empty_hint = QLabel(empty_text + "\n消息中的 Markdown 与 LaTeX 会在发送后自动排版。")
         self.empty_hint.setObjectName("aiEmptyHint")
         self.empty_hint.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -4060,26 +4119,31 @@ class AiAgentPanel(QWidget):
         if default_thinking_index >= 0:
             self.thinking_combo.setCurrentIndex(default_thinking_index)
         self.thinking_combo.setToolTip(
-            f"标准{self.subject_label}默认 standard + high；深度思考使用 standard + xhigh；最大思考使用 standard + max。"
+            "所有思考预设的 API 推理强度均固定为 high；预设只调整回答预算和详略。"
         )
         self.compute_combo = QComboBox()
         self.compute_combo.setObjectName("aiComputeCombo")
         self.compute_combo.setMinimumHeight(34)
         self.compute_combo.setMinimumWidth(96)
-        self.compute_combo.addItem("计算自动", "auto")
-        self.compute_combo.addItem("计算关闭", "off")
-        self.compute_combo.addItem("Python", "python")
-        self.compute_combo.addItem("Mathematica", "mathematica")
-        self.compute_combo.addItem("双重核验", "dual")
-        self.compute_combo.setToolTip("只决定本轮向模型提供哪些受控计算工具，不会自动执行工具；证明和概念题的自动模式通常不暴露计算工具。")
+        if self.discipline == "english":
+            self.compute_combo.addItem("工具自动", "auto")
+            self.compute_combo.addItem("工具关闭", "off")
+            self.compute_combo.setToolTip("英语学习默认不启用计算工具。")
+        else:
+            self.compute_combo.addItem("计算自动", "auto")
+            self.compute_combo.addItem("计算关闭", "off")
+            self.compute_combo.addItem("Python", "python")
+            self.compute_combo.addItem("Mathematica", "mathematica")
+            self.compute_combo.addItem("双重核验", "dual")
+            self.compute_combo.setToolTip("只决定本轮向模型提供哪些受控计算工具，不会自动执行工具；证明和概念题的自动模式通常不暴露计算工具。")
+        self.compute_combo.setVisible(self.discipline != "english")
         self.question_edit = ChatInputTextEdit()
         self.question_edit.setObjectName("aiComposerEdit")
         self.question_edit.setAcceptRichText(False)
-        self.question_edit.setPlaceholderText(
-            r"例如：推导 Klein--Gordon 方程并检查量纲，或用 Mathematica 绘制波包演化"
-            if self.discipline == "physics"
-            else r"例如：紧算子的定义是什么？搜索与 Arzelà--Ascoli 定理相关的题，或画出 $y=x^2$ 的图像"
-        )
+        self.question_edit.setPlaceholderText({
+            "physics": r"例如：推导 Klein--Gordon 方程并检查量纲，或用 Mathematica 绘制波包演化",
+            "english": "例如：请解释这句话的语法结构，比较 get used to 与 be used to，并给出三个例句",
+        }.get(self.discipline, r"例如：紧算子的定义是什么？搜索与 Arzelà--Ascoli 定理相关的题，或画出 $y=x^2$ 的图像"))
         self.question_edit.set_height_limit_provider(lambda: max(90, int(self.height() * 0.4)))
         _set_font(self.question_edit, 11)
         self.question_edit.send_requested.connect(self.send_question)
@@ -4111,7 +4175,10 @@ class AiAgentPanel(QWidget):
         stage_layout.addStretch(1)
         body_layout.addWidget(self.chat_stage, 1)
         outer.addWidget(self.body, 1)
-        self._refresh_history_list()
+        # History can contain many full message records.  Let the first frame
+        # paint before reading and materializing the list so opening the panel
+        # remains responsive.
+        QTimer.singleShot(0, self._refresh_history_list)
         QTimer.singleShot(0, lambda: self._sync_chat_column_width(reflow=False))
         QTimer.singleShot(0, self._position_history_overlay)
 
@@ -4230,9 +4297,11 @@ class AiAgentPanel(QWidget):
 
     def _refresh_profile_combo(self, selected_id: str = "") -> None:
         target = selected_id or self.settings_store.active_profile_id
+        resolved = self.settings_store.profile_for_selection(target)
+        target = resolved.id if resolved is not None else target
         self.profile_combo.blockSignals(True)
         self.profile_combo.clear()
-        for profile in self.settings_store.profiles:
+        for profile in self.settings_store.selectable_profiles():
             self.profile_combo.addItem(profile.name, profile.id)
         index = self.profile_combo.findData(target)
         self.profile_combo.setCurrentIndex(max(0, index))
@@ -4291,7 +4360,7 @@ class AiAgentPanel(QWidget):
         )
 
     def _refresh_tasks_button(self) -> None:
-        self.tasks_action.setText("任务与预算")
+        self.tasks_action.setText("任务与用量")
         self.more_button.setText("更多")
 
     def _show_operation_approval(self, payload: object) -> None:
@@ -4328,7 +4397,7 @@ class AiAgentPanel(QWidget):
         if not excerpt:
             QMessageBox.information(self, "尚未选择内容", "请在原始文本中框选一段，再点击“局部改写”。")
             return
-        dialog = LocalRewriteDialog(excerpt, self)
+        dialog = LocalRewriteDialog(excerpt, self, discipline=self.discipline)
         if dialog.exec() != QDialog.DialogCode.Accepted:
             return
         instruction = dialog.instruction()
@@ -4345,14 +4414,6 @@ class AiAgentPanel(QWidget):
             )
         except (ValueError, OSError) as error:
             QMessageBox.warning(self, "局部改写预检失败", str(error))
-            return
-        amount = (preflight.get("cost_estimate") or {}).get("estimated_amount")
-        amount_value = float(amount) if isinstance(amount, (int, float)) else 0.0
-        policy = self.policy_store.policy
-        if (policy.single_request_limit > 0 and amount_value > policy.single_request_limit) or (
-            policy.daily_limit > 0 and self.usage_ledger.today_total() + amount_value > policy.daily_limit
-        ):
-            QMessageBox.warning(self, "局部改写超过费用上限", f"保守预估 ¥{amount_value:.4f}，当前费用上限不允许发送。")
             return
         bubble.set_copy_mode(False)
         self._compile_bubble(self._add_bubble("user", visible_prompt), visible_prompt)
@@ -4740,7 +4801,8 @@ class AiAgentPanel(QWidget):
         self.current_run_details = dict(record.metadata or {})
         self.messages = [dict(message) for message in record.messages]
         if record.profile_id:
-            index = self.profile_combo.findData(record.profile_id)
+            resolved = self.settings_store.profile_for_selection(record.profile_id)
+            index = self.profile_combo.findData(resolved.id if resolved is not None else record.profile_id)
             if index >= 0:
                 self.profile_combo.setCurrentIndex(index)
         runs = [item for item in self.current_run_details.get("runs") or [] if isinstance(item, dict)]
@@ -4937,23 +4999,6 @@ class AiAgentPanel(QWidget):
             )
         except (ValueError, OSError) as error:
             QMessageBox.warning(self, "重新生成预检失败", str(error))
-            return
-        amount = (preflight.get("cost_estimate") or {}).get("estimated_amount")
-        amount_value = float(amount) if isinstance(amount, (int, float)) else 0.0
-        policy = self.policy_store.policy
-        if policy.single_request_limit > 0 and amount_value > policy.single_request_limit:
-            QMessageBox.warning(
-                self,
-                "超过单次费用上限",
-                f"本次保守预估为 ¥{amount_value:.4f}，超过单次硬上限 ¥{policy.single_request_limit:.4f}。",
-            )
-            return
-        if policy.daily_limit > 0 and self.usage_ledger.today_total() + amount_value > policy.daily_limit:
-            QMessageBox.warning(
-                self,
-                "超过每日费用上限",
-                f"本次保守预估为 ¥{amount_value:.4f}，加上今日已记录费用后超过每日硬上限。",
-            )
             return
         question_message = messages[-1]
         question = str(question_message.get("content") or "")
@@ -5221,11 +5266,10 @@ class AiAgentPanel(QWidget):
             widget = item.widget()
             if widget is not None:
                 widget.deleteLater()
-        empty_text = (
-            "可以询问物理概念、推导、计算、量纲、近似与实验含义，搜索相关题目或论文，或绘制物理图形。"
-            if self.discipline == "physics"
-            else "可以询问定义、定理、具体数学问题，搜索相关题目，或要求绘制数学图形。"
-        )
+        empty_text = {
+            "physics": "可以询问物理概念、推导、计算、量纲、近似与实验含义，搜索相关题目或论文，或绘制物理图形。",
+            "english": "可以询问教材句子、词汇、文法、阅读理解和写作表达，也可以让 AI 结合原书内容解释和练习。",
+        }.get(self.discipline, "可以询问定义、定理、具体数学问题，搜索相关题目，或要求绘制数学图形。")
         self.empty_hint = QLabel(empty_text + "\n消息中的 Markdown 与 LaTeX 会在发送后自动排版。")
         self.empty_hint.setObjectName("aiEmptyHint")
         self.empty_hint.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -5353,26 +5397,6 @@ class AiAgentPanel(QWidget):
             )
         except (ValueError, OSError) as error:
             QMessageBox.warning(self, "请求预检失败", str(error))
-            return
-        amount = (preflight.get("cost_estimate") or {}).get("estimated_amount")
-        amount_value = float(amount) if isinstance(amount, (int, float)) else 0.0
-        policy = self.policy_store.policy
-        if policy.single_request_limit > 0 and amount_value > policy.single_request_limit:
-            QMessageBox.warning(
-                self,
-                "超过单次费用上限",
-                f"本次保守预估为 ¥{amount_value:.4f}，超过单次硬上限 ¥{policy.single_request_limit:.4f}。\n"
-                "请在“任务与预算”中调整上限，或缩短问题与上下文。",
-            )
-            return
-        today_total = self.usage_ledger.today_total()
-        if policy.daily_limit > 0 and today_total + amount_value > policy.daily_limit:
-            QMessageBox.warning(
-                self,
-                "超过每日费用上限",
-                f"今日已记录 ¥{today_total:.4f}，本次预估 ¥{amount_value:.4f}，"
-                f"合计超过每日硬上限 ¥{policy.daily_limit:.4f}。",
-            )
             return
         self.question_edit.clear()
         default_thinking_index = self.thinking_combo.findData(DEFAULT_REASONING_PRESET)

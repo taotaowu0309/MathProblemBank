@@ -19,6 +19,83 @@ RENDER_ROOT = APP_PATHS.cache_dir / "ai_agent_render"
 RENDER_VERSION = "ai-answer-pdf-v2"
 MESSAGE_RENDER_VERSION = "ai-message-svg-v10"
 MARKDOWN_BOUNDARY_COMMENT = "<!--AIAGENT_MARKDOWN_BOUNDARY-->"
+_SUPERSCRIPT_DIGITS = str.maketrans("⁰¹²³⁴⁵⁶⁷⁸⁹", "0123456789")
+
+
+def _extract_markdown_footnotes(markdown: str) -> tuple[str, dict[str, str]]:
+    """Remove footnote definitions and replace their references with stable tokens.
+
+    MinerU/LLM output commonly mixes standard Markdown footnotes (``[^3]:``)
+    with Unicode superscript references and definitions (``³``). CommonMark
+    itself does not implement footnotes, so leaving those forms untouched turns
+    the definitions into ordinary body paragraphs.
+    """
+
+    source = str(markdown or "").replace("\r\n", "\n")
+    lines = source.splitlines()
+    definitions: dict[str, str] = {}
+    retained: list[str] = []
+    unicode_counts = {
+        marker: source.count(marker)
+        for marker in set(re.findall(r"[⁰¹²³⁴⁵⁶⁷⁸⁹]+", source))
+    }
+    index = 0
+    while index < len(lines):
+        line = lines[index]
+        standard = re.match(r"^\s*\[\^([^\]]+)\]:[ \t]*(.*)$", line)
+        unicode_definition = re.match(
+            r"^\s*([⁰¹²³⁴⁵⁶⁷⁸⁹]+)[ \t]+(.+)$", line
+        )
+        identifier = ""
+        first_line = ""
+        if standard:
+            identifier = standard.group(1).strip()
+            first_line = standard.group(2).strip()
+        elif unicode_definition and unicode_counts.get(unicode_definition.group(1), 0) > 1:
+            identifier = unicode_definition.group(1).translate(_SUPERSCRIPT_DIGITS)
+            first_line = unicode_definition.group(2).strip()
+        if not identifier:
+            retained.append(line)
+            index += 1
+            continue
+
+        body_lines = [first_line]
+        index += 1
+        while index < len(lines):
+            continuation = lines[index]
+            if re.match(r"^(?:\t| {2,})\S", continuation):
+                body_lines.append(re.sub(r"^(?:\t| {2,4})", "", continuation))
+                index += 1
+                continue
+            if (
+                not continuation.strip()
+                and index + 1 < len(lines)
+                and re.match(r"^(?:\t| {2,})\S", lines[index + 1])
+            ):
+                body_lines.append("")
+                index += 1
+                continue
+            break
+        definitions.setdefault(identifier, "\n".join(body_lines).strip())
+
+    normalized = "\n".join(retained)
+    tokens: dict[str, str] = {}
+    superscript_digits = str.maketrans("0123456789", "⁰¹²³⁴⁵⁶⁷⁸⁹")
+    for ordinal, (identifier, body) in enumerate(definitions.items()):
+        token = f"AIAGENTFOOTNOTE{ordinal}TOKEN"
+        replaced = False
+        markdown_reference = f"[^{identifier}]"
+        if markdown_reference in normalized:
+            normalized = normalized.replace(markdown_reference, token)
+            replaced = True
+        if identifier.isdigit():
+            superscript = identifier.translate(superscript_digits)
+            pattern = re.compile(rf"(?<![A-Za-z0-9]){re.escape(superscript)}")
+            normalized, count = pattern.subn(token, normalized)
+            replaced = replaced or count > 0
+        if replaced:
+            tokens[token] = body
+    return normalized, tokens
 
 
 def _hidden_subprocess_kwargs() -> dict[str, Any]:
@@ -415,7 +492,8 @@ def _render_markdown_table(tokens: list[Any], start: int) -> tuple[str, int]:
 
 
 def markdown_to_latex_body(markdown: str) -> str:
-    protected, fragments = _protect_fragments(str(markdown or "").replace("\r\n", "\n"))
+    normalized_footnotes, footnotes = _extract_markdown_footnotes(markdown)
+    protected, fragments = _protect_fragments(normalized_footnotes)
     protected = _normalize_display_math_paragraphs(protected, fragments)
     protected = _normalize_relaxed_markdown(protected)
     parser = MarkdownIt("commonmark", {"html": True, "breaks": False}).enable("table")
@@ -462,7 +540,12 @@ def markdown_to_latex_body(markdown: str) -> str:
         elif kind == "html_block":
             output.append(_html_to_latex(token.content))
         index += 1
-    return _restore_fragments("\n".join(output), fragments)
+    rendered = _restore_fragments("\n".join(output), fragments)
+    for token, note_markdown in footnotes.items():
+        note_latex = markdown_to_latex_body(note_markdown).strip()
+        note_latex = re.sub(r"(?:\s*\\par\s*)+$", "", note_latex).strip()
+        rendered = rendered.replace(token, rf"\footnote{{{note_latex}}}")
+    return rendered
 
 
 def build_answer_tex(answer: str) -> str:

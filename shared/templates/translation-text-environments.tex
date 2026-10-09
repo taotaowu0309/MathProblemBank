@@ -1,0 +1,56 @@
+% Shared two-tier typography for every MathProblemBank translation PDF.
+% The document body keeps ctexbook's normal 10.5 pt size.  Quotations and
+% notes share one 10 pt secondary size so translated source text never falls
+% back to LaTeX's much smaller default footnote size.
+\RequirePackage{needspace}
+
+\newcommand{\MPBTranslationBodyTextSize}{\normalsize}
+
+\makeatletter
+\renewcommand{\footnotesize}{%
+  \@setfontsize\footnotesize{10pt}{13pt}%
+  \abovedisplayskip 8pt plus 2pt minus 4pt%
+  \abovedisplayshortskip \z@ plus 2pt%
+  \belowdisplayshortskip 4pt plus 2pt minus 2pt%
+  \def\@listi{%
+    \leftmargin\leftmargini
+    \topsep 4pt plus 2pt minus 2pt%
+    \parsep 2pt plus 1pt minus 1pt%
+    \itemsep \parsep
+  }%
+  \belowdisplayskip \abovedisplayskip
+}
+\makeatother
+
+\newcommand{\MPBTranslationSecondaryTextSize}{\footnotesize}
+
+% Generic size environments are available when imported material needs an
+% explicit scope.  Ordinary translated prose already uses the body size.
+\newenvironment{translationbody}{%
+  \MPBTranslationBodyTextSize
+}{}
+\newenvironment{translationsecondary}{%
+  \MPBTranslationSecondaryTextSize
+}{}
+
+\newenvironment{quotationblock}{%
+  \par\Needspace{7\baselineskip}%
+  \begin{quote}%
+  \MPBTranslationSecondaryTextSize
+  \setstretch{1.08}%
+  \setlength{\parindent}{2em}%
+  \setlength{\parskip}{0.3em}%
+}{%
+  \end{quote}%
+}
+\newcommand{\quoteattribution}[1]{%
+  \par\nopagebreak[4]\smallskip\nopagebreak[4]
+  \begin{flushright}\textup{#1}\end{flushright}%
+}
+
+\setlength{\skip\footins}{10pt plus 4pt minus 2pt}
+\renewcommand{\footnoterule}{%
+  \kern -3pt
+  \hrule width 0.35\textwidth height 0.45pt
+  \kern 2.55pt
+}

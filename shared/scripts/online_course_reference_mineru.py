@@ -226,6 +226,15 @@ def _stream_process(
         creationflags=creationflags,
         env=environment,
     )
+    command_summary = (
+        subprocess.list2cmdline(command)
+        if os.name == "nt"
+        else " ".join(command)
+    )
+    emit(
+        f"MinerU subprocess 已启动：pid={process.pid}；cwd={cwd}；"
+        f"command={command_summary}"
+    )
     recent: list[str] = []
     assert process.stdout is not None
     output_queue: queue.Queue[str | None] = queue.Queue()
@@ -269,6 +278,7 @@ def _stream_process(
                     # download progress line must never abort the parse job.
                     emit(message.encode("ascii", errors="replace").decode("ascii"))
         return_code = process.wait()
+        emit(f"MinerU subprocess 已退出：pid={process.pid}；return_code={return_code}")
     except BaseException:
         _terminate_process_tree(process)
         raise

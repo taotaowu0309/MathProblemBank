@@ -37,7 +37,7 @@
 
 1. 在“学习项目”页选中项目，点击“打开项目目录”。
 2. 打开项目目录中的 `project_pdf_meta.json`。
-3. 将 `cover_background` 改成图片路径：可以是绝对路径，也可以是程序目录内的相对路径；推荐使用正斜杠，例如 `X:/Pictures/my-cover.png`。
+3. 将 `cover_background` 改成图片路径：可以是绝对路径，也可以是程序目录内的相对路径；推荐使用正斜杠。示例使用项目内的 `figures/my-cover.png`。
 4. 将 `cover_file` 改为空字符串 `""`。如果项目目录中已有旧的 `figures/cover.*`，先把旧文件移走或改名。
 5. 保存 JSON，再执行“生成项目 PDF”。程序会把指定图片复制到项目的 `figures/cover.<ext>`，重新计算 PDF 主题色，并把实际使用的图片和主题写回元数据。
 
@@ -66,7 +66,7 @@
 推荐的自由编辑方式：
 
 - 把自定义宏、颜色、记号、TikZ 设置写入 `notation/local_overrides.tex`；它会被 `main.tex` 引入，并且项目重新生成时保留。
-- 把图片放入项目自己的 `figures/` 或 `pic/`，在 TeX 中使用项目内相对路径，例如 `\includegraphics{figures/my-figure.png}`。不要使用 `C:/...`、`D:/...` 或 `..` 路径。
+- 把图片放入项目自己的 `figures/` 或 `pic/`，在 TeX 中使用项目内相对路径，例如 `\includegraphics{figures/my-figure.png}`。不要使用绝对路径或 `..` 路径。
 - 需要改变基础 LaTeX 模板时，先备份项目目录，再编辑项目自己的 `preamble/packages.tex`、`preamble/commands.tex`、`preamble/geometry.tex` 等文件。它们在已经存在时不会被默认模板覆盖，但升级或重新建立项目时仍应自行检查差异。
 - `project_pdf_meta.json` 用于项目标题、封面和主题色；修改后重新生成 PDF 才会进入正式制品。
 

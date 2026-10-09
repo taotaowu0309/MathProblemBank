@@ -105,6 +105,14 @@ breaks with `\\`, `\newline`, or repeated `\noindent`. A numbered exercise set
 may use one top-level `enumerate`. Apply the exercise/solution rules from
 `GLOBAL_CHATGPT_WRITING_RULES.txt` exactly.
 
+Keep closing punctuation and closing delimiters attached to the preceding text
+or formula: Chinese and English punctuation, right brackets, and closing quotes
+may not begin a visual line; opening brackets and opening quotes may not be
+stranded at a visual line end. Long relation chains must be broken with
+`aligned`, `align`, or `split`, never by leaving `=`, comparisons, or arrows at
+the start of a new line. The post-compilation layout checker is authoritative;
+source-level repairs are allowed only when the source mapping is unambiguous.
+
 7. PAGE-BREAK-SAFE BODY LATEX
 
 The semantic environments are breakable `tcolorbox` environments. Do not emit

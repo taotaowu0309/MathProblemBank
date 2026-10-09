@@ -33,6 +33,7 @@ shared/exports/vocabulary/vocabulary_all_build/
 
 # Runtime UI, AI, OCR, and rendering caches
 shared/ui/cache/
+logs/
 
 # Timestamped safety snapshots are superseded by the tracked current/latest DBs
 **/backups/*_before_*.db

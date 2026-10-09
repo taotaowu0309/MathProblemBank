@@ -42,8 +42,9 @@ class ReliabilityPolicy:
     # requests no longer show a confirmation dialog; hard limits below remain
     # the actual spending guard.
     show_preflight: bool = False
-    single_request_limit: float = 0.50
-    daily_limit: float = 3.00
+    # Retained as compatibility fields; zero means no local API spending cap.
+    single_request_limit: float = 0.0
+    daily_limit: float = 0.0
     currency: str = "CNY"
     auto_notify: bool = True
 
@@ -62,6 +63,10 @@ class ReliabilityPolicyStore:
         # user confirmation.  Keep the persisted field only for compatibility
         # with older policy files; a stored false value must never bypass it.
         self.policy.confirm_mutations = True
+        # API quotas are controlled by the provider/account.  Ignore legacy
+        # local spending caps so every registered API operation can run.
+        self.policy.single_request_limit = 0.0
+        self.policy.daily_limit = 0.0
 
     def save(self) -> None:
         if self.policy.single_request_limit < 0 or self.policy.daily_limit < 0:

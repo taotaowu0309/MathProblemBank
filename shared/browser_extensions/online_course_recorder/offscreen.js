@@ -225,17 +225,20 @@ async function startRecorder() {
     if (silenceState.limitReached && capture === current) {
       current.running = false;
       clearTimeout(current.analysisTimer);
-      chrome.runtime.sendMessage({
-        type: "capture-audio-silence",
-        payload: {
-          sequence,
-          current_time: Math.max(startTime, endTime),
-          audio_peak: Number(current.chunkAudioPeak || 0),
-          consecutive_silent_video_seconds: Number(silenceState.silentVideoSeconds || 0),
-          silence_limit_video_seconds: CONTINUOUS_SILENCE_STOP_VIDEO_SECONDS,
-          message: "No valid captured tab audio was detected for 15 continuous minutes of source-video time (15 minutes at 1x).",
-        },
-      }).catch(console.error);
+      try {
+        const pending = chrome.runtime.sendMessage({
+          type: "capture-audio-silence",
+          payload: {
+            sequence,
+            current_time: Math.max(startTime, endTime),
+            audio_peak: Number(current.chunkAudioPeak || 0),
+            consecutive_silent_video_seconds: Number(silenceState.silentVideoSeconds || 0),
+            silence_limit_video_seconds: CONTINUOUS_SILENCE_STOP_VIDEO_SECONDS,
+            message: "No valid captured tab audio was detected for 15 continuous minutes of source-video time (15 minutes at 1x).",
+          },
+        });
+        pending?.catch?.(() => {});
+      } catch (_error) {}
     }
     if (capture === current && current?.running) startRecorder().catch(console.error);
   };

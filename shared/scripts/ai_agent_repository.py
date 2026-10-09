@@ -13,8 +13,6 @@ from pathlib import Path
 from typing import Any, Callable, Iterable
 
 from shared.scripts.application_paths import APP_PATHS
-from shared.scripts.ai_agent_compute import LocalComputeManager
-from shared.scripts.ai_agent_lean import LeanCheckManager
 from shared.scripts.ai_agent_operation_registry import (
     AI_OPERATION_REGISTRY,
     DERIVED_WRITE,
@@ -23,18 +21,16 @@ from shared.scripts.ai_agent_operation_registry import (
     OperationSpec,
 )
 from shared.scripts.ai_agent_reference_materials import AiReferenceMaterialRegistry
-from shared.scripts.ai_agent_papers import AcademicPaperAccessor
 from shared.scripts.ai_agent_resources import ReadOnlyResourceAccessor
 from shared.scripts.ai_agent_semantic_index import SemanticIndex
 from shared.scripts.ai_agent_reliability import OperationJournal
-from shared.scripts.ai_agent_tex_editor import ProjectTexEditor
-from shared.scripts.ai_agent_visual_validation import validate_math_figure, validate_pdf_near_text
-from shared.scripts.ai_agent_workspace import DEFAULT_MATH_WORKSPACE, DEFAULT_PHYSICS_WORKSPACE, MathWorkspaceEditor
-from shared.scripts.ai_agent_workspace_tools import WorkspaceToolManager
-from shared.scripts.online_course_service import COURSE_STORAGE_ROOT, OnlineCourseService
 from shared.scripts.study_project_service import DEFAULT_SUBJECTS, SUBJECTS_PATH, subject_to_runtime
 from shared.scripts.vocabulary_manager import VocabularyManager, workspace_vocabulary_paths
-from shared.scripts.english_learning_service import EnglishLearningService
+from shared.scripts.english_learning_service import (
+    DEFAULT_RAYDU_SERIES_ROOT,
+    EnglishLearningService,
+)
+from shared.scripts.english_dictionary_service import EnglishDictionaryService
 
 
 ROOT_DIR = APP_PATHS.application_root
@@ -3264,6 +3260,48 @@ for _operation_spec in (
         category="english_learning",
     ),
     OperationSpec(
+        operation_id="english.materials.raydu_initial_catalog.register",
+        tool_name="register_raydu_initial_english_materials",
+        description="登记本机 Ray Du 三本书的外部只读 PDF 原件，不复制或修改原工程，并回读文字层状态。",
+        parameters={"type": "object", "properties": {
+            "series_root": {"type": "string"}, "audio_root": {"type": ["string", "null"]},
+        }, "additionalProperties": False},
+        handler_name="_tool_register_raydu_initial_english_materials", access_level=FORMAL_WRITE,
+        category="english_learning", evidence_policy="database_backup_external_path_hash_text_layer_and_readback",
+    ),
+    OperationSpec(
+        operation_id="english.question_bank.raydu_grammar.import",
+        tool_name="import_raydu_grammar_question_bank",
+        description="维护教材《文法解题》的独立练习索引；这些教材练习不进入英语真题题库。",
+        parameters={"type": "object", "properties": {
+            "series_root": {"type": "string"},
+        }, "additionalProperties": False},
+        handler_name="_tool_import_raydu_grammar_question_bank", access_level=FORMAL_WRITE,
+        category="english_learning", evidence_policy="database_backup_atomic_question_upsert_and_readback",
+    ),
+    OperationSpec(
+        operation_id="english.question_bank.search",
+        tool_name="search_english_question_bank",
+        description="按文法、阅读或写作分类检索英语真题题库；只读取独立真题表，不读取教材《文法解题》练习。",
+        parameters={"type": "object", "properties": {
+            "category": {"type": "string", "enum": ["grammar", "reading", "writing"]},
+            "keyword": {"type": "string"},
+            "limit": {"type": "integer", "minimum": 1, "maximum": 500},
+        }, "required": ["category"], "additionalProperties": False},
+        handler_name="_tool_search_english_question_bank",
+        category="english_learning",
+    ),
+    OperationSpec(
+        operation_id="english.vocabulary.raydu.import",
+        tool_name="import_raydu_vocabulary",
+        description="通过统一词汇管理器导入旋元佑英文字彙的结构化词条，合并重复词头并回读词汇库。",
+        parameters={"type": "object", "properties": {
+            "series_root": {"type": "string"},
+        }, "additionalProperties": False},
+        handler_name="_tool_import_raydu_vocabulary", access_level=FORMAL_WRITE,
+        category="english_learning", evidence_policy="vocabulary_manager_backup_transaction_and_readback",
+    ),
+    OperationSpec(
         operation_id="english.search",
         tool_name="search_english_learning",
         description="统一检索英语材料、Usage、句型 encounter 与稍后查标记，并返回可回跳的材料页码。",
@@ -3277,7 +3315,7 @@ for _operation_spec in (
     OperationSpec(
         operation_id="english.material.import",
         tool_name="import_english_material",
-        description="把 PDF/TXT/Markdown/HTML/DOCX/TeX 导入英语资料库；非 PDF 生成真实文字层阅读 PDF，写前备份并写后回读。",
+        description="把 PDF/EPUB/TXT/Markdown/HTML/DOCX/TeX 导入英语资料库；非 PDF 生成真实文字层阅读 PDF，写前备份并写后回读。",
         parameters={"type": "object", "properties": {
             "source_path": {"type": "string", "minLength": 1},
             "title": {"type": "string"}, "role": {"type": "string"},
@@ -3286,6 +3324,43 @@ for _operation_spec in (
         }, "required": ["source_path"], "additionalProperties": False},
         handler_name="_tool_import_english_material", access_level=FORMAL_WRITE,
         category="english_learning", evidence_policy="backup_copy_hash_text_layer_and_database_readback",
+    ),
+    OperationSpec(
+        operation_id="english.material.download_import",
+        tool_name="download_and_import_english_material",
+        description="从用户提供的公开文件直链下载 PDF/EPUB/TXT/Markdown/HTML/DOCX/TeX 到本地英语资料库，并生成可选词阅读副本；网页页面地址不会被当作正文导入。",
+        parameters={"type": "object", "properties": {
+            "download_url": {"type": "string", "minLength": 1},
+            "fallback_urls": {"type": "array", "items": {"type": "string"}, "maxItems": 3},
+            "title": {"type": "string", "minLength": 1},
+            "author": {"type": "string"}, "source_url": {"type": "string"},
+            "role": {"type": "string", "default": "extensive_reading"},
+            "material_type": {"type": "string", "default": "document"},
+            "enforce_long_reading": {"type": "boolean", "default": True},
+        }, "required": ["download_url", "title"], "additionalProperties": False},
+        handler_name="_tool_download_and_import_english_material", access_level=FORMAL_WRITE,
+        category="english_learning", evidence_policy="download_hash_backup_text_layer_and_database_readback",
+    ),
+    OperationSpec(
+        operation_id="english.material.placement_sample.ensure_local",
+        tool_name="ensure_local_english_placement_material",
+        description="把项目内置的英语广读定位文章登记到统一本地阅读器；样本已随项目保存，不访问外部下载地址，并回读材料与文字层状态。",
+        parameters={"type": "object", "properties": {
+            "passage_key": {"type": "string", "minLength": 1},
+        }, "required": ["passage_key"], "additionalProperties": False},
+        handler_name="_tool_ensure_local_english_placement_material", access_level=FORMAL_WRITE,
+        category="english_learning", evidence_policy="local_sample_hash_backup_text_layer_and_database_readback",
+    ),
+    OperationSpec(
+        operation_id="english.dictionary.lookup_local",
+        tool_name="lookup_local_english_dictionary",
+        description="查询项目内已下载并建立索引的 Open English WordNet 与 Etymological Wordnet，不访问网络。",
+        parameters={"type": "object", "properties": {
+            "term": {"type": "string", "minLength": 1},
+            "limit": {"type": "integer", "minimum": 1, "maximum": 20},
+        }, "required": ["term"], "additionalProperties": False},
+        handler_name="_tool_lookup_local_english_dictionary",
+        category="english_learning", evidence_policy="local_dictionary_index_readback",
     ),
     OperationSpec(
         operation_id="english.material.bind",
@@ -3392,7 +3467,7 @@ for _operation_spec in (
     OperationSpec(
         operation_id="english.chapter.progress.update",
         tool_name="update_english_chapter_progress",
-        description="更新旋元佑五书某章的学习状态和难点笔记，保留备份并写后回读。",
+        description="更新旋元佑七书某章的学习状态和难点笔记，保留备份并写后回读。",
         parameters={"type": "object", "properties": {
             "chapter_id": {"type": "integer", "minimum": 1},
             "progress_status": {"type": "string", "enum": ["not_started", "reading", "practising", "reviewing", "completed"]},
@@ -3435,6 +3510,28 @@ for _operation_spec in (
         category="english_learning", evidence_policy="backup_transaction_training_readback",
     ),
     OperationSpec(
+        operation_id="english.reading.profile.save",
+        tool_name="save_english_reading_profile",
+        description="保存广读长文自测的主题、阅读状态和主观感受，并生成可交给其他 AI 的 Markdown 学习画像。",
+        parameters={"type": "object", "properties": {
+            "selected_topics": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+            "reflections": {"type": "array", "items": {
+                "type": "object",
+                "properties": {
+                    "article_key": {"type": "string", "minLength": 1},
+                    "understanding": {"type": "string", "enum": ["clear", "gist", "hard"]},
+                    "fluency": {"type": "string", "enum": ["smooth", "pauses", "backtrack"]},
+                    "interest": {"type": "string", "enum": ["like", "okay", "dislike"]},
+                    "reflection": {"type": "string"},
+                },
+                "required": ["article_key", "understanding", "fluency", "interest"],
+                "additionalProperties": False,
+            }, "minItems": 1},
+        }, "required": ["selected_topics", "reflections"], "additionalProperties": False},
+        handler_name="_tool_save_english_reading_profile", access_level=FORMAL_WRITE,
+        category="english_learning", evidence_policy="report_file_and_database_backup_transaction_readback",
+    ),
+    OperationSpec(
         operation_id="english.reading.deferred.list",
         tool_name="list_english_deferred_lookups",
         description="列出广读中尚未处理或已处理的稍后查文本及其材料、上下文和页码。",
@@ -3457,10 +3554,378 @@ for _operation_spec in (
 ):
     AI_OPERATION_REGISTRY.register(_operation_spec)
 
+for _operation_spec in (
+    OperationSpec(
+        operation_id="translation.project.list",
+        tool_name="list_translation_projects",
+        description="列出数学译本项目及其锁定的 MathTranslations Skill revision、原书、MinerU 与目录状态。",
+        parameters={"type": "object", "properties": {}, "additionalProperties": False},
+        handler_name="_tool_list_translation_projects",
+        category="translation_projects",
+        evidence_policy="project_manifest_readback",
+    ),
+    OperationSpec(
+        operation_id="translation.project.outline.read",
+        tool_name="get_translation_project_outline",
+        description="读取一个数学译本的章、节、小节目录和 MinerU、Agent、图片、材料包、LaTeX 状态。",
+        parameters={
+            "type": "object",
+            "properties": {
+                "project_code": {"type": "string", "pattern": "^TR-C[0-9]{4}$"},
+                "granularity": {"type": "string", "enum": ["section", "subsection"]},
+            },
+            "required": ["project_code"],
+            "additionalProperties": False,
+        },
+        handler_name="_tool_get_translation_project_outline",
+        category="translation_projects",
+        evidence_policy="project_manifest_and_artifact_readback",
+    ),
+    OperationSpec(
+        operation_id="translation.project.create",
+        tool_name="create_translation_project",
+        description=(
+            "从明确指定的原书 PDF 创建正式数学译本项目，复制原书、锁定当前 MathTranslations Skill revision，"
+            "并写后回读项目清单。需要逐次授权。"
+        ),
+        parameters={
+            "type": "object",
+            "properties": {
+                "title": {"type": "string", "minLength": 1},
+                "author": {"type": "string"},
+                "source_pdf": {"type": "string", "minLength": 1},
+            },
+            "required": ["title", "source_pdf"],
+            "additionalProperties": False,
+        },
+        handler_name="_tool_create_translation_project",
+        access_level=FORMAL_WRITE,
+        category="translation_projects",
+        evidence_policy="source_copy_hash_skill_revision_lock_and_manifest_readback",
+    ),
+    OperationSpec(
+        operation_id="translation.figures.benchmark.read",
+        tool_name="get_translation_figure_benchmark_report",
+        description=(
+            "读取译本图片 benchmark 的标注进度，并按页计算 MinerU 与可选 DocLayout 的"
+            "召回、误检、截断、caption 混入、公式误判和小图识别指标；不运行或安装模型。"
+        ),
+        parameters={
+            "type": "object",
+            "properties": {
+                "project_code": {"type": "string", "pattern": "^TR-C[0-9]{4}$"},
+            },
+            "required": ["project_code"],
+            "additionalProperties": False,
+        },
+        handler_name="_tool_get_translation_figure_benchmark_report",
+        category="translation_projects",
+        evidence_policy="benchmark_manifest_ground_truth_and_detector_box_readback",
+    ),
+    OperationSpec(
+        operation_id="translation.mineru.run",
+        tool_name="run_translation_mineru",
+        description=(
+            "对译本工程内已保存的原书一键运行题库内置 MinerU；按 32 页保存可恢复检查点，"
+            "随后自动生成章级原书 PDF、节级原文 Markdown、公式、高清截图和完整日志。需要逐次授权。"
+        ),
+        parameters={
+            "type": "object",
+            "properties": {
+                "project_code": {"type": "string", "pattern": "^TR-C[0-9]{4}$"},
+                "dpi": {"type": "integer", "minimum": 144, "maximum": 600},
+            },
+            "required": ["project_code"],
+            "additionalProperties": False,
+        },
+        handler_name="_tool_run_translation_mineru",
+        access_level=FORMAL_WRITE,
+        category="translation_projects",
+        evidence_policy="source_hash_runtime_version_checkpoint_coverage_chapter_section_figure_readback",
+    ),
+    OperationSpec(
+        operation_id="translation.mineru.import",
+        tool_name="import_translation_mineru_output",
+        description=(
+            "把一个明确译本项目的 MinerU Markdown/content_list/middle.json 导入正式项目；"
+            "按章生成原书 PDF，并优先用 middle.json image_body bbox 从原书生成高清截图。需要逐次授权。"
+        ),
+        parameters={
+            "type": "object",
+            "properties": {
+                "project_code": {"type": "string", "pattern": "^TR-C[0-9]{4}$"},
+                "mineru_directory": {"type": "string", "minLength": 1},
+                "dpi": {"type": "integer", "minimum": 144, "maximum": 600},
+            },
+            "required": ["project_code", "mineru_directory"],
+            "additionalProperties": False,
+        },
+        handler_name="_tool_import_translation_mineru_output",
+        access_level=FORMAL_WRITE,
+        category="translation_projects",
+        evidence_policy="copied_mineru_hash_chapter_pdf_and_figure_manifest_readback",
+    ),
+    OperationSpec(
+        operation_id="translation.second_layer.prompt",
+        tool_name="prepare_translation_second_layer_prompt",
+        description=(
+            "为一个完整 section 构造第二层 MinerU 校正请求：加载锁定的 MathTranslations upstream Skill 与"
+            "高优先级 source-repair adapter，返回稳定缓存前缀、节级任务和精确章 PDF/图片附件路径；不调用模型。"
+        ),
+        parameters={
+            "type": "object",
+            "properties": {
+                "project_code": {"type": "string", "pattern": "^TR-C[0-9]{4}$"},
+                "section_id": {"type": "string", "minLength": 1},
+            },
+            "required": ["project_code", "section_id"],
+            "additionalProperties": False,
+        },
+        handler_name="_tool_prepare_translation_second_layer_prompt",
+        category="translation_projects",
+        evidence_policy="locked_skill_hash_section_source_and_attachment_readback",
+    ),
+    OperationSpec(
+        operation_id="translation.second_layer.run",
+        tool_name="run_translation_second_layer_agent",
+        description=(
+            "使用当前 AI API 配置对一个完整 section 运行一次轻量 MinerU source-repair Agent；"
+            "发送最多四页原书视觉证据和程序裁图，自动备份并保存 corrected.md/report.md。需要逐次授权。"
+        ),
+        parameters={
+            "type": "object",
+            "properties": {
+                "project_code": {"type": "string", "pattern": "^TR-C[0-9]{4}$"},
+                "section_id": {"type": "string", "minLength": 1},
+            },
+            "required": ["project_code", "section_id"],
+            "additionalProperties": False,
+        },
+        handler_name="_tool_run_translation_second_layer_agent",
+        access_level=FORMAL_WRITE,
+        category="translation_projects",
+        evidence_policy="api_usage_locked_skill_visual_evidence_backup_and_corrected_report_readback",
+    ),
+    OperationSpec(
+        operation_id="translation.front_matter.translate",
+        tool_name="translate_translation_front_matter",
+        description=(
+            "使用 deepseek-flash / medium 一次性翻译并锁定译本完整中英目录，随后在第二阶段"
+            "直接翻译前言、序言、致谢、后记和 Notes and References 等低数学密度非正文；"
+            "目录、参考文献表、符号表与索引由程序生成，不进入逐节 ChatGPT 材料包队列。"
+            "生成的项目常驻目录会自动写入以后每一个正文材料包。需要逐次授权。"
+        ),
+        parameters={
+            "type": "object",
+            "properties": {
+                "project_code": {"type": "string", "pattern": "^TR-C[0-9]{4}$"},
+            },
+            "required": ["project_code"],
+            "additionalProperties": False,
+        },
+        handler_name="_tool_translate_translation_front_matter",
+        access_level=FORMAL_WRITE,
+        category="translation_projects",
+        evidence_policy=(
+            "sol_medium_api_usage_complete_catalog_id_validation_locked_prompt_hash_"
+            "front_matter_corrected_markdown_and_manifest_readback"
+        ),
+    ),
+    OperationSpec(
+        operation_id="translation.second_layer.result.save",
+        tool_name="save_translation_second_layer_result",
+        description=(
+            "保存一次节级校正 Agent 的完整 corrected English Markdown、简短 report，"
+            "以及由 Agent 编写的英文 ASCII 定义/引用标签目录；覆盖前保留备份，写后回读，"
+            "不生成 patch/verifier/judge。需要逐次授权。"
+        ),
+        parameters={
+            "type": "object",
+            "properties": {
+                "project_code": {"type": "string", "pattern": "^TR-C[0-9]{4}$"},
+                "section_id": {"type": "string", "minLength": 1},
+                "corrected_markdown": {"type": "string", "minLength": 1, "maxLength": 2000000},
+                "report_markdown": {"type": "string", "maxLength": 200000},
+                "reference_catalog": {
+                    "type": "object",
+                    "properties": {
+                        "definitions": {"type": "array", "items": {"type": "object"}},
+                        "references": {"type": "array", "items": {"type": "object"}},
+                    },
+                    "required": ["definitions", "references"],
+                    "additionalProperties": True,
+                },
+            },
+            "required": [
+                "project_code",
+                "section_id",
+                "corrected_markdown",
+                "reference_catalog",
+            ],
+            "additionalProperties": False,
+        },
+        handler_name="_tool_save_translation_second_layer_result",
+        access_level=FORMAL_WRITE,
+        category="translation_projects",
+        evidence_policy="backup_atomic_write_and_corrected_report_agent_labels_readback",
+    ),
+    OperationSpec(
+        operation_id="translation.materials.prepare",
+        tool_name="prepare_translation_material_package",
+        description=(
+            "生成节或小节 ChatGPT 材料包；若完整 section 的第二层 Agent 产物缺失或过期，"
+            "本操作会先自动运行一次 Agent，由其检查并写入全部英文 ASCII 标签，再继续打包。"
+            "同一 section 的已验证产物会复用，且压缩包始终携带完整章 PDF。需要逐次授权。"
+        ),
+        parameters={
+            "type": "object",
+            "properties": {
+                "project_code": {"type": "string", "pattern": "^TR-C[0-9]{4}$"},
+                "target_id": {"type": "string", "minLength": 1},
+            },
+            "required": ["project_code", "target_id"],
+            "additionalProperties": False,
+        },
+        handler_name="_tool_prepare_translation_material_package",
+        access_level=FORMAL_WRITE,
+        category="translation_projects",
+        evidence_policy=(
+            "conditional_api_usage_backup_atomic_corrected_report_agent_labels_readback_"
+            "zip_required_members_chapter_pdf_and_target_readback"
+        ),
+    ),
+    OperationSpec(
+        operation_id="translation.latex.import",
+        tool_name="import_translation_latex",
+        description=(
+            "把 ChatGPT 返回的正文 LaTeX 导入精确节或小节目标；小节使用独立可寻址文件，"
+            "不得覆盖兄弟小节，覆盖旧目标前备份并写后回读；每次导入后从头编译全部"
+            "已导入最小单位并原子替换正式译本 PDF。需要逐次授权。"
+        ),
+        parameters={
+            "type": "object",
+            "properties": {
+                "project_code": {"type": "string", "pattern": "^TR-C[0-9]{4}$"},
+                "target_id": {"type": "string", "minLength": 1},
+                "latex_source": {"type": "string", "minLength": 1, "maxLength": 2000000},
+            },
+            "required": ["project_code", "target_id", "latex_source"],
+            "additionalProperties": False,
+        },
+        handler_name="_tool_import_translation_latex",
+        access_level=FORMAL_WRITE,
+        category="translation_projects",
+        evidence_policy="target_backup_source_readback_full_rebuild_pdf_log_synctex_and_pdf_readback",
+    ),
+    OperationSpec(
+        operation_id="translation.latex.refinement.list",
+        tool_name="get_translation_tex_refinement_units",
+        description=(
+            "读取数学译本已导入 TeX 的实际最小精度；若节级文件包含 subsection，"
+            "只返回可独立精修的小节源码范围。"
+        ),
+        parameters={
+            "type": "object",
+            "properties": {
+                "project_code": {"type": "string", "pattern": "^TR-C[0-9]{4}$"},
+            },
+            "required": ["project_code"],
+            "additionalProperties": False,
+        },
+        handler_name="_tool_get_translation_tex_refinement_units",
+        category="translation_projects",
+        evidence_policy="formal_tex_sectioning_and_source_range_readback",
+    ),
+    OperationSpec(
+        operation_id="translation.latex.refinement.save",
+        tool_name="save_translation_tex_refinement",
+        description=(
+            "只替换一个实际最小 TeX 单位的源码范围，保留同文件其他节/小节；"
+            "保存前备份完整源文件并写后回读。需要逐次授权。"
+        ),
+        parameters={
+            "type": "object",
+            "properties": {
+                "project_code": {"type": "string", "pattern": "^TR-C[0-9]{4}$"},
+                "refinement_id": {"type": "string", "minLength": 1},
+                "latex_source": {"type": "string", "minLength": 1, "maxLength": 2000000},
+            },
+            "required": ["project_code", "refinement_id", "latex_source"],
+            "additionalProperties": False,
+        },
+        handler_name="_tool_save_translation_tex_refinement",
+        access_level=FORMAL_WRITE,
+        category="translation_projects",
+        evidence_policy="full_file_backup_scoped_slice_replace_and_readback",
+    ),
+    OperationSpec(
+        operation_id="translation.latex.refinement.preview",
+        tool_name="compile_translation_tex_refinement_preview",
+        description="在隔离目录编译一个实际最小 TeX 单位的 PDF 预览，保留日志与 SyncTeX。",
+        parameters={
+            "type": "object",
+            "properties": {
+                "project_code": {"type": "string", "pattern": "^TR-C[0-9]{4}$"},
+                "refinement_id": {"type": "string", "minLength": 1},
+                "latex_source": {"type": "string", "minLength": 1, "maxLength": 2000000},
+            },
+            "required": ["project_code", "refinement_id", "latex_source"],
+            "additionalProperties": False,
+        },
+        handler_name="_tool_compile_translation_tex_refinement_preview",
+        access_level=DERIVED_WRITE,
+        category="translation_projects",
+        evidence_policy="isolated_latexmk_pdf_log_synctex_and_source_readback",
+    ),
+    OperationSpec(
+        operation_id="translation.pdf.location.read",
+        tool_name="locate_translation_formal_pdf",
+        description="在 ChatGPT 正式 LaTeX 编译的译本 PDF 中定位一个已登记节或小节；不退回原书。",
+        parameters={
+            "type": "object",
+            "properties": {
+                "project_code": {"type": "string", "pattern": "^TR-C[0-9]{4}$"},
+                "target_id": {"type": "string", "minLength": 1},
+            },
+            "required": ["project_code", "target_id"],
+            "additionalProperties": False,
+        },
+        handler_name="_tool_locate_translation_formal_pdf",
+        category="translation_projects",
+        evidence_policy="formal_pdf_outline_or_text_layer_location",
+    ),
+):
+    AI_OPERATION_REGISTRY.register(_operation_spec)
+
+
+
+AI_OPERATION_REGISTRY.register(OperationSpec(
+    operation_id="problem.import_and_build",
+    tool_name="import_problems_and_build_pdf",
+    description="批量导入标准题、加入指定题集并生成正式 PDF；失败自动撤销本批题及生成文件。写入前需逐次授权并保留备份。",
+    parameters={"type": "object", "properties": {
+        "subject_name": {"type": "string"}, "collection_id": {"type": "integer"},
+        "text": {"type": "string"},
+    }, "required": ["subject_name", "collection_id", "text"], "additionalProperties": False},
+    handler_name="_tool_import_problems_and_build_pdf", access_level=FORMAL_WRITE,
+    category="problem_import", evidence_policy="backup_transaction_integrity_readback",
+))
+
+
 TOOL_DEFINITIONS: list[dict[str, Any]] = AI_OPERATION_REGISTRY.definitions()
 
 
 class AiAgentToolExecutor:
+    def _tool_import_problems_and_build_pdf(self, arguments: dict[str, Any]) -> dict[str, Any]:
+        from shared.scripts.problem_bank_center_qt import DashboardService
+        service = getattr(self, "_dashboard_service", None)
+        if service is None:
+            service = DashboardService(self.repository.subject_configs())
+        return service.import_direct_templates_and_build_pdf(
+            str(arguments["subject_name"]), int(arguments["collection_id"]),
+            str(arguments["text"]), self._progress_callback,
+        )
+
     def __init__(self, repository: GlobalProblemRepository, discipline: str = "math") -> None:
         self.repository = repository
         requested_discipline = str(discipline).casefold()
@@ -3471,6 +3936,8 @@ class AiAgentToolExecutor:
         # directly readable even when an indexed filename search misses them.
         self.resources = ReadOnlyResourceAccessor()
         if self.discipline == "physics":
+            from shared.scripts.ai_agent_workspace import DEFAULT_PHYSICS_WORKSPACE
+
             cache_dir = self.repository.root_dir / "shared" / "ui" / "cache"
             self.semantic_index = SemanticIndex(
                 repository,
@@ -3481,22 +3948,56 @@ class AiAgentToolExecutor:
             )
         else:
             self.semantic_index = SemanticIndex(repository)
-        self.tex_editor = ProjectTexEditor(repository)
-        self.workspace_editor = MathWorkspaceEditor(
-            default_workspace=DEFAULT_PHYSICS_WORKSPACE if self.discipline == "physics" else DEFAULT_MATH_WORKSPACE,
-            allow_lean=self.discipline == "math",
-        )
-        self.workspace_tools = WorkspaceToolManager(self.repository.root_dir)
-        self.compute_manager = LocalComputeManager()
-        self.lean_manager = LeanCheckManager() if self.discipline == "math" else None
-        self.paper_accessor = AcademicPaperAccessor()
+        # SymPy and the Lean bridge are only needed by math calculations.  The
+        # English assistant must be able to open without importing either
+        # heavyweight dependency on the GUI thread.
+        self.compute_manager = None
+        self.lean_manager = None
+        if self.discipline in {"math", "physics"}:
+            from shared.scripts.ai_agent_compute import LocalComputeManager
+
+            self.compute_manager = LocalComputeManager()
+        if self.discipline == "math":
+            from shared.scripts.ai_agent_lean import LeanCheckManager
+
+            self.lean_manager = LeanCheckManager()
+        self.paper_accessor = None
         self.vocabulary_manager = VocabularyManager(
             workspace=self.discipline,
             root_dir=self.repository.user_data_root,
         )
         self.reference_materials = AiReferenceMaterialRegistry()
-        self.online_courses = OnlineCourseService()
+        self.online_courses = None
+        self.translation_projects = None
+        if self.discipline != "english":
+            from shared.scripts.ai_agent_papers import AcademicPaperAccessor
+            from shared.scripts.online_course_service import OnlineCourseService
+            from shared.scripts.translation_project_service import TranslationProjectService
+
+            self.paper_accessor = AcademicPaperAccessor()
+            self.online_courses = OnlineCourseService()
+            self.translation_projects = TranslationProjectService()
+        if self.discipline == "english":
+            self.tex_editor = None
+            self.workspace_editor = None
+            self.workspace_tools = None
+        else:
+            from shared.scripts.ai_agent_tex_editor import ProjectTexEditor
+            from shared.scripts.ai_agent_workspace import (
+                DEFAULT_MATH_WORKSPACE,
+                DEFAULT_PHYSICS_WORKSPACE,
+                MathWorkspaceEditor,
+            )
+            from shared.scripts.ai_agent_workspace_tools import WorkspaceToolManager
+
+            self.tex_editor = ProjectTexEditor(repository)
+            self.workspace_editor = MathWorkspaceEditor(
+                default_workspace=DEFAULT_PHYSICS_WORKSPACE if self.discipline == "physics" else DEFAULT_MATH_WORKSPACE,
+                allow_lean=self.discipline == "math",
+            )
+            self.workspace_tools = WorkspaceToolManager(self.repository.root_dir)
         self._english_learning_service: EnglishLearningService | None = None
+        self._english_dictionary_service: EnglishDictionaryService | None = None
         self._scope_subject = ""
         self._scope_project = ""
         self._scope_problem_ids: set[int] | None = None
@@ -3515,7 +4016,8 @@ class AiAgentToolExecutor:
         self._progress_callback = callback
 
     def cancel_current_compute(self) -> None:
-        self.compute_manager.cancel_current()
+        if self.compute_manager is not None:
+            self.compute_manager.cancel_current()
         if self.lean_manager is not None:
             self.lean_manager.cancel_current()
 
@@ -3547,7 +4049,12 @@ class AiAgentToolExecutor:
             "diff": "",
             "arguments": dict(arguments),
         }
-        if name in {"edit_project_tex", "insert_tikz_figure"}:
+        if name == "import_problems_and_build_pdf":
+            preview["title"] = "确认批量导入题目并编译 PDF"
+            preview["targets"] = [f"{arguments.get('subject_name')} / 题集 ID {arguments.get('collection_id')}"]
+            preview["diff"] = str(arguments.get("text") or "")
+            preview["rollback"] = "编译失败时撤销本批题目和题集关联，并恢复原项目文件。"
+        elif name in {"edit_project_tex", "insert_tikz_figure"}:
             project_dir, _project, target = self.tex_editor._target(
                 str(arguments.get("subject_name") or ""),
                 str(arguments.get("project_ref") or ""),
@@ -3745,6 +4252,8 @@ class AiAgentToolExecutor:
             "merge_online_course_same_subsections",
             "edit_online_course_subsection_latex",
         }:
+            from shared.scripts.online_course_service import COURSE_STORAGE_ROOT
+
             preview["title"] = {
                 "create_online_course": "确认创建网课",
                 "import_online_course_episode_latex": "确认导入 ChatGPT 分集 LaTeX",
@@ -3773,6 +4282,68 @@ class AiAgentToolExecutor:
                     "先单独编译当前小节预览，再备份并原子保存人工覆盖稿，随后从头重建整门课程并替换正式 PDF。"
                 ),
             }[name]
+        elif name in {
+            "create_translation_project",
+            "run_translation_mineru",
+            "import_translation_mineru_output",
+            "run_translation_second_layer_agent",
+            "translate_translation_front_matter",
+            "save_translation_second_layer_result",
+            "import_translation_latex",
+            "save_translation_tex_refinement",
+        }:
+            preview["title"] = {
+                "create_translation_project": "确认创建数学译本项目",
+                "run_translation_mineru": "确认运行译本第一层 MinerU",
+                "import_translation_mineru_output": "确认导入译本 MinerU 产物",
+                "run_translation_second_layer_agent": "确认运行译本第二层 Agent",
+                "translate_translation_front_matter": "确认翻译译本低数学密度非正文并锁定目录",
+                "save_translation_second_layer_result": "确认保存译本第二层校正版",
+                "import_translation_latex": "确认导入译本目标 LaTeX",
+                "save_translation_tex_refinement": "确认保存译本实际最小单位 TeX 精修稿",
+            }[name]
+            preview["targets"] = [
+                str(self.translation_projects.root),
+                str(arguments.get("project_code") or arguments.get("source_pdf") or ""),
+            ]
+            preview["diff"] = {
+                "create_translation_project": "复制明确指定的原书 PDF，创建独立译本目录并锁定当前 Skill revision。",
+                "run_translation_mineru": (
+                    f"对译本 {arguments.get('project_code') or ''} 的工程原书运行内置 MinerU；"
+                    "复用完整检查点，重建第一层章 PDF、节级原文 Markdown、公式和高清截图。"
+                ),
+                "import_translation_mineru_output": "复制 MinerU Markdown/JSON，生成章级 PDF、节级 Markdown 与原书高清裁图。",
+                "run_translation_second_layer_agent": (
+                    f"使用当前 API 配置处理 section {arguments.get('section_id') or ''}；"
+                    "产生模型额度消耗，已有 corrected.md/report.md 会先备份，模型输出通过 JSON 合同后才写入。"
+                ),
+                "translate_translation_front_matter": (
+                    f"使用 deepseek-flash / medium 为译本 {arguments.get('project_code') or ''} "
+                    "锁定完整中文目录，并直接翻译前言、序言、致谢、后记等低数学密度非正文；"
+                    "目录、参考文献表、符号表与索引由程序生成。会产生模型额度消耗，"
+                    "已有校正版先备份，后续每个正文材料包自动携带该目录。"
+                ),
+                "save_translation_second_layer_result": (
+                    f"保存 section {arguments.get('section_id') or ''} 的完整 corrected.md 与 report.md；已有文件先备份。"
+                ),
+                "import_translation_latex": (
+                    f"只写入目标 {arguments.get('target_id') or ''} 的正文 TeX；已有目标先备份，"
+                    "不覆盖兄弟小节；随后从头编译截至当前的全部已导入译本 TeX，"
+                    "仅在新 PDF 回读成功后原子替换正式译本。"
+                ),
+                "save_translation_tex_refinement": (
+                    f"只替换实际最小 TeX 单位 {arguments.get('refinement_id') or ''} 的源码范围；"
+                    "完整源文件先备份，不覆盖同文件其他节/小节。"
+                ),
+            }[name]
+            preview["arguments"] = {
+                key: (
+                    f"<{len(str(value))} characters>"
+                    if key in {"corrected_markdown", "report_markdown", "latex_source"}
+                    else value
+                )
+                for key, value in arguments.items()
+            }
         elif name == "delete_online_course_recording_segment":
             deletion = self.online_courses.recording_segment_delete_preview(
                 str(arguments.get("session_id") or ""),
@@ -3804,7 +4375,8 @@ class AiAgentToolExecutor:
         write_authorized: bool = False,
     ) -> None:
         self.resources.begin_turn(user_text)
-        self.paper_accessor.begin_turn()
+        if self.paper_accessor is not None:
+            self.paper_accessor.begin_turn()
         self._scope_subject = ""
         self._scope_project = ""
         self._scope_problem_ids = None
@@ -4013,12 +4585,56 @@ class AiAgentToolExecutor:
             self._english_learning_service = EnglishLearningService(self.repository.root_dir / "English")
         return self._english_learning_service
 
+    def _english_dictionary(self) -> EnglishDictionaryService:
+        if self._english_dictionary_service is None:
+            self._english_dictionary_service = EnglishDictionaryService(
+                self.repository.root_dir / "English" / "dictionaries"
+            )
+        return self._english_dictionary_service
+
     def _tool_list_english_materials(self, arguments: dict[str, Any]) -> dict[str, Any]:
         rows = self._english_learning().list_materials(
             role=str(arguments.get("role") or ""), status=str(arguments.get("status") or ""),
             keyword=str(arguments.get("keyword") or ""),
         )
         return {"materials": rows, "result_count": len(rows), "summary": self._english_learning().summary()}
+
+    def _tool_search_english_question_bank(self, arguments: dict[str, Any]) -> dict[str, Any]:
+        category = str(arguments.get("category") or "grammar").strip().casefold()
+        rows = self._english_learning().question_bank_items(
+            category,
+            str(arguments.get("keyword") or ""),
+            limit=int(arguments.get("limit") or 100),
+        )
+        return {"category": category, "questions": rows, "result_count": len(rows)}
+
+    def _tool_register_raydu_initial_english_materials(self, arguments: dict[str, Any]) -> dict[str, Any]:
+        series_root = str(arguments.get("series_root") or "").strip()
+        audio_root = str(arguments.get("audio_root") or "").strip()
+        if series_root and not self.resources.path_is_authorized(series_root):
+            raise ValueError("接入三本书前，用户必须在当前消息中明确提供 series_root 的绝对路径。")
+        if audio_root and not self.resources.path_is_authorized(audio_root):
+            raise ValueError("接入词汇音频前，用户必须在当前消息中明确提供 audio_root 的绝对路径。")
+        return self._english_learning().register_raydu_initial_sources(
+            series_root or str(DEFAULT_RAYDU_SERIES_ROOT),
+            audio_root or None,
+        )
+
+    def _tool_import_raydu_grammar_question_bank(self, arguments: dict[str, Any]) -> dict[str, Any]:
+        series_root = str(arguments.get("series_root") or "").strip()
+        if series_root and not self.resources.path_is_authorized(series_root):
+            raise ValueError("导入文法题库前，用户必须在当前消息中明确提供 series_root 的绝对路径。")
+        return self._english_learning().import_raydu_grammar_exercises(
+            series_root or str(DEFAULT_RAYDU_SERIES_ROOT)
+        )
+
+    def _tool_import_raydu_vocabulary(self, arguments: dict[str, Any]) -> dict[str, Any]:
+        series_root = str(arguments.get("series_root") or "").strip()
+        if series_root and not self.resources.path_is_authorized(series_root):
+            raise ValueError("导入英文字彙前，用户必须在当前消息中明确提供 series_root 的绝对路径。")
+        return self._english_learning().import_raydu_vocabulary(
+            series_root or str(DEFAULT_RAYDU_SERIES_ROOT)
+        )
 
     def _tool_search_english_learning(self, arguments: dict[str, Any]) -> dict[str, Any]:
         rows = self._english_learning().unified_search(
@@ -4038,6 +4654,44 @@ class AiAgentToolExecutor:
         )
         self.resources.authorize_generated_path(str(result.get("reading_path") or ""))
         return result
+
+    def _tool_download_and_import_english_material(self, arguments: dict[str, Any]) -> dict[str, Any]:
+        result = self._english_learning().download_and_import_material(
+            str(arguments.get("download_url") or ""),
+            fallback_urls=[str(item) for item in arguments.get("fallback_urls") or ()],
+            title=str(arguments.get("title") or ""),
+            role=str(arguments.get("role") or "extensive_reading"),
+            material_type=str(arguments.get("material_type") or "document"),
+            author=str(arguments.get("author") or ""),
+            source_url=str(arguments.get("source_url") or ""),
+            enforce_long_reading=bool(arguments.get("enforce_long_reading", True)),
+        )
+        self.resources.authorize_generated_path(str(result.get("download_path") or ""))
+        self.resources.authorize_generated_path(str(result.get("source_path") or ""))
+        self.resources.authorize_generated_path(str(result.get("reading_path") or ""))
+        return result
+
+    def _tool_ensure_local_english_placement_material(self, arguments: dict[str, Any]) -> dict[str, Any]:
+        result = self._english_learning().ensure_local_placement_material(
+            str(arguments.get("passage_key") or "")
+        )
+        for key in ("local_sample_path", "source_path", "reading_path"):
+            self.resources.authorize_generated_path(str(result.get(key) or ""))
+        return result
+
+    def _tool_lookup_local_english_dictionary(self, arguments: dict[str, Any]) -> dict[str, Any]:
+        if self.discipline != "english":
+            raise ValueError("本地英语词典查询只在英语工作空间可用。")
+        rows = self._english_dictionary().lookup(
+            str(arguments.get("term") or ""),
+            limit=max(1, min(int(arguments.get("limit") or 8), 20)),
+        )
+        return {
+            "term": str(arguments.get("term") or ""),
+            "entries": rows,
+            "index_path": str(self._english_dictionary().database_path),
+            "readback_verified": self._english_dictionary().database_path.is_file(),
+        }
 
     def _tool_bind_english_material_file(self, arguments: dict[str, Any]) -> dict[str, Any]:
         source = Path(str(arguments.get("source_path") or "")).expanduser().resolve()
@@ -4127,6 +4781,12 @@ class AiAgentToolExecutor:
             question_type=str(arguments.get("question_type") or ""),
             error_reason=str(arguments.get("error_reason") or ""), note=str(arguments.get("note") or ""),
             chapter_id=arguments.get("chapter_id"),
+        )
+
+    def _tool_save_english_reading_profile(self, arguments: dict[str, Any]) -> dict[str, Any]:
+        return self._english_learning().save_extensive_reading_profile(
+            selected_topics=[str(item) for item in arguments.get("selected_topics") or ()],
+            reflections=[dict(item) for item in arguments.get("reflections") or ()],
         )
 
     def _tool_list_english_deferred_lookups(self, arguments: dict[str, Any]) -> dict[str, Any]:
@@ -4549,6 +5209,13 @@ class AiAgentToolExecutor:
         if not package_path.is_file() or not bool(result.get("readback_verified")):
             raise RuntimeError("小节 ChatGPT 压缩包写后回读失败。")
         self.resources.authorize_generated_path(str(package_path))
+        for split_path in list(result.get("package_paths") or []):
+            path = Path(str(split_path or ""))
+            if path == package_path:
+                continue
+            if not path.is_file():
+                raise RuntimeError("自动拆分后的某个小节 ChatGPT 压缩包写后回读失败。")
+            self.resources.authorize_generated_path(str(path))
         return dict(result)
 
     def _tool_prepare_online_course_packages(
@@ -4789,6 +5456,338 @@ class AiAgentToolExecutor:
             "readback_verified": True,
         }
 
+    def _tool_list_translation_projects(self, _arguments: dict[str, Any]) -> dict[str, Any]:
+        projects = self.translation_projects.list_projects()
+        return {
+            "projects": [
+                {
+                    "code": item.get("code"),
+                    "title": item.get("title"),
+                    "author": item.get("author"),
+                    "updated_at": item.get("updated_at"),
+                    "chapter_count": len(item.get("outline") or []),
+                    "figure_count": int(item.get("figure_count") or 0),
+                    "mineru_imported": bool(item.get("mineru")),
+                    "second_layer_skill": item.get("second_layer_skill") or {},
+                }
+                for item in projects
+            ]
+        }
+
+    def _tool_get_translation_project_outline(self, arguments: dict[str, Any]) -> dict[str, Any]:
+        code = str(arguments.get("project_code") or "")
+        granularity = str(arguments.get("granularity") or "section")
+        project = self.translation_projects.project(code)
+        return {
+            "project": {
+                "code": project.get("code"),
+                "title": project.get("title"),
+                "author": project.get("author"),
+                "source_sha256": project.get("source_sha256"),
+                "mineru": project.get("mineru") or {},
+                "second_layer_skill": project.get("second_layer_skill") or {},
+            },
+            "granularity": granularity,
+            "units": self.translation_projects.list_units(code, granularity),
+        }
+
+    def _tool_create_translation_project(self, arguments: dict[str, Any]) -> dict[str, Any]:
+        project = self.translation_projects.create_project(
+            str(arguments.get("title") or ""),
+            str(arguments.get("author") or ""),
+            str(arguments.get("source_pdf") or ""),
+        )
+        project_dir = self.translation_projects._project_dir(str(project["code"]))
+        self.resources.authorize_generated_path(str(project_dir / "source" / "original.pdf"))
+        return {
+            "project_code": project["code"],
+            "title": project["title"],
+            "project_directory": str(project_dir),
+            "source_sha256": project["source_sha256"],
+            "second_layer_skill": project["second_layer_skill"],
+            "readback_verified": (project_dir / "project.json").is_file(),
+        }
+
+    def _tool_import_translation_mineru_output(self, arguments: dict[str, Any]) -> dict[str, Any]:
+        code = str(arguments.get("project_code") or "")
+        project = self.translation_projects.import_mineru_output(
+            code,
+            str(arguments.get("mineru_directory") or ""),
+            dpi=int(arguments.get("dpi") or 360),
+        )
+        project_dir = self.translation_projects._project_dir(code)
+        for chapter in project.get("outline") or []:
+            path = project_dir / str(chapter.get("pdf_path") or "")
+            if path.is_file():
+                self.resources.authorize_generated_path(str(path))
+        image_manifest = project_dir / "images" / "manifest.json"
+        if image_manifest.is_file():
+            self.resources.authorize_generated_path(str(image_manifest))
+        return {
+            "project_code": code,
+            "chapter_count": len(project.get("outline") or []),
+            "section_count": sum(
+                len(chapter.get("sections") or []) for chapter in project.get("outline") or []
+            ),
+            "figure_count": int(project.get("figure_count") or 0),
+            "mineru": project.get("mineru") or {},
+            "readback_verified": image_manifest.is_file(),
+        }
+
+    def _tool_get_translation_figure_benchmark_report(
+        self, arguments: dict[str, Any]
+    ) -> dict[str, Any]:
+        return self.translation_projects.figure_benchmark_report(
+            str(arguments.get("project_code") or "")
+        )
+
+    def _tool_run_translation_mineru(self, arguments: dict[str, Any]) -> dict[str, Any]:
+        code = str(arguments.get("project_code") or "")
+        project = self.translation_projects.run_mineru(
+            code,
+            dpi=int(arguments.get("dpi") or 360),
+        )
+        project_dir = self.translation_projects._project_dir(code)
+        image_manifest = project_dir / "images" / "manifest.json"
+        for chapter in project.get("outline") or []:
+            chapter_pdf = project_dir / str(chapter.get("pdf_path") or "")
+            if chapter_pdf.is_file():
+                self.resources.authorize_generated_path(str(chapter_pdf))
+        if image_manifest.is_file():
+            self.resources.authorize_generated_path(str(image_manifest))
+        runtime = dict((project.get("mineru") or {}).get("runtime") or {})
+        return {
+            "project_code": code,
+            "chapter_count": len(project.get("outline") or []),
+            "section_count": sum(
+                len(chapter.get("sections") or []) for chapter in project.get("outline") or []
+            ),
+            "figure_count": int(project.get("figure_count") or 0),
+            "mineru_runtime": runtime,
+            "readback_verified": bool(project.get("outline")) and image_manifest.is_file(),
+        }
+
+    def _tool_prepare_translation_second_layer_prompt(self, arguments: dict[str, Any]) -> dict[str, Any]:
+        from shared.scripts.translation_agent_prompts import build_second_layer_prompt
+
+        code = str(arguments.get("project_code") or "")
+        section_id = str(arguments.get("section_id") or "")
+        project = self.translation_projects.project(code)
+        chapter, section = self.translation_projects._find_section(project, section_id)
+        project_dir = self.translation_projects._project_dir(code)
+        raw_path = project_dir / str(section.get("raw_markdown") or "")
+        image_manifest_path = project_dir / "images" / "manifest.json"
+        if not raw_path.is_file() or not image_manifest_path.is_file():
+            raise RuntimeError("当前 section 缺少 MinerU Markdown 或图片清单。")
+        image_manifest = json.loads(image_manifest_path.read_text(encoding="utf-8"))
+        raw_markdown = raw_path.read_text(encoding="utf-8")
+        reference_index = self.translation_projects._translation_reference_index(
+            project,
+            project_dir,
+        )
+        bundle = build_second_layer_prompt(
+            project,
+            chapter,
+            section,
+            raw_markdown,
+            image_manifest,
+            self.translation_projects._agent_reference_candidates(
+                reference_index,
+                raw_markdown,
+                section_id,
+            ),
+            self.translation_projects._deterministic_reference_mentions(
+                raw_markdown,
+                reference_index,
+            ),
+        )
+        chapter_pdf = project_dir / str(chapter.get("pdf_path") or "")
+        attachment_paths = [chapter_pdf]
+        figure_ids = set(section.get("figure_ids") or [])
+        attachment_paths.extend(
+            project_dir / str(item.get("path") or "")
+            for item in image_manifest.get("figures") or []
+            if str(item.get("figure_id") or "") in figure_ids
+        )
+        for path in attachment_paths:
+            if path.is_file():
+                self.resources.authorize_generated_path(str(path))
+        return {
+            "project_code": code,
+            "section_id": section_id,
+            "stable_prefix": bundle.stable_prefix,
+            "stable_prefix_sha256": bundle.stable_prefix_sha256,
+            "upstream_revision": bundle.upstream_revision,
+            "task_prompt": bundle.task_prompt,
+            "attachments": [str(path) for path in attachment_paths if path.is_file()],
+            "agent_call_performed": False,
+        }
+
+    def _tool_save_translation_second_layer_result(self, arguments: dict[str, Any]) -> dict[str, Any]:
+        result = self.translation_projects.save_agent_result(
+            str(arguments.get("project_code") or ""),
+            str(arguments.get("section_id") or ""),
+            str(arguments.get("corrected_markdown") or ""),
+            str(arguments.get("report_markdown") or ""),
+            reference_catalog=dict(arguments.get("reference_catalog") or {}),
+        )
+        return {
+            "corrected_markdown_path": str(result["corrected_markdown"]),
+            "report_markdown_path": str(result.get("report_markdown") or ""),
+            "reference_catalog_path": str(result.get("reference_catalog") or ""),
+            "readback_verified": result["corrected_markdown"].is_file(),
+        }
+
+    def _tool_run_translation_second_layer_agent(self, arguments: dict[str, Any]) -> dict[str, Any]:
+        result = self.translation_projects.run_second_layer_agent(
+            str(arguments.get("project_code") or ""),
+            str(arguments.get("section_id") or ""),
+        )
+        corrected = Path(result["corrected_markdown"])
+        report = Path(result["report_markdown"]) if result.get("report_markdown") else None
+        self.resources.authorize_generated_path(str(corrected))
+        if report is not None and report.is_file():
+            self.resources.authorize_generated_path(str(report))
+        return {
+            "corrected_markdown_path": str(corrected),
+            "report_markdown_path": str(report or ""),
+            "profile_name": result.get("profile_name"),
+            "model": result.get("model"),
+            "usage": result.get("usage") or {},
+            "stable_prefix_sha256": result.get("stable_prefix_sha256"),
+            "page_evidence_count": len(result.get("page_evidence") or []),
+            "figure_evidence_count": len(result.get("figure_evidence") or []),
+            "readback_verified": bool(result.get("readback_verified")),
+        }
+
+    def _tool_translate_translation_front_matter(
+        self, arguments: dict[str, Any]
+    ) -> dict[str, Any]:
+        code = str(arguments.get("project_code") or "")
+        result = self.translation_projects.translate_paratext_directly(code)
+        project = self.translation_projects.project(code)
+        project_dir = self.translation_projects._project_dir(code)
+        context = dict(project.get("translation_context") or {})
+        authorized: list[str] = []
+        for relative in (
+            context.get("context_path"),
+            context.get("translated_outline_path"),
+            context.get("agent_report_path"),
+        ):
+            path = project_dir / str(relative or "")
+            if path.is_file():
+                self.resources.authorize_generated_path(str(path))
+                authorized.append(str(path))
+        section_rows: dict[str, Any] = {}
+        for number, data in (result.get("sections") or {}).items():
+            corrected = Path(data["corrected_markdown"])
+            report = Path(data["report_markdown"]) if data.get("report_markdown") else None
+            self.resources.authorize_generated_path(str(corrected))
+            if report is not None and report.is_file():
+                self.resources.authorize_generated_path(str(report))
+            section_rows[str(number)] = {
+                "corrected_markdown_path": str(corrected),
+                "report_markdown_path": str(report or ""),
+                "model": data.get("model"),
+                "reasoning_effort": data.get("reasoning_effort"),
+                "usage": data.get("usage") or {},
+                "readback_verified": bool(data.get("readback_verified")),
+            }
+        return {
+            "project_code": code,
+            "translation_context": context,
+            "authorized_context_paths": authorized,
+            "sections": section_rows,
+            "readback_verified": (
+                context.get("status") == "locked"
+                and all(row["readback_verified"] for row in section_rows.values())
+            ),
+        }
+
+    def _tool_prepare_translation_material_package(self, arguments: dict[str, Any]) -> dict[str, Any]:
+        output = self.translation_projects.generate_material_package(
+            str(arguments.get("project_code") or ""),
+            str(arguments.get("target_id") or ""),
+        )
+        self.resources.authorize_generated_path(str(output))
+        return {
+            "package_path": str(output),
+            "size_bytes": output.stat().st_size,
+            "readback_verified": output.is_file(),
+        }
+
+    def _tool_import_translation_latex(self, arguments: dict[str, Any]) -> dict[str, Any]:
+        result = self.translation_projects.import_latex_and_compile(
+            str(arguments.get("project_code") or ""),
+            str(arguments.get("target_id") or ""),
+            str(arguments.get("latex_source") or ""),
+        )
+        output = Path(result["latex_path"])
+        self.resources.authorize_generated_path(str(result["pdf_path"]))
+        self.resources.authorize_generated_path(str(result["log_path"]))
+        return {
+            "latex_path": str(output),
+            "sha256": hashlib.sha256(output.read_bytes()).hexdigest(),
+            "pdf_path": str(result["pdf_path"]),
+            "pdf_page_count": int(result["page_count"]),
+            "log_path": str(result["log_path"]),
+            "readback_verified": bool(result.get("readback_verified")),
+        }
+
+    def _tool_get_translation_tex_refinement_units(self, arguments: dict[str, Any]) -> dict[str, Any]:
+        code = str(arguments.get("project_code") or "")
+        project = self.translation_projects.project(code)
+        units = self.translation_projects.latex_refinement_units(code)
+        return {
+            "project_code": code,
+            "project_title": project.get("title"),
+            "units": units,
+            "actual_precision": "subsection" if any(
+                str(item.get("unit_kind") or "").casefold() == "subsection" for item in units
+            ) else "section",
+        }
+
+    def _tool_save_translation_tex_refinement(self, arguments: dict[str, Any]) -> dict[str, Any]:
+        result = self.translation_projects.save_latex_refinement(
+            str(arguments.get("project_code") or ""),
+            str(arguments.get("refinement_id") or ""),
+            str(arguments.get("latex_source") or ""),
+        )
+        return {
+            "source_path": str(result["source_path"]),
+            "backup_path": str(result["backup_path"]),
+            "readback_verified": bool(result.get("readback_verified")),
+        }
+
+    def _tool_compile_translation_tex_refinement_preview(self, arguments: dict[str, Any]) -> dict[str, Any]:
+        result = self.translation_projects.compile_latex_refinement_preview(
+            str(arguments.get("project_code") or ""),
+            str(arguments.get("refinement_id") or ""),
+            str(arguments.get("latex_source") or ""),
+        )
+        self.resources.authorize_generated_path(str(result["pdf_path"]))
+        self.resources.authorize_generated_path(str(result["log_path"]))
+        return {
+            "pdf_path": str(result["pdf_path"]),
+            "source_path": str(result["preview_source_path"]),
+            "log_path": str(result["log_path"]),
+            "readback_verified": bool(result.get("readback_verified")),
+        }
+
+    def _tool_locate_translation_formal_pdf(self, arguments: dict[str, Any]) -> dict[str, Any]:
+        result = self.translation_projects.formal_pdf_location(
+            str(arguments.get("project_code") or ""),
+            str(arguments.get("target_id") or ""),
+        )
+        self.resources.authorize_generated_path(str(result["pdf_path"]))
+        return {
+            "pdf_path": str(result["pdf_path"]),
+            "page_index": int(result["page_index"]),
+            "number": result.get("number"),
+            "title": result.get("title"),
+            "matched_by": result.get("matched_by"),
+        }
+
     def execute(self, name: str, arguments: dict[str, Any]) -> dict[str, Any]:
         operation_id = ""
         try:
@@ -4898,6 +5897,8 @@ class AiAgentToolExecutor:
                             self.resources.authorize_generated_path(str(artifact["absolute_path"]))
                     pdf_path = str(result.get("pdf_path") or "")
                     if pdf_path:
+                        from shared.scripts.ai_agent_visual_validation import validate_math_figure
+
                         result["visual_validation"] = validate_math_figure(pdf_path)
             elif name == "mathematica_compute":
                 result = self.compute_manager.run_mathematica(
@@ -4912,6 +5913,8 @@ class AiAgentToolExecutor:
                         self.resources.authorize_generated_path(str(artifact["absolute_path"]))
                 preview_path = str(result.get("pdf_path") or result.get("png_path") or "")
                 if preview_path:
+                    from shared.scripts.ai_agent_visual_validation import validate_math_figure
+
                     result["visual_validation"] = validate_math_figure(preview_path)
             elif name == "dual_verify_math":
                 result = self.compute_manager.dual_verify(dict(arguments), self._progress_callback)
@@ -4931,6 +5934,8 @@ class AiAgentToolExecutor:
                         "data": result,
                     }
             elif name == "validate_math_figure":
+                from shared.scripts.ai_agent_visual_validation import validate_math_figure
+
                 if not self.resources.path_is_authorized(str(arguments.get("path") or "")):
                     raise ValueError(
                         "只能视觉检查用户明确给出的文件、本轮搜索结果或本轮工具生成的文件。"
@@ -5159,6 +6164,8 @@ class AiAgentToolExecutor:
                 )
                 if result.get("project_pdf_path"):
                     self.resources.authorize_generated_path(str(result["project_pdf_path"]))
+                    from shared.scripts.ai_agent_visual_validation import validate_pdf_near_text
+
                     result["visual_validation"] = validate_pdf_near_text(
                         str(result["project_pdf_path"]),
                         str(arguments.get("caption") or ""),

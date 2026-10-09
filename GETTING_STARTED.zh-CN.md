@@ -7,7 +7,7 @@
 ## 1. 下载什么
 
 1. 打开 GitHub 仓库的 [Releases](https://github.com/taotaowu0309/MathProblemBank/releases) 页面。
-2. 进入最新的版本条目。带有 `Pre-release` 的版本表示仍在持续测试；当前公开候选版本为 `v0.1.0-rc1`。
+2. 进入最新的版本条目。带有 `Pre-release` 的版本表示仍在持续测试；当前公开候选版本为 `v0.1.0-rc3`。
 3. 在 **Assets** 区下载名称以 `MathProblemBank-v...zip` 开头的发行压缩包。
 4. 不要下载页面自动生成的 `Source code (zip)` 或 `Source code (tar.gz)`，也不要下载 GitHub 仓库中的私人数据库、PDF 或开发目录。发行附件才是经过白名单和敏感信息检查的可运行公开视图。
 5. 下载后把 ZIP 解压到一个你有写入权限的普通目录。不要直接在 ZIP 压缩包内运行，也不要把用户数据库放回 GitHub 仓库。
@@ -15,7 +15,7 @@
 如果你需要核对下载是否完整，可以在 Release 页面查看 SHA-256；PowerShell 命令示例：
 
 ```powershell
-Get-FileHash .\MathProblemBank-v0.1.0-rc1.zip -Algorithm SHA256
+Get-FileHash .\MathProblemBank-v0.1.0-rc3.zip -Algorithm SHA256
 ```
 
 ## 2. 安装运行环境

@@ -94,11 +94,17 @@ Selected surface text: {selected}
 Nearby source context: {context or '[not available]'}
 Authoritative local-book context: {book_context or '[not supplied]'}
 
-Return exactly one line with seven pipe-separated fields:
-lemma or fixed expression | part of speech / expression kind | concise Chinese contextual meaning | concise English contextual definition | why this sense fits here | useful collocation or register note | exceptional inflection or morphology note
+Return exactly one line with three pipe-separated fields:
+lemma or fixed expression | abbreviated part of speech | concise Chinese contextual meaning
+
+Explain only the Chinese meaning of the selected word or expression in this
+context, using a short Chinese phrase or at most one brief Chinese sentence.
+Do not include English definitions, examples, collocations, register notes,
+etymology, morphology notes, learning advice, or explanations of why the sense
+fits. The first two fields are storage metadata, not part of the explanation.
 
 Treat a selected multi-word expression as one unit.  Solve “what does it mean
-here?” before mentioning other senses.  Preserve the selected surface form in
+here?” and omit unrelated senses.  Preserve the selected surface form in
 your reasoning but store a dictionary lemma or canonical fixed expression.
 Do not invent Xuan Yu-You etymology or terminology when local-book context is
 absent.  Do not output Markdown, JSON, headings, extra lines, or tools."""

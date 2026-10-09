@@ -1,14 +1,19 @@
 {
   "format_version": 1,
   "profile": "public-math-v0.1",
-  "release_version": "0.1.0rc1",
+  "release_version": "0.1.0rc3",
   "python_requires": ">=3.12,<3.13",
-  "file_count": 159,
+  "file_count": 180,
   "files": [
     {
       "path": ".gitignore",
-      "bytes": 1668,
-      "sha256": "5e4eb7eb872315fd90176697e453970aa1d6a9d353c07e39bb55cd53587e8df7"
+      "bytes": 1675,
+      "sha256": "3631dc770d7ff5d0ed52ed9c49a55d26f9cc8a264bb5dcb1af10474f5c2cb501"
+    },
+    {
+      "path": ".cursorignore",
+      "bytes": 877,
+      "sha256": "ebb03e507b81a730758f356d78d3979079f7da159a9f3fc15f929025d58d9e48"
     },
     {
       "path": "LaunchStudyProblemBank.vbs",
@@ -17,18 +22,33 @@
     },
     {
       "path": "README.md",
-      "bytes": 2605,
-      "sha256": "4b55cd89f4fd1a5f9a8d848b8d0f28a858e0b4d418c7f92192e15cf29751128c"
+      "bytes": 3935,
+      "sha256": "66ed8bd39f171758b696926e0a0fcce329d12a30e9872793cb9e6d1bd91d16ec"
+    },
+    {
+      "path": "README.zh-CN.md",
+      "bytes": 3363,
+      "sha256": "4be0f1c1c0684e4d6f9c402c873bf698e1af322103dedee692f708df9010da70"
     },
     {
       "path": "GETTING_STARTED.md",
-      "bytes": 9047,
-      "sha256": "a7f9c261c832795256ece5871d29ab90a489e892f974f6f83d50ba98d5aa203a"
+      "bytes": 5854,
+      "sha256": "5e0e886ec1732c999aceaa8a2e8161b4f3ea5e1162aa8ab279fb29e06ad4e398"
+    },
+    {
+      "path": "GETTING_STARTED.zh-CN.md",
+      "bytes": 9261,
+      "sha256": "6b505d4db2c9942a73c6df244a8271cd544b351c67a5134eed8e96d018d309f8"
     },
     {
       "path": "USER_GUIDE.md",
-      "bytes": 5849,
-      "sha256": "9359f4c615560a21c535c2341b790d4f29e9d2860957778f3f0d9b75e8eec9e4"
+      "bytes": 4660,
+      "sha256": "30a080a41a166596d4507bbfb8dab3787f2d807fc413008bbe3729bf120cd1e2"
+    },
+    {
+      "path": "USER_GUIDE.zh-CN.md",
+      "bytes": 5895,
+      "sha256": "84c4c71ca54e584108075b32ee75bef6bdd395ea68b6362797700887f7bed2f9"
     },
     {
       "path": "OPEN_SOURCE_RELEASE.md",
@@ -52,13 +72,13 @@
     },
     {
       "path": "pyproject.toml",
-      "bytes": 1084,
-      "sha256": "4f81c1704e42595a20029add8e947aba92332f4e6a0189b16abeecd20a422f5a"
+      "bytes": 1146,
+      "sha256": "ee2825f5fbf5da68d1f363cf612bb9bc011c3bc2697f716213cb0c9a5f38edd4"
     },
     {
       "path": "requirements-public.txt",
-      "bytes": 222,
-      "sha256": "8048d24b291168a7fc7ae98c569af5436de82c537309af2a40d705d1c20182a7"
+      "bytes": 237,
+      "sha256": "8200b6cd2b18999e6f755d8aa9566d528ccffbec2debd3b4fcd04595ed9dae3d"
     },
     {
       "path": "LICENSE",
@@ -71,19 +91,34 @@
       "sha256": "c0db4eb9a9e8b842559ddeeeece31a8e56b52f7f36070f795d78ca25c21ccac5"
     },
     {
+      "path": "docs/CURSOR_PROJECT_GUIDE.zh-CN.md",
+      "bytes": 18429,
+      "sha256": "3889bf3303910b0612c94ee40ec1d5bccbc8c070cf22fb6da539558b20cf857a"
+    },
+    {
+      "path": ".cursor/rules/00-math-problem-bank.mdc",
+      "bytes": 2002,
+      "sha256": "502b21586fac34c39d0a9348af9834431f0cfd5ec80add96beb6fc005b4ed98b"
+    },
+    {
       "path": ".github/workflows/public-release-gate.yml",
-      "bytes": 1615,
-      "sha256": "178c9b9f4c910262ab80e77011a532997df1d385a4ab38d59fc1ccb472af36a3"
+      "bytes": 2467,
+      "sha256": "c82b51ee495e14b5e63b232eaa1ab3fdb9371aa7661e343f538a4ec5a37e71e5"
     },
     {
       "path": "tools/build_public_release.py",
-      "bytes": 19709,
-      "sha256": "84b4dac074041fba3b54f52ce2c5ada1dab42c33b459682f3d49a991858027fb"
+      "bytes": 21761,
+      "sha256": "7a9c6fcc5cf956f6d6ac26633dcc6816a503d98dc690ab28dfa07f07a452b631"
     },
     {
       "path": "shared/scripts/ai_agent_acceptance.py",
       "bytes": 21177,
       "sha256": "52fdfcdf55f83c6a489232eb0b4f17c236a26fe2e752f05c2a865b3e184f5e94"
+    },
+    {
+      "path": "shared/scripts/ai_agent_api_policy.py",
+      "bytes": 3365,
+      "sha256": "0baa0b3cdb60be5c655c0a9745d9b2da82661561fbf202eb233e08a90ea85ccc"
     },
     {
       "path": "shared/scripts/ai_agent_attachments.py",
@@ -102,8 +137,8 @@
     },
     {
       "path": "shared/scripts/ai_agent_config.py",
-      "bytes": 22165,
-      "sha256": "2e3105607007a2d472443fb34e2d3953f66752265993cb81867c77b5816b34d3"
+      "bytes": 24799,
+      "sha256": "937a6fa7093e9bfb4335d35f0f6165aecf8338a865110602173e3cbd126b47d6"
     },
     {
       "path": "shared/scripts/ai_agent_history.py",
@@ -122,8 +157,8 @@
     },
     {
       "path": "shared/scripts/ai_agent_math.py",
-      "bytes": 23915,
-      "sha256": "a035e0e6589807a879313139fcd8767608fbfa4c8b09534e5b91803436798ef7"
+      "bytes": 27418,
+      "sha256": "07c235fe5733d446aab5fd7362c22baefb6b212358b41937c2f1b2b5e49af005"
     },
     {
       "path": "shared/scripts/ai_agent_math_tools.py",
@@ -167,13 +202,13 @@
     },
     {
       "path": "shared/scripts/ai_agent_providers.py",
-      "bytes": 62045,
-      "sha256": "d74fcf6436c08b11c68903ea642e89f284bde8dacf6682872d19a6812c240f49"
+      "bytes": 71436,
+      "sha256": "1bf6b66729abbf51cdb6262c4254d21d410e56833c346fc9b72f0c4f8bdc73a6"
     },
     {
       "path": "shared/scripts/ai_agent_qt.py",
-      "bytes": 262327,
-      "sha256": "63e62ccbdab3d89284d8798fe5297b673ec363adca8a3b0cbeffbccf32ff3f7e"
+      "bytes": 269458,
+      "sha256": "93a192cd967a6b5e419315eca39494b46d0ace4bec2b33b0f1ca8847a6c4950d"
     },
     {
       "path": "shared/scripts/ai_agent_quality.py",
@@ -197,13 +232,13 @@
     },
     {
       "path": "shared/scripts/ai_agent_reliability.py",
-      "bytes": 10857,
-      "sha256": "e4ac862aeab5e353acf5bd69368de103b48e552a3766dbe953af57a23ba661de"
+      "bytes": 11167,
+      "sha256": "19bdb6229ba34d82a94e6b7dd40e89caf8ea7f673dba6a866becc5daac86106c"
     },
     {
       "path": "shared/scripts/ai_agent_repository.py",
-      "bytes": 268005,
-      "sha256": "b55b3c1be823e567712cf6782ffcbecc04fe51ecb8d352127fc899b3ff4ade1d"
+      "bytes": 326086,
+      "sha256": "34e2d29ebfe6be6e9bbb22fbc8d9dcc6afd98748a47e07a41852b6715e310eb0"
     },
     {
       "path": "shared/scripts/ai_agent_resources.py",
@@ -217,8 +252,8 @@
     },
     {
       "path": "shared/scripts/ai_agent_service.py",
-      "bytes": 125930,
-      "sha256": "e0c7cdf17e828f82b7c5dc7d2219977c44183709edb29de30bd563e3ca8ce152"
+      "bytes": 131950,
+      "sha256": "0ac0e377e9ffb46efdb40dc9b5e2d29a16af12bf5b09f47b6128e04a8df28bdb"
     },
     {
       "path": "shared/scripts/ai_agent_tex_editor.py",
@@ -256,14 +291,24 @@
       "sha256": "896d4eed17b11e593630d6ff8b8dee958f112806d65a7e9cca78c65729438a4c"
     },
     {
+      "path": "shared/scripts/crash_diagnostics.py",
+      "bytes": 35123,
+      "sha256": "3ec085bf50b7d502a37a33534282f207695e9d853c844670b2f46d5a2b67f0d4"
+    },
+    {
+      "path": "shared/scripts/english_dictionary_service.py",
+      "bytes": 67124,
+      "sha256": "d482c0bb3c6b7d34896bbdef8e660a196a4891fd48a76aeca7295e80ab3219c8"
+    },
+    {
       "path": "shared/scripts/english_domain_profile.py",
-      "bytes": 10136,
-      "sha256": "dcbdf8cd8b3e715aada95a1b0d76c1c49d0190b5641314374024051c1251de9c"
+      "bytes": 10363,
+      "sha256": "5519200238b2bf3eb8b9050f4aa2122d51092282783ce57eec6a5cef899fb54a"
     },
     {
       "path": "shared/scripts/english_learning_service.py",
-      "bytes": 80889,
-      "sha256": "71c53d127c4448b49a0cbb8a2e5717efa3a9ba3fbb6d730addeaf0a70d750dc3"
+      "bytes": 186176,
+      "sha256": "cbf901987e7f29cec71a157e8c4f7577aa3df5fed4b904b72c23a140e4ca4e42"
     },
     {
       "path": "shared/scripts/init_databases.py",
@@ -271,9 +316,24 @@
       "sha256": "3108c0e712a74036059380f36ee224587b0917bb6a93802c65901e9cd402f9c9"
     },
     {
+      "path": "shared/scripts/latex_build_pipeline.py",
+      "bytes": 20594,
+      "sha256": "485c6c7192eb80ed685e63a314fbd7bf13e11e2322c6d8fbfdf253cd06c40242"
+    },
+    {
       "path": "shared/scripts/latex_document_layout.py",
-      "bytes": 1660,
-      "sha256": "ceb4e802740f28d634cc462b2bc0a4551899901da3c95186c96cfc43beb87e63"
+      "bytes": 4394,
+      "sha256": "8ee0d4e22ffaf52939cb532b5d7b7a1af22a298246e17f1b338c1db04b7e84e0"
+    },
+    {
+      "path": "shared/scripts/latex_overfull_repair.py",
+      "bytes": 27221,
+      "sha256": "70521f2029a7d285d194b5252c481c42e7b52c443b2b45cce4f25cb85071357c"
+    },
+    {
+      "path": "shared/scripts/latex_quality.py",
+      "bytes": 16074,
+      "sha256": "1156fa64ba4782f92cd802976873b3ad06aeef1a6c74d5d0801ae55379d799be"
     },
     {
       "path": "shared/scripts/latex_theorem_environments.py",
@@ -282,13 +342,13 @@
     },
     {
       "path": "shared/scripts/launch_study_problem_bank.pyw",
-      "bytes": 13326,
-      "sha256": "1845a826a80dcf4549b1223c43badb6b7402076a139bbbed7d804a158eadaee9"
+      "bytes": 14588,
+      "sha256": "092894399fa8879658cdc3b5eb93a65eaf546807e03219fc8ce8771f96c24c39"
     },
     {
       "path": "shared/scripts/markdown_reader_qt.py",
-      "bytes": 35811,
-      "sha256": "4f28b8d89222225d37b1aa8a91226cea2894c021a84ba8e607fe9acaa75d90d7"
+      "bytes": 43452,
+      "sha256": "a80518ea23f37bf05c8382b16e0f9c9fd6ac04d224529cb49add981bb98a6555"
     },
     {
       "path": "shared/scripts/markdown_renderer.py",
@@ -302,13 +362,18 @@
     },
     {
       "path": "shared/scripts/online_course_ai_agent.py",
-      "bytes": 342578,
-      "sha256": "a00d59ac1abbec9710bd200eda1235eaf6730a685eb8f7c771010b81f471234f"
+      "bytes": 353350,
+      "sha256": "9410f0f6ac98cdb0fa782940847e03e28ad7646541758e1959c05d1a8547adc4"
     },
     {
       "path": "shared/scripts/online_course_board_keyframes.py",
       "bytes": 36347,
       "sha256": "f214aed7c9a939f8213b12331f4465e372c523d80b304333edd7883c1731d1e4"
+    },
+    {
+      "path": "shared/scripts/online_course_candidate_benchmark.py",
+      "bytes": 31987,
+      "sha256": "9ca1de8534faac7751e2e819bb5d28b9701110b2e0b4c23561fd5eca1b4b6190"
     },
     {
       "path": "shared/scripts/online_course_crv_worker.py",
@@ -332,23 +397,23 @@
     },
     {
       "path": "shared/scripts/online_course_media_engine.py",
-      "bytes": 74678,
-      "sha256": "6aa352c079d216d34d96923ccf262ab0c7635fc99f0c90ab4615582543a837de"
+      "bytes": 75961,
+      "sha256": "a79b09aff13b1de5afffd161d9b7648c15ffe5d348bc8f71c158d5300f6b63be"
     },
     {
       "path": "shared/scripts/online_course_reference_mineru.py",
-      "bytes": 50453,
-      "sha256": "729153bb26f02bf71771c03b2798a2cb3d2ec7111b677422ddf6e29c81d3d2cb"
+      "bytes": 50802,
+      "sha256": "68af714ec633458cbb8918a069b99ec3e55116edc12a02e58df12f21e25db9c4"
     },
     {
       "path": "shared/scripts/online_course_scene_worker.py",
-      "bytes": 1292,
-      "sha256": "0ffb6a7769896523d2d0f127990b4a08aa37dea9ff0c41f923ce25a12b6c96a6"
+      "bytes": 6163,
+      "sha256": "e4c0af70443043081ac6817745d64182e6cfb45dc701e5093e598f673011e0c0"
     },
     {
       "path": "shared/scripts/online_course_service.py",
-      "bytes": 1182983,
-      "sha256": "39ab2821dad0ca40ee4468146fd41cf1acc7f2123aba20ad1bbd64e6f16b936e"
+      "bytes": 1271711,
+      "sha256": "ca0cdef73971e3c9fe22e3a6ada3085fc88c137e4a3b867fc1b222243ee1526d"
     },
     {
       "path": "shared/scripts/pdf_word_geometry.py",
@@ -357,13 +422,13 @@
     },
     {
       "path": "shared/scripts/problem_bank_center.py",
-      "bytes": 134370,
-      "sha256": "3342bafeea3c6d5da7662e6678d6c16533c3b11fa637d494a5a8a9d04091e2b3"
+      "bytes": 174046,
+      "sha256": "6a5aacdd6fe4de76111676b8e978987bce3067cedcae77453db7044a29755506"
     },
     {
       "path": "shared/scripts/problem_bank_center_qt.py",
-      "bytes": 973766,
-      "sha256": "2e374705da53ddee9a3f28d538d148718532f6ae0e4a3c71681aecc40ab920b3"
+      "bytes": 1106404,
+      "sha256": "3c854e04df4b1b353a7b07c0c8b1029e5486159b57545d25feab722efc053538"
     },
     {
       "path": "shared/scripts/public_regression_core.py",
@@ -387,8 +452,8 @@
     },
     {
       "path": "shared/scripts/test_release_engineering.py",
-      "bytes": 24207,
-      "sha256": "93a551c1955aac2a631bd4d3c1af9a79bf8251544766f307ad99d87aca5e57ed"
+      "bytes": 26042,
+      "sha256": "64d7b28009264356e90cb6e1d496320db58fbc241073174257534fd2e3d6af9d"
     },
     {
       "path": "shared/scripts/textbook_exercise_companion.py",
@@ -396,9 +461,39 @@
       "sha256": "9e41edcbcd8ed6a146e764e1fe9c5e1acb10558f718a0cbc2328f123a574b7da"
     },
     {
+      "path": "shared/scripts/translation_agent_prompts.py",
+      "bytes": 9047,
+      "sha256": "0a958ae228d531022ac456e35afbfce41d9f35b2d35581d389da1a7a50df5635"
+    },
+    {
+      "path": "shared/scripts/translation_figure_geometry.py",
+      "bytes": 15994,
+      "sha256": "2d8432225c3f2de7dcc71259f2ed59f56aa528a99220f665a2fd36ce27390580"
+    },
+    {
+      "path": "shared/scripts/translation_outline.py",
+      "bytes": 31252,
+      "sha256": "da97c87d7e3f711eb8327aafcb154a0342c2a4f5cf7118cc5af8bbb76dcfdd0d"
+    },
+    {
+      "path": "shared/scripts/translation_project_qt.py",
+      "bytes": 96525,
+      "sha256": "8357f293d58f8dd28c50fbd64e0b5cb0572d962a1eb0d16bc56c2b26ca006b56"
+    },
+    {
+      "path": "shared/scripts/translation_project_service.py",
+      "bytes": 406389,
+      "sha256": "2f4c826c164c34ad306fe3fbf10f242368648e93c5f3a5abd66b789c11c2cb2b"
+    },
+    {
+      "path": "shared/scripts/validate_latex_punctuation.py",
+      "bytes": 1692,
+      "sha256": "9b5e7288f661d4fa70349a38e5de956455435fe6e7260ecd966ca31d96132a91"
+    },
+    {
       "path": "shared/scripts/vocabulary_manager.py",
-      "bytes": 53322,
-      "sha256": "3dda39799938b815115fa698da54ee2dbc5ba67720ef623c9cf3b89f11b9e621"
+      "bytes": 58561,
+      "sha256": "55d66547f7ff4119dc5e3274e5039b13b0727ee3271f95ac07b657cd27774b53"
     },
     {
       "path": "shared/ui/assets/icons/problem_bank_studio_icon.ico",
@@ -612,8 +707,8 @@
     },
     {
       "path": "shared/templates/document_layout.tex",
-      "bytes": 877,
-      "sha256": "fe01b01558236f0ecd5d351232e1ba973c98c3baa27bcb1efb5b64ffd07bf9e9"
+      "bytes": 1331,
+      "sha256": "24e48491a39cb54c9b41ba3f14af3b4395c8ae9172130df49768be93d465beae"
     },
     {
       "path": "shared/templates/general_theorem_environments.tex",
@@ -622,8 +717,8 @@
     },
     {
       "path": "shared/templates/latex_writing_rules.txt",
-      "bytes": 13941,
-      "sha256": "e10b6642c17796f8cba2cb667f953f9edbbb40bbe9485aaae3e45d097ec825c7"
+      "bytes": 26017,
+      "sha256": "e518aa40b36dc15f6a5673d93678002e11d51b15562235b6632dc10535b50616"
     },
     {
       "path": "shared/templates/online_course_chatgpt_writing_prompt.txt",
@@ -637,8 +732,8 @@
     },
     {
       "path": "shared/templates/online_course_latex_import_contract.txt",
-      "bytes": 6176,
-      "sha256": "257c1bda0ab07e2fbb70e3dcbee8e1d74a1754b30746aa445b0460ec9d9ff03c"
+      "bytes": 6721,
+      "sha256": "ea78d445001488a2bc3c57857617757296d3b65e57e1065e43c8ee47fd212ca1"
     },
     {
       "path": "shared/templates/online_course_reference_and_continuity_prompt.txt",
@@ -654,6 +749,16 @@
       "path": "shared/templates/online_course_reference_outline_prompt.txt",
       "bytes": 2604,
       "sha256": "58a6db036b42810a703dae272fbf3f076663d3d4bef81bc311393ea34d94ad1e"
+    },
+    {
+      "path": "shared/templates/translation-text-environments.tex",
+      "bytes": 1648,
+      "sha256": "9fcdf05ac2e115e667abbd69da460dbfb45a7aefc3b455be47fb8578893ae6cb"
+    },
+    {
+      "path": "shared/templates/translation_chatgpt_latex_prompt.txt",
+      "bytes": 5366,
+      "sha256": "3d473648f4da71bf02d75ca14912572d99d992381f70fbabdd0bc087d09c47ac"
     },
     {
       "path": "shared/vendor/online_course_toolchain/README.md",
@@ -692,13 +797,13 @@
     },
     {
       "path": "shared/browser_extensions/online_course_recorder/content_script.js",
-      "bytes": 6967,
-      "sha256": "acacd08da77250d2feba55ff0d75156baff8423c5757e17fa832015303ff251d"
+      "bytes": 12114,
+      "sha256": "4d38372f60d6c6b58df609060098cd9070ecdfc8f3af2c50ea1108dbe3e4ae4f"
     },
     {
       "path": "shared/browser_extensions/online_course_recorder/manifest.json",
       "bytes": 945,
-      "sha256": "8939c79f4156ebc2cef94c4a0f77b0c95c68fe0ba397b7ec6ef8ab428b11be9c"
+      "sha256": "0d335aac206dc882de7b6765920d9528730e3e64ab104799e3c48eb61b44603a"
     },
     {
       "path": "shared/browser_extensions/online_course_recorder/offscreen.html",
@@ -707,8 +812,8 @@
     },
     {
       "path": "shared/browser_extensions/online_course_recorder/offscreen.js",
-      "bytes": 18381,
-      "sha256": "5ebcad42f83af7bcbe7cb08058d6abf31838b222c81e72b3eb1124c4bc7c2c73"
+      "bytes": 18472,
+      "sha256": "184da70567be278de8c1ac0fa042d88778d2e9d485674fc67f92bb4b2321420d"
     },
     {
       "path": "shared/browser_extensions/online_course_recorder/popup.html",
@@ -717,8 +822,8 @@
     },
     {
       "path": "shared/browser_extensions/online_course_recorder/popup.js",
-      "bytes": 3479,
-      "sha256": "3566fa01e75cf76c604c92f59a448def87f89297c96ce9362a57d21b1c02d01e"
+      "bytes": 3772,
+      "sha256": "850319e55617a72be69c44ef91d45febdea99465cc8dfe99a6585e7bc304b22b"
     },
     {
       "path": "shared/browser_extensions/online_course_recorder/README.md",
@@ -727,13 +832,13 @@
     },
     {
       "path": "shared/browser_extensions/online_course_recorder/service_worker.js",
-      "bytes": 11568,
-      "sha256": "1149cb58d8e6ee99371c3621b246d97145a25cd356d2a13e7a17ba2aefbd1fa5"
+      "bytes": 24360,
+      "sha256": "4e49ae8f0eb1b049362a8f48a82b7c4a71adf1273136436c81f41a515a0e9615"
     },
     {
       "path": "MathAnalysis/preamble/chapter.title.tex",
-      "bytes": 627,
-      "sha256": "78aa0fc1042658494a96da79be9ea73414de725af112ffbd305c1c721be50d2a"
+      "bytes": 699,
+      "sha256": "f6bdf80a3628ca048631d0743f9e93efb8b8234f3e9131781ac9d0d1130a4b19"
     },
     {
       "path": "MathAnalysis/preamble/colors.tex",

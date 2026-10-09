@@ -990,6 +990,17 @@ class OnlineCourseMediaEngine:
             "scenes": scenes,
             "board_candidates": candidates,
             "analysis_version": int(payload.get("analysis_version") or 0),
+            "candidate_analysis_version": int(
+                payload.get("candidate_analysis_version")
+                or payload.get("analysis_version")
+                or 0
+            ),
+            "candidate_algorithm": str(
+                payload.get("candidate_algorithm") or "baseline"
+            ),
+            "candidate_fallback_reasons": list(
+                payload.get("candidate_fallback_reasons") or []
+            ),
             "duration": float(payload.get("duration") or 0),
             "decoded_frame_count": int(payload.get("decoded_frame_count") or 0),
         }
@@ -1244,6 +1255,10 @@ class OnlineCourseMediaEngine:
         board_analysis_version = 0
         stored_duration = 0.0
         manifest_valid = False
+        promotion_marker_present = any(
+            (parent / "derived" / "offline_candidate_promotion.json").is_file()
+            for parent in source.parents
+        )
         if manifest.is_file():
             try:
                 stored = json.loads(manifest.read_text(encoding="utf-8"))
@@ -1259,6 +1274,11 @@ class OnlineCourseMediaEngine:
                     isinstance(stored.get("scenes"), list)
                     and isinstance(stored.get("board_candidates"), list)
                     and board_analysis_version >= 2
+                    and (
+                        not promotion_marker_present
+                        or str(stored.get("candidate_algorithm") or "")
+                        in {"offline_sidecar", "baseline_fallback"}
+                    )
                 )
             except (OSError, ValueError, TypeError, json.JSONDecodeError):
                 scene_ranges = []
@@ -1291,6 +1311,15 @@ class OnlineCourseMediaEngine:
                 "duration": float(info["duration"]),
                 "scenes": scene_ranges,
                 "board_analysis_version": board_analysis_version,
+                "candidate_analysis_version": int(
+                    analysis.get("candidate_analysis_version") or board_analysis_version
+                ),
+                "candidate_algorithm": str(
+                    analysis.get("candidate_algorithm") or "baseline"
+                ),
+                "candidate_fallback_reasons": list(
+                    analysis.get("candidate_fallback_reasons") or []
+                ),
                 "decoded_frame_count": int(analysis["decoded_frame_count"]),
                 "board_candidates": board_candidates,
             },

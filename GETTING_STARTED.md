@@ -7,7 +7,7 @@ This guide is for someone who has never used MathProblemBank. The public release
 ## 1. Download the right file
 
 1. Open the repository's [Releases](https://github.com/taotaowu0309/MathProblemBank/releases) page.
-2. Open the newest release. A `Pre-release` label means that it is still being tested; the current candidate is `v0.1.0-rc1`.
+2. Open the newest release. A `Pre-release` label means that it is still being tested; the current candidate is `v0.1.0-rc3`.
 3. Under **Assets**, download the file whose name starts with `MathProblemBank-v` and ends in `.zip`.
 4. Do not use GitHub's automatically generated `Source code (zip)` or `Source code (tar.gz)`. The release asset is the allowlisted, sanitized, runnable public view.
 5. Extract it to a normal directory where you have write permission. Do not run files from inside the ZIP.
@@ -15,7 +15,7 @@ This guide is for someone who has never used MathProblemBank. The public release
 For an integrity check, compare the SHA-256 shown in the release notes:
 
 ```powershell
-Get-FileHash .\MathProblemBank-v0.1.0-rc1.zip -Algorithm SHA256
+Get-FileHash .\MathProblemBank-v0.1.0-rc3.zip -Algorithm SHA256
 ```
 
 ## 2. Install Python and dependencies

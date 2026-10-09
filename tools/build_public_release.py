@@ -18,6 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 MARKER_NAME = ".mathproblem-public-release.json"
 ROOT_FILES = (
     ".gitignore",
+    ".cursorignore",
     "LaunchStudyProblemBank.vbs",
     "README.md",
     "README.zh-CN.md",
@@ -33,8 +34,16 @@ ROOT_FILES = (
     "requirements-public.txt",
     "LICENSE",
     "THIRD_PARTY_NOTICES.md",
+    "docs/CURSOR_PROJECT_GUIDE.zh-CN.md",
+    ".cursor/rules/00-math-problem-bank.mdc",
 )
 PUBLIC_README_SOURCE = Path("shared/templates/public_release/README.md")
+PUBLIC_VERSION_DOCS = {
+    Path("README.md"),
+    Path("README.zh-CN.md"),
+    Path("GETTING_STARTED.md"),
+    Path("GETTING_STARTED.zh-CN.md"),
+}
 PUBLIC_PYTHON_REQUIRES = ">=3.12,<3.13"
 RELEASE_VERSION_RE = re.compile(
     r"^\d+\.\d+\.\d+(?:(?:a|b|rc)\d+|\.dev\d+|\.post\d+)?$"
@@ -105,6 +114,9 @@ SKIPPED_SCRIPT_NAMES = {
     "test_quick_video_transcript.py",
     "test_textbook_exercise_companion.py",
     "test_textbook_exercise_companion_ui.py",
+    # One-off local PDF repair script; it is tied to a private source PDF and
+    # is not part of the supported public application.
+    "fix_fourier_toc.py",
 }
 SKIPPED_UI_ASSET_PREFIXES = (
     Path("shared/ui/assets/carousel"),
@@ -193,6 +205,15 @@ PRIVATE_NAME_FRAGMENTS = _PRIVATE_RELEASE_POLICY["PRIVATE_NAME_FRAGMENTS"]
 WINDOWS_USER_PATH_RE = re.compile(
     r"(?i)(?:[a-z]:[\\/]{1,2}users[\\/]|\\\\[^\\/\s]+[\\/]+users[\\/])[^\s\"']+"
 )
+_WINDOWS_DRIVE_PREFIX = r"(?:[" + "a-z" + r"]:[\\/]{1,2})"
+GENERIC_WINDOWS_PATH_RE = re.compile(
+    r"(?i)(?<![A-Za-z0-9])" + _WINDOWS_DRIVE_PREFIX + r"[^\s\"'<>]+"
+)
+SAFE_PUBLIC_WINDOWS_PATH_PREFIXES = (
+    "c:\\windows",
+    "d:\\temp",
+    "x:\\pictures",
+)
 POSIX_USER_PATH_RE = re.compile(
     r"(?i)(?:/" + "home/" + r"|/" + "users/)" + r"[^\s\"']+"
 )
@@ -249,6 +270,8 @@ def _relative_files(root: Path) -> Iterable[Path]:
                 continue
             if any(relative.is_relative_to(prefix) for prefix in SKIPPED_RELATIVE_PREFIXES):
                 continue
+            if relative.parent == Path("tools") and relative.name in SKIPPED_SCRIPT_NAMES:
+                continue
             if relative.parent == Path("shared/scripts"):
                 if relative.name.startswith(SKIPPED_SCRIPT_PREFIXES):
                     continue
@@ -302,6 +325,15 @@ def _sensitive_marker(
         return "Windows user/profile path"
     if POSIX_USER_PATH_RE.search(text):
         return "POSIX user/profile path"
+    for match in GENERIC_WINDOWS_PATH_RE.finditer(normalized):
+        candidate = match.group(0).rstrip(".,;:)]}")
+        folded = candidate.replace("/", "\\").casefold()
+        if any(
+            folded == prefix or folded.startswith(prefix + "\\")
+            for prefix in SAFE_PUBLIC_WINDOWS_PATH_PREFIXES
+        ):
+            continue
+        return "Windows absolute path"
     if URL_CREDENTIAL_RE.search(text):
         return "URL credentials"
     return None
@@ -384,6 +416,19 @@ def _public_pyproject_text(source: Path, release_version: str | None) -> tuple[s
     return text, selected_version
 
 
+def _public_version_display(version: str) -> str:
+    match = re.fullmatch(r"(\d+\.\d+\.\d+)(a|b|rc)(\d+)", version)
+    if match:
+        return f"{match.group(1)}-{match.group(2)}{match.group(3)}"
+    return version
+
+
+def _rewrite_public_version_docs(text: str, selected_version: str) -> str:
+    display = _public_version_display(selected_version)
+    text = re.sub(r"\bv\d+\.\d+\.\d+-rc\d+\b", f"v{display}", text)
+    return re.sub(r"\b\d+\.\d+\.\d+rc\d+\b", selected_version, text)
+
+
 def build_public_release(
     output: Path,
     *,
@@ -395,6 +440,10 @@ def build_public_release(
     output.parent.mkdir(parents=True, exist_ok=True)
 
     selected = _selected_files(ROOT)
+    public_pyproject, selected_release_version = _public_pyproject_text(
+        ROOT / "pyproject.toml",
+        release_version,
+    )
     forbidden = [
         f"{target_relative.as_posix()}: {_forbidden_reason(target_relative)}"
         for _source_relative, target_relative in selected
@@ -418,11 +467,15 @@ def build_public_release(
                     encoding="utf-8",
                 )
             elif target_relative == Path("pyproject.toml"):
-                public_pyproject, selected_release_version = _public_pyproject_text(
-                    source,
-                    release_version,
-                )
                 target.write_text(public_pyproject, encoding="utf-8")
+            elif target_relative in PUBLIC_VERSION_DOCS:
+                target.write_text(
+                    _rewrite_public_version_docs(
+                        source.read_text(encoding="utf-8"),
+                        selected_release_version,
+                    ),
+                    encoding="utf-8",
+                )
             else:
                 shutil.copy2(source, target)
             if target.suffix.lower() in SCANNED_TEXT_SUFFIXES:

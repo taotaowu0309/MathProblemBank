@@ -61,6 +61,9 @@ class PublicReleaseBuilderTests(unittest.TestCase):
         escaped_path = raw_path.replace(slash, slash + slash)
         self.assertIsNotNone(_sensitive_marker(raw_path))
         self.assertIsNotNone(_sensitive_marker(escaped_path))
+        private_path = "D:" + "/EnglishProjects/" + "RayDuSeries"
+        self.assertIsNotNone(_sensitive_marker(private_path))
+        self.assertIsNone(_sensitive_marker("D:" + "/Temp/example-release"))
         user = "user"
         password = "secret"
         host = "example.invalid"
@@ -120,6 +123,9 @@ class PublicReleaseBuilderTests(unittest.TestCase):
             self.assertTrue((output / "PUBLIC_RELEASE_MANIFEST.json").is_file())
             self.assertTrue((output / "shared" / "scripts" / "problem_bank_center_qt.py").is_file())
             self.assertTrue((output / "tools" / "build_public_release.py").is_file())
+            self.assertTrue((output / ".cursorignore").is_file())
+            self.assertTrue((output / ".cursor" / "rules" / "00-math-problem-bank.mdc").is_file())
+            self.assertTrue((output / "docs" / "CURSOR_PROJECT_GUIDE.zh-CN.md").is_file())
             self.assertFalse((output / "shared" / "private_release_policy.local.py").exists())
             self.assertFalse((output / "shared" / "templates" / "public_release").exists())
             self.assertTrue((output / "shared" / "scripts" / "public_regression_core.py").is_file())
@@ -224,6 +230,20 @@ class PublicReleaseBuilderTests(unittest.TestCase):
                 if path.is_file() and path.name.lower().endswith(forbidden_suffixes)
             ]
             self.assertEqual(forbidden, [])
+
+    def test_release_version_is_consistent_in_user_documents(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            output = Path(temporary) / "public-release"
+            build_public_release(output, release_version="0.1.0rc3")
+            for relative in (
+                "README.md",
+                "README.zh-CN.md",
+                "GETTING_STARTED.md",
+                "GETTING_STARTED.zh-CN.md",
+            ):
+                text = (output / relative).read_text(encoding="utf-8")
+                self.assertIn("0.1.0-rc3", text, relative)
+                self.assertNotRegex(text, r"0\.1\.0-rc[12]|0\.1\.0rc[12]")
 
     def test_public_exporter_self_hosts_without_private_policy_or_readme_template(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:

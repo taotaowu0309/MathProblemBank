@@ -6,7 +6,7 @@ import json
 import os
 import uuid
 from ctypes import wintypes
-from dataclasses import asdict, dataclass, fields
+from dataclasses import asdict, dataclass, fields, replace
 from pathlib import Path
 from typing import Any
 
@@ -35,12 +35,13 @@ ROOT_DIR = APP_PATHS.application_root
 SETTINGS_PATH = APP_PATHS.settings_dir / "ai_agent_settings.json"
 CREDENTIALS_PATH = APP_PATHS.settings_dir / "ai_agent_credentials.json"
 DPAPI_ENTROPY = b"MathProblemBank.AIAgent.v1"
-SETTINGS_VERSION = 13
+SETTINGS_VERSION = 14
 DEFAULT_MAX_TOOL_ROUNDS = 24
 MAX_TOOL_ROUNDS = 64
 DEFAULT_RELAY_API_BASE_URL = (
-    PRIVATE_DEFAULT_RELAY_API_BASE_URL or APP_PATHS.relay_api_base_url
+    PRIVATE_DEFAULT_RELAY_API_BASE_URL or APP_PATHS.relay_api_base_url or "https://api.deepseek.com"
 )
+DEFAULT_RELAY_IS_CONFIGURED = bool(PRIVATE_DEFAULT_RELAY_API_BASE_URL or APP_PATHS.relay_api_base_url)
 DEFAULT_RELAY_PROFILE_NAME = (
     PRIVATE_DEFAULT_RELAY_PROFILE_NAME or APP_PATHS.relay_profile_name
 )
@@ -93,7 +94,7 @@ class ProviderProfile:
     max_output_tokens: int = 6000
     max_tool_rounds: int = DEFAULT_MAX_TOOL_ROUNDS
     timeout_seconds: int = 180
-    reasoning_effort: str = "auto"
+    reasoning_effort: str = "high"
     text_verbosity: str = "auto"
     transport_retries: int = 1
     # Retained in the schema for backward-compatible settings reads.  Runtime
@@ -179,23 +180,52 @@ def _new_profile(
 
 def default_profiles() -> list[ProviderProfile]:
     profiles: list[ProviderProfile] = []
-    if DEFAULT_RELAY_API_BASE_URL:
+    def add(name: str, kind: str, url: str, model: str, env: str, **kwargs: Any) -> None:
         profiles.append(
             _new_profile(
-                DEFAULT_RELAY_PROFILE_NAME or "Custom OpenAI-compatible API",
-                "openai_responses",
-                DEFAULT_RELAY_API_BASE_URL,
-                "gpt-5.6-sol",
-                DEFAULT_RELAY_API_KEY_ENV,
-                max_output_tokens=48000,
+                name,
+                kind,
+                url,
+                model,
+                env,
+                max_output_tokens=6000,
                 timeout_seconds=600,
-                reasoning_effort="adaptive",
+                reasoning_effort="high",
                 routing_strategy="fixed",
                 input_price_per_million=0.0,
                 cached_input_price_per_million=0.0,
                 cached_write_price_per_million=0.0,
                 output_price_per_million=0.0,
-                long_context_threshold_tokens=272000,
+                long_context_threshold_tokens=0,
+                long_input_price_per_million=0.0,
+                long_cached_input_price_per_million=0.0,
+                long_cached_write_price_per_million=0.0,
+                long_output_price_per_million=0.0,
+                price_currency="CNY",
+                pricing_plan_name="",
+                **kwargs,
+            )
+        )
+
+    # Keep a configured private relay first for existing installations. Public
+    # and fresh installations receive neutral profiles from several providers.
+    if DEFAULT_RELAY_IS_CONFIGURED:
+        profiles.append(
+            _new_profile(
+                DEFAULT_RELAY_PROFILE_NAME or "DeepSeek 官方 · V4.1 Flash",
+                "openai_responses",
+                DEFAULT_RELAY_API_BASE_URL,
+                "deepseek-flash",
+                DEFAULT_RELAY_API_KEY_ENV or "DEEPSEEK_API_KEY",
+                max_output_tokens=6000,
+                timeout_seconds=600,
+                reasoning_effort="high",
+                routing_strategy="fixed",
+                input_price_per_million=0.0,
+                cached_input_price_per_million=0.0,
+                cached_write_price_per_million=0.0,
+                output_price_per_million=0.0,
+                long_context_threshold_tokens=0,
                 long_input_price_per_million=0.0,
                 long_cached_input_price_per_million=0.0,
                 long_cached_write_price_per_million=0.0,
@@ -204,46 +234,11 @@ def default_profiles() -> list[ProviderProfile]:
                 pricing_plan_name="",
             )
         )
-    profiles.extend([
-        _new_profile(
-            "OpenAI",
-            "openai_responses",
-            "https://api.openai.com/v1",
-            "gpt-5.6",
-            "OPENAI_API_KEY",
-            reasoning_effort="adaptive",
-        ),
-        _new_profile(
-            "OpenAI 兼容 API",
-            "openai_compatible",
-            "https://api.deepseek.com/v1",
-            "",
-            "MODEL_API_KEY",
-        ),
-        _new_profile(
-            "Claude",
-            "anthropic",
-            "https://api.anthropic.com/v1",
-            "",
-            "ANTHROPIC_API_KEY",
-        ),
-        _new_profile(
-            "Gemini",
-            "gemini",
-            "https://generativelanguage.googleapis.com/v1beta",
-            "",
-            "GEMINI_API_KEY",
-        ),
-        _new_profile(
-            "Ollama 本地模型",
-            "openai_compatible",
-            "http://localhost:11434/v1",
-            "",
-            "",
-            auth_mode="none",
-            requires_api_key=False,
-        ),
-    ])
+    add("OpenAI", "openai_responses", "https://api.openai.com/v1", "gpt-4.1", "OPENAI_API_KEY")
+    add("Anthropic · Claude Sonnet", "anthropic", "https://api.anthropic.com", "claude-sonnet-4-6", "ANTHROPIC_API_KEY", auth_mode="api-key")
+    add("Google · Gemini Flash", "gemini", "https://generativelanguage.googleapis.com/v1beta", "gemini-2.5-flash", "GEMINI_API_KEY", auth_mode="api-key")
+    if not DEFAULT_RELAY_IS_CONFIGURED:
+        add("DeepSeek · V4 Flash", "openai_responses", "https://api.deepseek.com", "deepseek-v4-flash", "DEEPSEEK_API_KEY")
     return profiles
 
 
@@ -369,6 +364,12 @@ class AiAgentSettingsStore:
             if "text_verbosity" not in item:
                 values["text_verbosity"] = "auto"
                 migrated_profiles = True
+            # Reasoning strength is a global application policy.  Normalize
+            # every saved provider, not only the default relay profile, so the
+            # settings UI and diagnostics agree with the wire-level guard.
+            if str(values.get("reasoning_effort") or "") != "high":
+                values["reasoning_effort"] = "high"
+                migrated_profiles = True
             if is_default_relay:
                 old_name = str(values.get("name") or "")
                 if any(
@@ -409,9 +410,6 @@ class AiAgentSettingsStore:
                             "pricing_plan_name": "",
                         }
                     )
-                    migrated_profiles = True
-                if "reasoning_effort" not in item:
-                    values["reasoning_effort"] = "adaptive"
                     migrated_profiles = True
                 if source_version < 9 and int(values.get("max_output_tokens") or 0) == 12000:
                     values["max_output_tokens"] = 48000
@@ -487,7 +485,32 @@ class AiAgentSettingsStore:
     def profile(self, profile_id: str) -> ProviderProfile | None:
         return next((profile for profile in self.profiles if profile.id == profile_id), None)
 
+    def profile_for_selection(self, profile_id: str) -> ProviderProfile | None:
+        """Resolve an identical historical alias without removing its saved ID."""
+        profile = self.profile(profile_id)
+        suffix = "（历史会话兼容）"
+        if profile is None or not profile.name.endswith(suffix):
+            return profile
+        expected = asdict(profile)
+        expected.pop("id")
+        expected["name"] = profile.name.removesuffix(suffix).rstrip()
+        for candidate in self.profiles:
+            values = asdict(candidate)
+            values.pop("id")
+            if values == expected:
+                return candidate
+        return profile
+
+    def selectable_profiles(self) -> list[ProviderProfile]:
+        return [
+            profile for profile in self.profiles
+            if self.profile_for_selection(profile.id) is profile
+        ]
+
     def upsert_profile(self, profile: ProviderProfile, api_key: str | None = None) -> None:
+        # Persist the application-wide quality policy even when an older UI
+        # submits an adaptive/low value.
+        profile = replace(profile, reasoning_effort="high")
         profile.validate(require_model=False)
         for index, current in enumerate(self.profiles):
             if current.id == profile.id:

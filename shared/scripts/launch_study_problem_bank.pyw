@@ -23,6 +23,7 @@ os.environ.setdefault("TCL_LIBRARY", str(PYTHON_HOME / "tcl" / "tcl8.6"))
 os.environ.setdefault("TK_LIBRARY", str(PYTHON_HOME / "tcl" / "tk8.6"))
 
 from shared.scripts.application_paths import APP_PATHS
+from shared.scripts.crash_diagnostics import get_crash_diagnostics
 from shared.ui.windows_shell import apply_icon, configure_app_identity
 
 
@@ -53,7 +54,7 @@ WORKSPACE_OPTIONS = (
         "key": "english",
         "name": "英语",
         "mark": "EN",
-        "description": "旋元佑五书、广读、写作与主动语言练习",
+        "description": "旋元佑七书、广读、写作与主动语言练习",
         "enabled": True,
         "accent": "#2b8d7d",
     },
@@ -94,11 +95,11 @@ def prime_legacy_tk_dpi() -> None:
 
 
 def warm_startup_imports() -> None:
-    """Use chooser dwell time to load the largest non-Qt startup dependency."""
+    """Load the largest post-selection dependency while the chooser is open."""
     try:
         from shared.scripts import online_course_service  # noqa: F401
     except Exception:
-        # The normal foreground import still reports a complete traceback.
+        # The foreground import still reports the complete traceback if needed.
         pass
 
 
@@ -262,9 +263,10 @@ def choose_workspace_tk() -> str | None:
     root.title("选择学习工程")
     apply_icon(root, APP_ICON_PATH)
     root.resizable(False, False)
-    root.geometry("320x150")
+    enabled_options = [option for option in WORKSPACE_OPTIONS if option["enabled"]]
+    width = max(320, 140 * len(enabled_options) + 20)
+    root.geometry(f"{width}x150")
     root.update_idletasks()
-    width = 320
     height = 150
     x = (root.winfo_screenwidth() - width) // 2
     y = (root.winfo_screenheight() - height) // 2
@@ -284,10 +286,14 @@ def choose_workspace_tk() -> str | None:
         root.update_idletasks()
         root.destroy()
 
-    math_button = tk.Button(buttons, text="数学", width=10, command=lambda: select("math"))
-    physics_button = tk.Button(buttons, text="物理", width=10, command=lambda: select("physics"))
-    math_button.pack(side=tk.LEFT, padx=8)
-    physics_button.pack(side=tk.LEFT, padx=8)
+    for option in enabled_options:
+        button = tk.Button(
+            buttons,
+            text=str(option["name"]),
+            width=10,
+            command=lambda item=str(option["key"]): select(item),
+        )
+        button.pack(side=tk.LEFT, padx=8)
     def close() -> None:
         choice["value"] = None
         root.withdraw()
@@ -301,30 +307,32 @@ def choose_workspace_tk() -> str | None:
 
 
 def choose_workspace() -> str | None:
-    warmup_done = threading.Event()
-
-    def warm() -> None:
-        try:
-            warm_startup_imports()
-        finally:
-            warmup_done.set()
-
+    # Keep the first visible window on the lightweight legacy path.  The Qt
+    # chooser imports most of the control center before the user has selected
+    # a workspace and was the main source of the recent launch regression.
     threading.Thread(
-        target=warm,
+        target=warm_startup_imports,
         name="problem-bank-startup-warmup",
         daemon=True,
     ).start()
     try:
-        workspace = choose_workspace_qt()
-    except Exception:
         workspace = choose_workspace_tk()
+    except Exception:
+        # Tk remains the normal fast path; retain the Qt chooser as a safe
+        # fallback for machines where the legacy Tk runtime is unavailable.
+        workspace = choose_workspace_qt()
     if workspace is not None:
-        # Usually the choice takes longer than the warmup. Bound instant clicks.
-        warmup_done.wait(timeout=1.5)
+        # The visible Tk chooser already established the DPI baseline. This
+        # avoids creating a second hidden Tk root inside the Qt entry point.
+        os.environ["STUDY_BANK_TK_DPI_PRIMED"] = "1"
     return workspace
 
 
 if __name__ == "__main__":
+    diagnostics = get_crash_diagnostics()
+    diagnostics.start_session()
+    diagnostics.install_exception_hooks()
+    diagnostics.install_qt_message_handler()
     try:
         startup_started = time.perf_counter()
         skip_workspace_chooser = (
@@ -337,6 +345,13 @@ if __name__ == "__main__":
             else choose_workspace()
         )
         if workspace is None:
+            diagnostics.log_event(
+                level="INFO",
+                logger="launcher",
+                event="workspace_selection_cancelled",
+                message="用户关闭了学习工程选择窗口。",
+            )
+            diagnostics.mark_clean_shutdown(0)
             raise SystemExit(0)
         enabled_workspaces = {
             str(option["key"]) for option in WORKSPACE_OPTIONS if option["enabled"]
@@ -362,8 +377,18 @@ if __name__ == "__main__":
                 encoding="utf-8",
             )
 
-        main(record_startup_ready)
-    except Exception:
+        exit_code = int(main(record_startup_ready) or 0)
+        diagnostics.mark_clean_shutdown(exit_code)
+    except SystemExit:
+        raise
+    except BaseException as error:
+        diagnostics.record_exception(
+            type(error),
+            error,
+            error.__traceback__,
+            kind="launcher_unhandled",
+            fatal=True,
+        )
         LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
         message = traceback.format_exc()
         LOG_PATH.write_text(message, encoding="utf-8")

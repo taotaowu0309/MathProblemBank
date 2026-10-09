@@ -50,9 +50,9 @@ python shared/scripts/public_regression_core.py
 
 ```powershell
 python tools/build_public_release.py `
-  --output D:\\Temp\\MathProblemBank-v0.1.0-rc2 `
-  --zip D:\\Temp\\MathProblemBank-v0.1.0-rc2.zip `
-  --release-version 0.1.0rc2
+  --output D:\\Temp\\MathProblemBank-v0.1.0-rc3 `
+  --zip D:\\Temp\\MathProblemBank-v0.1.0-rc3.zip `
+  --release-version 0.1.0rc3
 ```
 
 发行器使用白名单、闭世界 manifest 和敏感信息检查，拒绝数据库、教材、生成 PDF、编译缓存、未声明压缩包和私人路径。

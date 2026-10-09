@@ -251,6 +251,18 @@ def build_markdown_document(result: MarkdownRenderResult) -> str:
     )
 
 
+def resolve_markdown_asset_urls(document: str) -> str:
+    """Keep bundled KaTeX absolute so the HTML base can follow the opened file.
+
+    A file-specific base URL is required for MinerU's relative image links.
+    """
+
+    katex_base = (MARKDOWN_ASSET_DIR / "katex").resolve().as_uri().rstrip("/") + "/"
+    return str(document).replace('href="katex/', f'href="{katex_base}').replace(
+        'src="katex/', f'src="{katex_base}'
+    )
+
+
 def build_markdown_outline_document(headings: tuple[MarkdownHeading, ...]) -> str:
     roots: list[dict[str, Any]] = []
     parents: list[tuple[int, dict[str, Any]]] = []
@@ -496,10 +508,16 @@ class MarkdownReaderPage(QWidget):
         self.setObjectName("markdownReaderPage")
         self.setMinimumHeight(600)
         self.draft_path = Path(draft_path) if draft_path is not None else DEFAULT_MARKDOWN_DRAFT_PATH
+        self.source_base_dir = self.draft_path.parent.resolve()
+        self.document_read_only = False
         self._last_result: MarkdownRenderResult | None = None
         self._preview_loaded = False
+        self._pending_reveal_line = 1
         self._syncing_from_preview = False
         self.outline_visible = False
+        self.related_documents: dict[str, dict[str, Any]] = {}
+        self.related_document_buttons: dict[str, QPushButton] = {}
+        self.active_related_document = ""
 
         self.compile_timer = QTimer(self)
         self.compile_timer.setSingleShot(True)
@@ -540,6 +558,7 @@ class MarkdownReaderPage(QWidget):
         root.setContentsMargins(0, 0, 0, 0)
         root.setSpacing(0)
         root.addWidget(self._build_toolbar())
+        root.addWidget(self._build_related_toolbar())
 
         self.splitter = QSplitter(Qt.Orientation.Horizontal)
         self.splitter.setObjectName("markdownSplitter")
@@ -612,6 +631,121 @@ class MarkdownReaderPage(QWidget):
         layout.addWidget(dialect)
         return toolbar
 
+    def _build_related_toolbar(self) -> QWidget:
+        self.related_toolbar = QFrame()
+        self.related_toolbar.setObjectName("markdownRelatedToolbar")
+        self.related_toolbar_layout = QHBoxLayout(self.related_toolbar)
+        self.related_toolbar_layout.setContentsMargins(14, 7, 14, 7)
+        self.related_toolbar_layout.setSpacing(6)
+        self.related_toolbar.hide()
+        return self.related_toolbar
+
+    def clear_related_documents(self) -> None:
+        self.related_documents = {}
+        self.related_document_buttons = {}
+        self.active_related_document = ""
+        while self.related_toolbar_layout.count():
+            item = self.related_toolbar_layout.takeAt(0)
+            widget = item.widget()
+            if widget is not None:
+                widget.deleteLater()
+        self.related_toolbar.hide()
+
+    def configure_related_documents(
+        self,
+        documents: dict[str, dict[str, Any]],
+        *,
+        active_key: str,
+        source_line: int = 1,
+    ) -> None:
+        self.clear_related_documents()
+        self.related_documents = {
+            str(key): dict(value)
+            for key, value in dict(documents or {}).items()
+            if isinstance(value, dict) and str(value.get("path") or "").strip()
+        }
+        if not self.related_documents:
+            return
+        for key, document in self.related_documents.items():
+            button = QPushButton(str(document.get("label") or key))
+            button.setObjectName("markdownDocumentTab")
+            button.setCheckable(True)
+            button.setCursor(Qt.CursorShape.PointingHandCursor)
+            button.setFixedHeight(30)
+            button.clicked.connect(
+                lambda _checked=False, selected=key: self.open_related_document(selected)
+            )
+            self.related_document_buttons[key] = button
+            self.related_toolbar_layout.addWidget(button)
+        self.related_toolbar_layout.addStretch(1)
+        self.related_toolbar.show()
+        selected = active_key if active_key in self.related_documents else next(iter(self.related_documents))
+        self.open_related_document(selected, source_line=source_line)
+
+    def open_related_document(self, key: str, *, source_line: int = 1) -> None:
+        document = self.related_documents.get(str(key))
+        if document is None:
+            return
+        path = Path(str(document.get("path") or "")).resolve()
+        if str(document.get("kind") or "") == "image_gallery":
+            if not path.is_dir():
+                QMessageBox.information(self, "图片", f"图片根目录尚不存在：\n{path}")
+                return
+            parts = ["# 当前节图片", ""]
+            items = [item for item in document.get("items") or [] if isinstance(item, dict)]
+            if not items:
+                parts.append("当前节没有登记图片。")
+            for index, item in enumerate(items, start=1):
+                label = str(item.get("label") or f"图 {index}").replace("]", "\\]")
+                relative = (
+                    str(item.get("path") or "")
+                    .replace("\\", "/")
+                    .replace(" ", "%20")
+                    .replace("(", "%28")
+                    .replace(")", "%29")
+                )
+                parts.extend((f"## {label}", "", f"![{label}]({relative})", ""))
+            self.active_related_document = str(key)
+            for button_key, button in self.related_document_buttons.items():
+                button.setChecked(button_key == self.active_related_document)
+            self.open_virtual_document(
+                "\n".join(parts).rstrip() + "\n",
+                base_dir=path,
+                display_name="当前节图片",
+            )
+            return
+        if str(document.get("kind") or "markdown") == "directory":
+            if not path.is_dir() or not QDesktopServices.openUrl(QUrl.fromLocalFile(str(path))):
+                QMessageBox.information(self, "图片目录", f"目录无法打开：\n{path}")
+            for button_key, button in self.related_document_buttons.items():
+                button.setChecked(button_key == self.active_related_document)
+            return
+        if not path.is_file():
+            QMessageBox.information(self, str(document.get("label") or "Markdown"), f"文件尚不存在：\n{path}")
+            return
+        self.active_related_document = str(key)
+        for button_key, button in self.related_document_buttons.items():
+            button.setChecked(button_key == self.active_related_document)
+        self.open_document(path, read_only=True, source_line=max(1, int(source_line)))
+
+    def open_virtual_document(
+        self,
+        source: str,
+        *,
+        base_dir: str | Path,
+        display_name: str,
+    ) -> None:
+        self.compile_timer.stop()
+        self.draft_save_timer.stop()
+        self.source_base_dir = Path(base_dir).resolve()
+        self.document_read_only = True
+        self._pending_reveal_line = 1
+        self.editor.setReadOnly(True)
+        self.editor.setPlainText(str(source or ""))
+        self.editor.reveal_line(1, focus=False)
+        self.compile_preview()
+        self.status_label.setText(f"已打开（只读）：{display_name}")
+
     @staticmethod
     def _pane(title: str, content: QWidget) -> QWidget:
         pane = QFrame()
@@ -672,6 +806,7 @@ class MarkdownReaderPage(QWidget):
             """
             QWidget#markdownReaderPage { background: #e8edf1; color: #17212b; }
             QFrame#markdownToolbar { background: #f8fafb; border-bottom: 1px solid #cfd8e1; }
+            QFrame#markdownRelatedToolbar { background: #eef3f6; border-bottom: 1px solid #cfd8e1; }
             QPushButton#markdownButton, QPushButton#markdownPrimaryButton {
                 border: 1px solid #bcc8d2; border-radius: 5px; padding: 0 13px;
                 background: #ffffff; color: #243442; font-weight: 600;
@@ -679,6 +814,13 @@ class MarkdownReaderPage(QWidget):
             QPushButton#markdownButton:hover { background: #eef3f5; border-color: #98a8b5; }
             QPushButton#markdownPrimaryButton { background: #006d77; border-color: #006d77; color: #ffffff; }
             QPushButton#markdownPrimaryButton:hover { background: #005f67; }
+            QPushButton#markdownDocumentTab {
+                border: 1px solid #b9c6d0; border-radius: 5px; padding: 0 12px;
+                background: #ffffff; color: #334552; font-weight: 650;
+            }
+            QPushButton#markdownDocumentTab:checked {
+                background: #006d77; border-color: #006d77; color: #ffffff;
+            }
             QCheckBox { spacing: 7px; color: #334552; }
             QLabel#markdownDialect { color: #657582; font-size: 12px; }
             QFrame#markdownPane { background: #ffffff; border: 0; }
@@ -697,7 +839,8 @@ class MarkdownReaderPage(QWidget):
         self.update_line_status()
 
     def schedule_draft_save(self) -> None:
-        self.draft_save_timer.start()
+        if not self.document_read_only:
+            self.draft_save_timer.start()
 
     def load_draft(self) -> None:
         try:
@@ -710,6 +853,8 @@ class MarkdownReaderPage(QWidget):
 
     def save_draft(self) -> None:
         self.draft_save_timer.stop()
+        if self.document_read_only:
+            return
         try:
             write_markdown_draft(self.draft_path, self.editor.toPlainText())
         except OSError as error:
@@ -721,7 +866,7 @@ class MarkdownReaderPage(QWidget):
             return
         try:
             result = compile_markdown(self.editor.toPlainText())
-            document = build_markdown_document(result)
+            document = resolve_markdown_asset_urls(build_markdown_document(result))
         except Exception as error:
             self.status_label.setText(f"编译失败：{error}")
             fallback = f"<html><body style='font-family:Segoe UI;padding:24px;color:#b42318'>{html.escape(str(error))}</body></html>"
@@ -734,7 +879,7 @@ class MarkdownReaderPage(QWidget):
         self.save_draft()
         self.load_outline(result)
         self._preview_loaded = False
-        base = QUrl.fromLocalFile(str(MARKDOWN_ASSET_DIR.resolve()) + os.sep)
+        base = QUrl.fromLocalFile(str(self.source_base_dir) + os.sep)
         self.web_view.setHtml(document, base)
         warning_text = f" · {len(result.warnings)} 条安全提示" if result.warnings else ""
         self.status_label.setText(
@@ -747,7 +892,7 @@ class MarkdownReaderPage(QWidget):
         if not ok:
             self.status_label.setText("Markdown 预览载入失败。")
             return
-        self.sync_cursor_to_preview()
+        self._run_preview_script(self._pending_reveal_line, True)
 
     def on_render_completed(self, math_count: int, error_count: int) -> None:
         if self._last_result is None:
@@ -773,9 +918,33 @@ class MarkdownReaderPage(QWidget):
     def load_outline(self, result: MarkdownRenderResult) -> None:
         if self.outline_web_view is None:
             return
-        document = build_markdown_outline_document(result.headings)
-        base = QUrl.fromLocalFile(str(MARKDOWN_ASSET_DIR.resolve()) + os.sep)
+        document = resolve_markdown_asset_urls(build_markdown_outline_document(result.headings))
+        base = QUrl.fromLocalFile(str(self.source_base_dir) + os.sep)
         self.outline_web_view.setHtml(document, base)
+
+    def open_document(
+        self,
+        path: str | Path,
+        *,
+        read_only: bool = True,
+        source_line: int = 1,
+    ) -> None:
+        target = Path(path).resolve()
+        if not target.is_file():
+            raise FileNotFoundError(f"找不到 Markdown 文件：{target}")
+        source = target.read_text(encoding="utf-8")
+        self.compile_timer.stop()
+        self.draft_save_timer.stop()
+        self.draft_path = target
+        self.source_base_dir = target.parent
+        self.document_read_only = bool(read_only)
+        self._pending_reveal_line = max(1, int(source_line))
+        self.editor.setReadOnly(self.document_read_only)
+        self.editor.setPlainText(source)
+        self.editor.reveal_line(self._pending_reveal_line, focus=False)
+        self.compile_preview()
+        mode = "只读" if self.document_read_only else "可编辑"
+        self.status_label.setText(f"已打开（{mode}）：{target.name}")
 
     @Slot(int)
     def jump_to_outline_source_line(self, source_line: int) -> None:

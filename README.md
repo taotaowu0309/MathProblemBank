@@ -8,7 +8,7 @@ The current public scope is **math v0.1**. Physics, English, and other workspace
 
 ## Project status
 
-This repository is a sanitized public view generated from one canonical implementation. Its public history does not contain private development history, user databases, textbooks, recordings, generated artifacts, credentials, or a pre-filled learner profile.
+This repository is a sanitized public view (净化后的公开发行视图) generated from one canonical implementation. Its public history does not contain private development history, user databases, textbooks, recordings, generated artifacts, credentials, or a pre-filled learner profile.
 
 The project is released under the Apache License 2.0. Third-party components retain their own licenses; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
@@ -50,9 +50,9 @@ To build a fresh public staging directory and archive:
 
 ```powershell
 python tools/build_public_release.py `
-  --output D:\\Temp\\MathProblemBank-v0.1.0-rc1 `
-  --zip D:\\Temp\\MathProblemBank-v0.1.0-rc1.zip `
-  --release-version 0.1.0rc1
+  --output D:\\Temp\\MathProblemBank-v0.1.0-rc3 `
+  --zip D:\\Temp\\MathProblemBank-v0.1.0-rc3.zip `
+  --release-version 0.1.0rc3
 ```
 
 The exporter uses an allowlist, a closed-world manifest, and sensitive-data checks. It rejects databases, textbooks, generated PDFs, compiler caches, undeclared archives, and private paths.

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from shared.scripts.ai_agent_api_policy import budgeted_task, submit_with_budget
+
 import hashlib
 import json
 import mimetypes
@@ -554,14 +556,23 @@ class OnlineCourseAiAgent:
     # remains one logical invocation with three connection attempts underneath.
     REQUEST_ATTEMPTS = 1
     PREFLIGHT_ATTEMPTS = 1
-    REQUIRED_MODEL = "gpt-5.6-sol"
-    REQUIRED_REASONING_EFFORT = "medium"
+    REQUIRED_MODEL = "deepseek-flash"
+    # Mathematical evidence reconstruction prioritizes rigorous reasoning over
+    # minimum latency. Final text parts are still parallelized independently.
+    REQUIRED_REASONING_EFFORT = "high"
+    # The bounded end-of-recording synthesis is a merge/repair pass over
+    # already locked evidence; keep its relay request at the medium setting
+    # used by the persisted invocation contract.
+    FINAL_SYNTHESIS_REASONING_EFFORT = "medium"
     EVIDENCE_REQUEST_MAX_IMAGES = 24
     EVIDENCE_REQUEST_MAX_TRANSCRIPT_CHARACTERS = 60000
     TARGETED_REVIEW_MAX_IMAGES = 16
     RECORDING_WINDOW_SYNTHESIS_SCHEMA_VERSION = 1
-    RECORDING_WINDOW_OUTPUT_TOKENS = 4500
-    FINAL_SYNTHESIS_OUTPUT_TOKENS = 4500
+    # A five-minute window can contain a long proof plus the required JSON
+    # envelope.  4,500 tokens repeatedly truncated otherwise valid windows;
+    # reserve enough headroom while remaining below the provider hard ceiling.
+    RECORDING_WINDOW_OUTPUT_TOKENS = 12000
+    FINAL_SYNTHESIS_OUTPUT_TOKENS = 48000
     FINAL_SYNTHESIS_PART_OUTPUT_TOKENS = 8000
     # Some relay gateways return HTTP 524 before a large, reasoning-heavy
     # request reaches the user's configured client timeout.  Five recording
@@ -569,7 +580,12 @@ class OnlineCourseAiAgent:
     # one serial request per five-minute window.  A failed multi-window request
     # is bisected until the existing single-window safe path is reached.
     FINAL_SYNTHESIS_WINDOWS_PER_REQUEST = 5
-    FINAL_SYNTHESIS_PARALLEL_REQUESTS = 1
+    # Final synthesis parts are independent bounded text patches.  Keep a
+    # small fixed pool so a long episode does not serialize every relay round,
+    # while leaving enough headroom for the provider and preserving the
+    # deterministic local merge order below.  Failed parts still fall back to
+    # the existing binary retry path.
+    FINAL_SYNTHESIS_PARALLEL_REQUESTS = 3
     OUTLINE_ENDPOINT_TOLERANCE_SECONDS = 5.0
     EVIDENCE_RESPONSE_SCHEMA_VERSION = 5
     EVIDENCE_RESPONSE_SCHEMA = {
@@ -663,9 +679,9 @@ class OnlineCourseAiAgent:
                 overrides.update(
                     provider_kind="openai_responses",
                     routing_strategy="fixed",
-                    reasoning_effort="medium",
+                    reasoning_effort=self.REQUIRED_REASONING_EFFORT,
                     stream_responses=False,
-                    transport_retries=2,
+                    transport_retries=1,
                 )
             request_profile = replace(self.profile, **overrides)
         self.request_profile = request_profile
@@ -791,6 +807,12 @@ class OnlineCourseAiAgent:
         marker = "ONLINE_COURSE_API_OK"
         started = time.monotonic()
         routes = self._preflight_route_candidates()
+        emit(
+            "网课 Agent 性能策略已加载："
+            f"reasoning_effort={self.REQUIRED_REASONING_EFFORT}；"
+            f"final_synthesis_parallel={self.FINAL_SYNTHESIS_PARALLEL_REQUESTS}；"
+            "录制窗口与结束阶段使用同一固定模型路由。"
+        )
         total_attempts = 0
         routes_tried: list[dict[str, str]] = []
         last_error: Exception | None = None
@@ -803,7 +825,9 @@ class OnlineCourseAiAgent:
                         getattr(route_profile, "timeout_seconds", 600)
                     ),
                     reasoning_effort=self.REQUIRED_REASONING_EFFORT,
-                    max_output_tokens=32,
+                    # Thinking tokens share the output budget on DeepSeek.
+                    # 32 can truncate even this short connectivity marker.
+                    max_output_tokens=256,
                     stream_responses=False,
                 )
             model = str(getattr(preflight_profile, "model", "unknown") or "unknown")
@@ -878,7 +902,7 @@ class OnlineCourseAiAgent:
                     self.stage_timings.append(timing)
                     try:
                         emit(
-                            f"网课 Agent API 预检通过：{elapsed:.1f} 秒；"
+                            f"网课 Agent API 预检通过：{elapsed:.1f} 秒（仅验证短文本连通性）；"
                             f"已锁定模型 {timing['response_model'] or model}，"
                             f"协议 {protocol}。后续单次正确性审核与统一生成"
                             "使用该路由。"
@@ -948,6 +972,7 @@ class OnlineCourseAiAgent:
             key=lambda profile: int(profile.id == self.store.active_profile_id),
         )
 
+    @budgeted_task
     def _run(
         self,
         payload: dict[str, Any],
@@ -1008,8 +1033,11 @@ class OnlineCourseAiAgent:
                 "录制段数学正确性审核与统一生成" in stage
             )
             if recording_window_stage:
+                configured = int(
+                    getattr(self.request_profile, "max_output_tokens", 0) or 0
+                )
                 stage_output_tokens = min(
-                    int(getattr(self.request_profile, "max_output_tokens", 4500)),
+                    configured or self.RECORDING_WINDOW_OUTPUT_TOKENS,
                     self.RECORDING_WINDOW_OUTPUT_TOKENS,
                 )
             elif coverage_audit:
@@ -1023,14 +1051,18 @@ class OnlineCourseAiAgent:
                     max(18000, transcript_length * 2),
                 )
             elif final_window_synthesis:
-                stage_output_tokens = min(
-                    int(getattr(self.request_profile, "max_output_tokens", 12000)),
-                    (
-                        self.FINAL_SYNTHESIS_PART_OUTPUT_TOKENS
-                        if "文本分块" in stage
-                        else self.FINAL_SYNTHESIS_OUTPUT_TOKENS
-                    ),
+                # The normal profile may still be 6,000 from older settings;
+                # final synthesis needs the raised window budget to avoid
+                # truncating the JSON patch response again.
+                requested = (
+                    self.FINAL_SYNTHESIS_PART_OUTPUT_TOKENS
+                    if "文本分块" in stage
+                    else self.FINAL_SYNTHESIS_OUTPUT_TOKENS
                 )
+                configured = int(
+                    getattr(self.request_profile, "max_output_tokens", 0) or 0
+                )
+                stage_output_tokens = min(configured or requested, requested)
             elif "截图价值判断" in stage or "板书" in stage:
                 stage_output_tokens = min(
                     int(getattr(self.request_profile, "max_output_tokens", 12000)),
@@ -1048,12 +1080,16 @@ class OnlineCourseAiAgent:
                 self.request_profile,
                 model=self.REQUIRED_MODEL,
                 provider_kind="openai_responses",
-                reasoning_effort=self.REQUIRED_REASONING_EFFORT,
+                reasoning_effort=(
+                    self.FINAL_SYNTHESIS_REASONING_EFFORT
+                    if final_window_synthesis and "并发" in stage
+                    else self.REQUIRED_REASONING_EFFORT
+                ),
                 max_output_tokens=stage_output_tokens,
                 timeout_seconds=configured_timeout_seconds,
                 # Retry the same synchronous relay request twice, but never
                 # switch model, protocol, or transport.
-                transport_retries=2,
+                transport_retries=1,
                 stream_responses=False,
             )
             stage_provider = create_provider(stage_profile, self.api_key)
@@ -1103,7 +1139,8 @@ class OnlineCourseAiAgent:
             f"模型：{getattr(stage_profile, 'model', 'unknown')}\n"
             f"协议：{getattr(stage_profile, 'provider_kind', 'configured provider')}\n"
             f"推理强度：{getattr(stage_profile, 'reasoning_effort', 'provider default')}\n"
-            f"最大输出：{getattr(stage_profile, 'max_output_tokens', 'provider default')} tokens\n"
+            "最大输出：由 API 提供方决定（客户端不设置上限）\n"
+            "推理强度：由 API 提供方决定（客户端不设置）\n"
             f"单次请求超时：{getattr(stage_profile, 'timeout_seconds', 'provider default')} 秒\n"
             f"连接级重试：{getattr(stage_profile, 'transport_retries', 0)} 次\n"
             "响应传输：同步 JSON（固定）\n"
@@ -1251,19 +1288,13 @@ class OnlineCourseAiAgent:
         prohibited_boundary_times: list[float] | None = None,
         maximum_segments: int | None = None,
     ) -> list[dict[str, Any]]:
-        subsection_capacity_seconds = 10 * 60.0
-        duration_segment_limit = max(
-            1,
-            int(
-                max(0.0, float(coverage_end) - float(coverage_start))
-                // subsection_capacity_seconds
-            )
-            + (1 if existing_outline else 0),
-        )
+        # Formal units follow mathematical meaning.  An explicit ceiling is
+        # retained only for callers that need a transport safeguard; never
+        # derive a split quota from the recording duration.
         segment_limit = (
-            duration_segment_limit
-            if maximum_segments is None
-            else min(duration_segment_limit, max(1, int(maximum_segments)))
+            max(1, int(maximum_segments))
+            if maximum_segments is not None
+            else None
         )
         section_only_rule = _section_only_outline_rule(course_info)
         reference_guided_rule = _reference_guided_outline_rule(course_info)
@@ -1288,12 +1319,16 @@ class OnlineCourseAiAgent:
             "Decide subsection continuity and every new boundary from a genuine mathematical-content transition. "
             "First build an internal chronological content map of the definitions, constructions, families of examples, "
             "new mathematical objects, named properties, theorem-and-proof arcs, and changes in the question being studied. "
-            "Then partition that map into coherent writing units. A lone definition, theorem, example, or proof step does "
-            "not automatically force a boundary; however, a sustained cluster organized around a new definition or "
-            "construction, a new class of examples, a new property, a theorem with its proof, or a new mathematical goal "
-            "is normally its own Subsection. Treat transitions such as basic examples to separation/countability, local "
-            "structure to compactness, construction to classification, or statement to a different theorem family as "
-            "strong boundary evidence even when the parent Section stays the same. "
+            "Then partition that map into textbook-sized mathematical writing units. Each unit has one main mathematical "
+            "question and a coherent chain of definitions, hypotheses, lemmas, theorem statements, proofs, and examples. "
+            "Keep a theorem with the proof that establishes it, a construction with the properties proved from it, and an "
+            "example family with the criterion or theorem it illustrates. A lone definition, theorem, example, or proof step "
+            "does not automatically force a boundary; it belongs to the surrounding unit unless the lecture opens a new "
+            "mathematical question. Create a boundary only when the question, principal object, or proof strategy changes "
+            "in a way that would justify a new textbook subsection. Follow explicit source headings and reference-outline "
+            "transitions when supplied. Do not manufacture a boundary because an episode, week, five-minute evidence window, "
+            "page, board, formula, or isolated proof step ended. Never use generic labels such as 'Applications ... (part 1/3)' "
+            "when the evidence supports a mathematical title. "
             "Each segment object must contain integer `chapter_number`, `section_number`, and `subsection_number`; "
             "concise academic-English `chapter_title`, `section_title`, and `subsection_title`; write every "
             "mathematical symbol or expression as inline LaTeX delimited by single dollar signs, for example "
@@ -1320,17 +1355,17 @@ class OnlineCourseAiAgent:
             "substantial item in the internal content map belongs to exactly one focused segment, every boundary has a "
             "content-based reason, every reused ID is a direct continuation, and every new Subsection number is unused "
             "inside its Chapter/Section. `prohibited_boundary_times` lists internal evidence-processing window endpoints. "
-            f"Assign at most {segment_limit} distinct Subsections in this {float(coverage_end) - float(coverage_start):.3f}-second "
-            "range. More importantly, every distinct formal Subsection must own at least 600 seconds of 1x lecture "
-            "evidence after all of its segments are accumulated. Disjoint segments and cross-episode continuations "
-            "assigned to the same stable existing Subsection contribute to the same total; use the supplied "
-            "`accumulated_lecture_seconds` when continuing an existing ID. A short definition, theorem, example, "
-            "exercise cluster, transition, or final tail is not allowed to become its own Subsection merely because "
-            "it has a genuine local boundary. Place it inside the mathematically closest coherent adjacent writing "
-            "unit and choose a focused title broad enough to cover both. Before returning, calculate the accumulated "
-            "duration of every proposed Subsection and verify that each is at least 600 seconds. Never use a "
-            "recording-window boundary as the reason for a split "
-            "or merge, and avoid crossing a genuine Chapter/Section transition. "
+            "There is no minimum, target, or preferred duration for a Subsection. A short but mathematically complete "
+            "theorem, construction, counterexample, or computation remains its own unit when the source treats it as one; "
+            "a long unit remains intact when its definitions, proof, and applications form one argument. Duration may be "
+            "reported as evidence, but it must never decide a split or merge. "
+            + (
+                f"An external protocol ceiling of {segment_limit} distinct units applies only as a validation check; never "
+                "merge mathematically distinct units to satisfy it. "
+                if segment_limit is not None
+                else "No protocol ceiling is supplied for this request. "
+            )
+            + "Never use a recording-window boundary as the reason for a split or merge, and avoid crossing a genuine Chapter/Section transition. "
             "Never return one of them as an internal segment endpoint, even if it looks like a convenient round time; "
             "move to the actual mathematical transition supported by the complete evidence. Include a "
             "concise `evidence` string in every segment explaining the mathematical boundary or continuity decision. "
@@ -1349,9 +1384,10 @@ class OnlineCourseAiAgent:
                 "outline boundaries. Each segment has integer chapter/section/subsection numbers, concise academic-English titles, "
                 "numeric `end_video_time`, `assignment` (`existing` or `new`), `existing_subsection_id`, and a content-based `evidence` "
                 "reason. Cover the requested range without gaps and end at the supplied coverage endpoint. Reuse an existing ID only for "
-                "direct continuation of the same focused teaching unit; shared vocabulary is not enough. Every formal Subsection must "
-                "accumulate at least 600 seconds of 1x lecture evidence; merge a short topic or final tail into the mathematically closest "
-                f"coherent adjacent unit, and return at most {segment_limit} distinct subsections. Never place an internal endpoint at a prohibited evidence-window "
+                "direct continuation of the same focused teaching unit; shared vocabulary is not enough. Partition by the "
+                "mathematical question and its definition/proof/example chain, following explicit textbook headings when "
+                "supplied. There is no duration minimum or duration-based maximum: a short complete mathematical unit stays "
+                "separate, and a long coherent argument stays together. Never place an internal endpoint at a prohibited evidence-window "
                 "time merely for convenience. Do not invent Xuan Yu-You terminology or book structure without supplied evidence. "
                 + section_only_rule + reference_guided_rule + outline_contract
             )
@@ -1383,8 +1419,8 @@ class OnlineCourseAiAgent:
                 float(value) for value in (prohibited_boundary_times or [])
             ],
             "maximum_distinct_subsections_for_range": segment_limit,
-            "subsection_capacity_seconds": subsection_capacity_seconds,
-            "minimum_new_subsection_seconds": subsection_capacity_seconds,
+            "subsection_capacity_seconds": None,
+            "minimum_new_subsection_seconds": None,
             "raw_timestamped_transcript": transcript[:220000],
             "ai_transcribed_board_reference": board_markdown[:80000],
         }
@@ -2645,7 +2681,7 @@ class OnlineCourseAiAgent:
                 getattr(request_profile, "provider_kind", "openai_responses")
                 or "openai_responses"
             ),
-            "reasoning_effort": self.REQUIRED_REASONING_EFFORT,
+            "reasoning_effort": self.FINAL_SYNTHESIS_REASONING_EFFORT,
             "stream_responses": False,
             "timeout_seconds": int(
                 getattr(request_profile, "timeout_seconds", 600) or 600
@@ -2676,6 +2712,28 @@ class OnlineCourseAiAgent:
                 separators=(",", ":"),
             ).encode("utf-8")
         ).hexdigest()
+        def reusable_signature(document: dict[str, Any]) -> bool:
+            if document.get("synthesis_signature") == synthesis_signature:
+                return True
+            previous = document.get("invocation_contract") or {}
+            # A cheaper scheduling policy does not invalidate already validated
+            # mathematics. Recompute the exact old evidence/prompt fingerprint;
+            # never accept a cache merely because its model matches.
+            if not isinstance(previous, dict) or any(
+                previous.get(key) != synthesis_invocation_contract.get(key)
+                for key in ("model", "provider_kind", "stream_responses")
+            ):
+                return False
+            if previous.get("reasoning_effort") not in {"low", "medium", "high"}:
+                return False
+            old_signature = hashlib.sha256(json.dumps({
+                "payload": synthesis_payload,
+                "system_prompt": system_prompt,
+                "agent_profile": str(getattr(self, "profile_label", "") or ""),
+                "invocation_contract": previous,
+            }, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")).hexdigest()
+            return document.get("synthesis_signature") == old_signature
+
         cached_answer = ""
         if response_cache_path is not None:
             try:
@@ -2688,8 +2746,7 @@ class OnlineCourseAiAgent:
                 isinstance(cached_response, dict)
                 and isinstance(cached_response.get("version"), int)
                 and cached_response.get("version", 0) >= 6
-                and str(cached_response.get("synthesis_signature") or "")
-                == synthesis_signature
+                and reusable_signature(cached_response)
             ):
                 cached_answer = str(cached_response.get("answer") or "")
 
@@ -2737,8 +2794,7 @@ class OnlineCourseAiAgent:
             if (
                 isinstance(stored_parts, dict)
                 and int(stored_parts.get("version") or 0) >= 3
-                and str(stored_parts.get("synthesis_signature") or "")
-                == synthesis_signature
+                and reusable_signature(stored_parts)
                 and isinstance(stored_parts.get("answers"), dict)
             ):
                 cached_parts = {
@@ -2861,6 +2917,12 @@ class OnlineCourseAiAgent:
                         if str(item.get("diagram_id") or "")
                     ],
                 }
+            part_schema = dict(response_schema)
+            if not part_candidates:
+                # No figure can be returned here: do not send its large TikZ schema.
+                row_schema = dict(response_schema["sessions"][0])
+                row_schema["diagram_decisions"] = []
+                part_schema["sessions"] = [row_schema]
             if window_indexes[0] != min(windows_by_index):
                 # The leading continuity context is in the bounded ASR slice;
                 # avoid repeatedly sending earlier full-session material.
@@ -2876,6 +2938,7 @@ class OnlineCourseAiAgent:
                 ],
                 "payload": {
                     **synthesis_payload,
+                    "response_schema": part_schema,
                     "recording_sessions": [part_session],
                 },
             }
@@ -3078,6 +3141,7 @@ class OnlineCourseAiAgent:
             def apply_unscoped(
                 source: str,
                 replacement_rows: list[dict[str, Any]],
+                *, defer_unmatched: bool = False,
             ) -> str:
                 source = repair_overescaped_latex_commands(source)
 
@@ -3238,7 +3302,7 @@ class OnlineCourseAiAgent:
                         for new in {str(item["new"]) for item in group}
                         if new
                     )
-                    if unmatched_targets is not None:
+                    if unmatched_targets is not None and not defer_unmatched:
                         unmatched_targets.append(
                             {
                                 "old": old,
@@ -3302,7 +3366,7 @@ class OnlineCourseAiAgent:
                 for window_index, block in repaired_blocks:
                     anchored_rows = anchored_by_window.get(window_index, [])
                     try:
-                        applied_block = apply_unscoped(block, anchored_rows)
+                        applied_block = apply_unscoped(block, anchored_rows, defer_unmatched=True)
                     except RuntimeError:
                         # A model can assign a boundary paragraph to the adjacent
                         # recording window even though replacement.old was copied
@@ -4442,7 +4506,7 @@ class OnlineCourseAiAgent:
                     thread_name_prefix="recording-final-synthesis",
                 ) as executor:
                     futures = {
-                        executor.submit(prefetch_part, position, part): part
+                        submit_with_budget(executor, prefetch_part, position, part): part
                         for position, part in enumerate(uncached_parts, start=1)
                     }
                     actual_requests += len(futures)
@@ -4569,7 +4633,9 @@ class OnlineCourseAiAgent:
                                 )
                                 raise RuntimeError(
                                     "transcript-fallback window still requires a "
-                                    "successful mathematical reconstruction"
+                                    "successful mathematical reconstruction; "
+                                    f"session={expected_session_id}, windows={expected_coverage}; "
+                                    f"upstream error: {error}"
                                 ) from error
                             # A single recording window cannot be split further.
                             # Preserve its already locked mathematical draft and

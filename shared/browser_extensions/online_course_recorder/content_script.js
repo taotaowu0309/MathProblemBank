@@ -1,11 +1,29 @@
 (() => {
-  if (window.__mathProblemBankCourseRecorderInstalled) return;
-  window.__mathProblemBankCourseRecorderInstalled = true;
+  const previousInstall = window.__mathProblemBankCourseRecorderInstalled;
+  if (previousInstall?.isAlive instanceof Function) {
+    try {
+      // A script injected twice in the same extension context is already
+      // healthy. After Chrome reloads the extension this closure throws
+      // "Extension context invalidated", so the new script is allowed to
+      // install a fresh listener set on the unchanged page.
+      if (previousInstall.isAlive()) return;
+    } catch (_error) {}
+  }
+  window.__mathProblemBankCourseRecorderInstalled = {
+    isAlive: () => {
+      chrome.runtime.getManifest();
+      return true;
+    },
+  };
 
   let lastCaption = "";
   let lastTimeEventAt = 0;
   let attachedVideo = null;
   let recordingIndicator = null;
+  let lastRouteIdentity = "";
+  let recordingActive = false;
+  let boundaryPauseLock = null;
+  let boundaryPauseTimer = null;
 
   function videoElement() {
     const videos = [...document.querySelectorAll("video")];
@@ -51,10 +69,56 @@
   }
 
   function post(type, payload) {
-    chrome.runtime.sendMessage({ type, payload }).catch(() => {});
+    // During an extension reload Chrome invalidates the existing content
+    // script context. In that short window sendMessage can throw synchronously
+    // instead of returning a rejected promise; swallow that expected race so
+    // the page does not accumulate extension errors.
+    try {
+      const pending = chrome.runtime.sendMessage({ type, payload });
+      pending?.catch?.(() => {});
+    } catch (_error) {}
   }
 
-  function pauseSourceVideo(reason = "") {
+  function clearBoundaryPauseLock() {
+    boundaryPauseLock = null;
+    if (boundaryPauseTimer !== null) {
+      clearInterval(boundaryPauseTimer);
+      boundaryPauseTimer = null;
+    }
+  }
+
+  function enforceBoundaryPause() {
+    if (!boundaryPauseLock) return;
+    const video = videoElement();
+    if (video && !video.paused) video.pause();
+  }
+
+  function lockBoundaryPause(identity, reason = "") {
+    boundaryPauseLock = {
+      identity: String(identity || sourceIdentity() || "").trim().toLowerCase(),
+      reason: String(reason || ""),
+      lockedAt: Date.now(),
+    };
+    if (boundaryPauseTimer === null) {
+      // Bilibili can call play() again after the first pause while it is
+      // replacing the player route. Keep the completed episode boundary
+      // frozen until the user explicitly starts playback or recording again.
+      boundaryPauseTimer = setInterval(enforceBoundaryPause, 200);
+    }
+    enforceBoundaryPause();
+  }
+
+  function clearBoundaryPauseOnUserIntent(event) {
+    if (!boundaryPauseLock) return;
+    if (event?.isTrusted === false) return;
+    if (event?.type === "keydown" && ![" ", "Enter", "k", "K", "ArrowLeft", "ArrowRight"].includes(event.key)) {
+      return;
+    }
+    clearBoundaryPauseLock();
+  }
+
+  function pauseSourceVideo(reason = "", hold = false) {
+    if (hold) lockBoundaryPause(sourceIdentity(), reason);
     const video = videoElement();
     if (!video) {
       return { ok: false, paused: false, reason: "video_not_found" };
@@ -72,7 +136,52 @@
   }
 
   function emitState(type) {
+    let data = metadata();
+    const previousIdentity = String(lastRouteIdentity || "").trim().toLowerCase();
+    const observedIdentity = String(data.source_identity || "").trim().toLowerCase();
+    const sourceChanged = Boolean(
+      previousIdentity && observedIdentity && previousIdentity !== observedIdentity
+    );
+    if (sourceChanged) {
+      // Freeze autoplay locally before the service-worker/backend round trip.
+      // The latter still confirms and persists the episode boundary.
+      const video = videoElement();
+      if (recordingActive) lockBoundaryPause(data.source_identity, "source_identity_changed");
+      video?.pause();
+      data = metadata();
+      type = "episode-boundary";
+    }
+    if (data.source_identity) lastRouteIdentity = data.source_identity;
+    post("player-event", {
+      type,
+      state: type,
+      url: data.url,
+      title: data.title,
+      video_id: data.video_id,
+      source_identity: data.source_identity,
+      duration: data.duration,
+      current_time: data.current_time,
+      playback_rate: data.playback_rate,
+      paused: data.paused,
+      muted: data.muted,
+      volume: data.volume,
+      ready_state: data.ready_state,
+      wall_time: Date.now(),
+    });
+  }
+
+  function emitRouteIfChanged(type = "navigation-check") {
     const data = metadata();
+    const identity = String(data.source_identity || "").trim();
+    if (!identity || identity === lastRouteIdentity) return;
+    const previousIdentity = String(lastRouteIdentity || "").trim().toLowerCase();
+    if (previousIdentity && identity.toLowerCase() !== previousIdentity) {
+      // Route polling can observe a new autoplay item before the media event;
+      // freeze it here as well.
+      if (recordingActive) lockBoundaryPause(identity, "route_identity_changed");
+      videoElement()?.pause();
+    }
+    lastRouteIdentity = identity;
     post("player-event", {
       type,
       state: type,
@@ -96,9 +205,19 @@
     if (!video || video === attachedVideo) return;
     attachedVideo = video;
     for (const event of ["play", "pause", "playing", "waiting", "stalled", "seeking", "seeked", "ratechange", "volumechange", "ended", "emptied"]) {
-      video.addEventListener(event, () => emitState(event), { passive: true });
+      video.addEventListener(event, () => {
+        if (boundaryPauseLock && (event === "play" || event === "playing")) {
+          enforceBoundaryPause();
+          return;
+        }
+        emitState(event);
+      }, { passive: true });
     }
     video.addEventListener("timeupdate", () => {
+      if (boundaryPauseLock) {
+        enforceBoundaryPause();
+        return;
+      }
       const now = Date.now();
       if (now - lastTimeEventAt >= 1000) {
         lastTimeEventAt = now;
@@ -180,11 +299,13 @@
       return false;
     }
     if (message?.type === "pause-source-video") {
-      sendResponse(pauseSourceVideo(message.reason));
+      sendResponse(pauseSourceVideo(message.reason, Boolean(message.hold)));
       return false;
     }
     if (message?.type === "recording-state") {
-      showRecordingIndicator(Boolean(message.active));
+      recordingActive = Boolean(message.active);
+      if (recordingActive) clearBoundaryPauseLock();
+      showRecordingIndicator(recordingActive);
       sendResponse({ ok: true });
       return false;
     }
@@ -197,10 +318,31 @@
   });
 
   attachVideo();
+  post("content-script-ready", metadata());
+  for (const event of ["pointerdown", "touchstart", "keydown"]) {
+    document.addEventListener(event, clearBoundaryPauseOnUserIntent, {
+      capture: true,
+      passive: true,
+    });
+  }
   document.addEventListener("yt-navigate-finish", () => {
     attachVideo();
-    if (recordingIndicator) emitState("youtube-navigation");
+    emitRouteIfChanged("youtube-navigation");
+  }, { passive: true });
+  for (const event of ["popstate", "hashchange"]) {
+    window.addEventListener(event, () => {
+      attachVideo();
+      emitRouteIfChanged(event);
+    }, { passive: true });
+  }
+  document.addEventListener("fullscreenchange", () => {
+    attachVideo();
+    emitRouteIfChanged("fullscreenchange");
   }, { passive: true });
   setInterval(scanCaption, 650);
+  setInterval(() => {
+    attachVideo();
+    emitRouteIfChanged();
+  }, 750);
   new MutationObserver(attachVideo).observe(document.documentElement, { childList: true, subtree: true });
 })();

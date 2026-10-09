@@ -35,11 +35,14 @@ async function refresh() {
     const awake =
       `Recorder ${response.extensionVersion || ""} background woke successfully. ` +
       "Chrome may show Service Worker (Inactive) again while idle; that is normal.";
+    const interruptedNotice = response.interrupted
+      ? "\n\nThe previous recording was finalized because Chrome updated or reloaded the recorder. A MediaRecorder cannot continue across an extension reload; start the next episode again."
+      : "";
     if (response.active) {
-      status.textContent = awake + "\n\nRecording is active. The lecture is replayed to your Windows output, while only this browser tab is recorded; microphone is never used.";
+      status.textContent = awake + interruptedNotice + "\n\nRecording is active. The lecture is replayed to your Windows output, while only this browser tab is recorded; microphone is never used.";
       start.hidden = true; stop.hidden = false;
     } else {
-      status.textContent = awake + "\n\n" + (selected
+      status.textContent = awake + interruptedNotice + "\n\n" + (selected
         ? "Open the desired YouTube or Bilibili episode, then start recording. Keep Windows output audible to listen; only tab audio is captured, and microphone audio is excluded."
         : "Open Math Problem Bank → Web Course Lectures and prepare a course first.");
       start.hidden = false; stop.hidden = true; start.disabled = !selected;
