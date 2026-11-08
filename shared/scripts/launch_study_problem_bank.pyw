@@ -99,6 +99,11 @@ WORKSPACE_OPTIONS = (
     },
 )
 
+if APP_PATHS.public_release:
+    WORKSPACE_OPTIONS = tuple(
+        option for option in WORKSPACE_OPTIONS if option["key"] in {"math", "english"}
+    )
+
 configure_app_identity(APP_ID)
 
 
@@ -153,7 +158,7 @@ def choose_workspace_qt() -> str | None:
     dialog.setWindowFlag(Qt.WindowType.WindowContextHelpButtonHint, False)
     dialog.setWindowFlag(Qt.WindowType.MSWindowsFixedSizeDialogHint, True)
     dialog.setModal(True)
-    dialog.setFixedSize(680, 560)
+    dialog.setFixedSize(680, 310 if APP_PATHS.public_release else 560)
     if APP_ICON_PATH.exists():
         dialog.setWindowIcon(QIcon(str(APP_ICON_PATH)))
     dialog.setStyleSheet(
@@ -196,7 +201,11 @@ def choose_workspace_qt() -> str | None:
     title.setObjectName("chooserTitle")
     title.setFont(QFont("Microsoft YaHei UI", round(ui_point_size(16)), QFont.Weight.DemiBold))
     layout.addWidget(title)
-    note = QLabel("选择本次要进入的工作空间；未启用的工程会在后续接入。")
+    note = QLabel(
+        "选择数学或英语，开始本次学习。"
+        if APP_PATHS.public_release
+        else "选择本次要进入的工作空间；未启用的工程会在后续接入。"
+    )
     note.setObjectName("chooserNote")
     layout.addWidget(note)
     layout.addSpacing(12)
