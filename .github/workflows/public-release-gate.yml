@@ -1,0 +1,47 @@
+name: 公开发行检查
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  release-gate:
+    name: ${{ matrix.os }} · Python 3.12
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    env:
+      PYTHONUTF8: "1"
+      PYTHONIOENCODING: utf-8
+      PYTHONDONTWRITEBYTECODE: "1"
+      QT_QPA_PLATFORM: offscreen
+      MPB_CODE_UPDATE_DONE: "1"
+    steps:
+      - name: 启用 Windows 长路径
+        if: runner.os == 'Windows'
+        run: git config --global core.longpaths true
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: 安装公开依赖
+        run: python -m pip install -r requirements-public.txt
+      - name: 检查源码语法与导入
+        run: python shared/scripts/public_regression_core.py --static-only
+      - name: 验证发行、隐私边界及隔离的数学英语回归
+        run: python -m unittest -v shared.scripts.test_release_engineering
+      - name: 记录 PDF 验收边界
+        shell: bash
+        run: |
+          python - <<'PY'
+          import shutil
+          print("XeLaTeX:", "已安装" if shutil.which("xelatex") else "未安装")
+          print("自动检查不等于真实桌面、音频、录屏、外部服务或正式 PDF 验收。")
+          PY

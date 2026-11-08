@@ -1,0 +1,14 @@
+# Binary user data and generated document/media formats
+*.db binary
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.ico binary
+*.gz binary
+*.xdv binary
+
+# TeX can use a final backslash-space deliberately; vocabulary exports keep
+# a trailing field separator space as part of their stable text format.
+*.tex -whitespace
+shared/exports/vocabulary/*.txt -whitespace

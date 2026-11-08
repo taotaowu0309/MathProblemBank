@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "runtime_root": "runtimes/diagram-backends-v1",
+  "policy_scope": "all_future_online_course_lectures",
+  "node_packages": {
+    "@penrose/core": "3.3.0",
+    "@viz-js/viz": "3.29.0",
+    "jsdom": "latest-compatible"
+  },
+  "typst": "0.14.2",
+  "cetz": "0.5.2",
+  "system_tools": [
+    "xelatex/quiver/tikz-cd",
+    "asymptote"
+  ],
+  "backends": [
+    "penrose",
+    "quiver",
+    "asymptote",
+    "graphviz",
+    "cetz"
+  ],
+  "textbook_figure_policy": "indexed_source_asset_sha256_exact_copy_only"
+}

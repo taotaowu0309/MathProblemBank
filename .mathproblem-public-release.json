@@ -1,0 +1,11 @@
+{
+  "product": "MathProblemBank",
+  "profile": "public-math-english-v0.2",
+  "release_version": "0.2.0rc1",
+  "python_requires": ">=3.12,<3.13",
+  "workspaces": [
+    "math",
+    "english"
+  ],
+  "user_data_policy": "OS application data / MathProblemBank unless overridden"
+}

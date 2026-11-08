@@ -1,0 +1,79 @@
+% textbook-note.sty — additions for textbook notes on top of ElegantNote.
+%
+% Every note is compiled as one fixed document: the open-source ElegantNote
+% class (ElegantLaTeX, LPPL; lang=cn, device=pad) provides the page, fonts,
+% colour theme, headings, title block and theorem-like environments.  This
+% package only adds what ElegantNote lacks for language notes — example
+% sentences with constituent underlines, a short "my understanding" block and
+% a full-width table — and takes every colour from ElegantNote's theme colour
+% `ecolor`, so a theme change restyles everything consistently.
+% Notes contain only body LaTeX; TextbookNotesService adds the wrapper.
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{textbook-note}[2026/10/25 MathProblemBank textbook note additions v3]
+
+\RequirePackage[normalem]{ulem}
+\RequirePackage{booktabs,tabularx,array}
+\RequirePackage{etoolbox}
+\RequirePackage[most]{tcolorbox}
+
+\colorlet{NoteMuted}{black!60}
+\colorlet{NoteWrong}{red!65!black}
+
+% ---------------------------------------------------------------- examples
+% \eg{English sentence}{中文译文或说明}: one numbered example, the English line
+% on top and the Chinese line below.  Leave the Chinese argument empty ({}) to
+% print only the English line.  \egbad: ungrammatical (*); \egweak: poor (?).
+% Examples are numbered through the note, so the text can refer to "(3)".
+\newcounter{noteeg}
+\newcommand\NoteEgLine[3]{% mark, English, Chinese
+  \par\addvspace{0.5em}%
+  \refstepcounter{noteeg}%
+  \begingroup\raggedright
+  \leftskip=2.4em
+  \renewcommand{\arraystretch}{0.85}\setlength{\tabcolsep}{0pt}%
+  \noindent\llap{\textcolor{ecolor}{(\thenoteeg)}\hspace{0.7em}}#1#2\par
+  \ifstrempty{#3}{}{\nopagebreak\vspace{-0.2em}\nopagebreak
+    \noindent{\small\color{NoteMuted}#3}\par}%
+  \endgroup
+  \addvspace{0.3em}}
+\newcommand\eg[2]{\NoteEgLine{}{#1}{#2}}
+\newcommand\egbad[2]{\NoteEgLine{\textcolor{NoteWrong}{*}\,}{#1}{#2}}
+\newcommand\egweak[2]{\NoteEgLine{\textcolor{NoteWrong}{?}\,}{#1}{#2}}
+% \eglabel{name} right after an example, then \egref{name} prints "(3)".
+\newcommand\eglabel[1]{\label{eg:#1}}
+\newcommand\egref[1]{(\ref{eg:#1})}
+
+% Marks inside the English sentence.
+% \seg{words}{S}: underlined constituent with its label beneath.
+\newcommand\seg[2]{\begin{tabular}[t]{@{}c@{}}\uline{\strut #1}\\[-0.2em]%
+  {\scriptsize\sffamily\color{ecolor}#2}\end{tabular}}
+% \ul{words}: underline only; \hl{words}: the point of the example.
+\newcommand\ul[1]{\uline{#1}}
+\newcommand\hl[1]{\textcolor{ecolor}{\bfseries #1}}
+% \del{words}: words removed; \ins{words}: words put in their place.
+\newcommand\del[1]{{\color{NoteWrong}\sout{#1}}}
+\newcommand\ins[1]{\textcolor{ecolor}{\bfseries #1}}
+% \wrong{words}: the faulty part of a wrong sentence.
+\newcommand\wrong[1]{\textcolor{NoteWrong}{\uwave{#1}}}
+
+% ---------------------------------------------------------------- blocks
+% \begin{mynote}[标题] ... \end{mynote}: the user's own understanding or question.
+\newtcolorbox{mynote}[1][我的理解]{enhanced,frame hidden,boxrule=0pt,arc=0pt,
+  colback=ecolor!6,borderline west={1.5pt}{0pt}{ecolor},
+  left=2.5mm,right=2mm,top=1.5mm,bottom=1.5mm,before skip=0.7em,after skip=0.7em,
+  before upper={{\small\bfseries\color{ecolor}#1}\par\vspace{0.15em}}}
+% \pattern{having + p.p.}: a structural formula, shown as 〈having + p.p.〉.
+\newcommand\pattern[1]{{\sffamily\bfseries\color{ecolor}〈#1〉}}
+\newcommand\key[1]{\textcolor{ecolor}{\bfseries #1}}
+\newcommand\page[1]{{\footnotesize\color{NoteMuted}（p.\,#1）}}
+
+% ---------------------------------------------------------------- tables
+% Wrapping columns: L{3cm} (fixed width) and Y (takes the remaining width).
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+% \begin{notetable}{L{3cm}Y} ... \end{notetable}: full-width table with booktabs rules.
+\newenvironment{notetable}[1]{\par\addvspace{0.4em}\noindent\small\renewcommand{\arraystretch}{1.3}%
+  \tabularx{\linewidth}{#1}\toprule}{\bottomrule\endtabularx\par\addvspace{0.4em}}
+\newcommand\hd[1]{\textcolor{ecolor}{\bfseries #1}}
+
+\endinput

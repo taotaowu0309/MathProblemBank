@@ -1,0 +1,23 @@
+% Loaded before the document through latexmk's pretex on macOS. Existing
+% preambles keep their preferred Windows fonts whenever those are installed.
+\PassOptionsToPackage{fontset=fandol}{ctex}
+\PassOptionsToClass{fontset=fandol}{ctexbook}
+\PassOptionsToClass{fontset=fandol}{ctexart}
+\AddToHook{package/xeCJK/after}{%
+  \NewCommandCopy\MPBOriginalCJKMain\setCJKmainfont
+  \NewCommandCopy\MPBOriginalCJKSans\setCJKsansfont
+  \NewCommandCopy\MPBOriginalCJKMono\setCJKmonofont
+  \NewCommandCopy\MPBOriginalCJKFamily\setCJKfamilyfont
+  \RenewDocumentCommand\setCJKmainfont{O{}mO{}}{%
+    \IfFontExistsTF{#2}{\MPBOriginalCJKMain[#1,#3]{#2}}{%
+      \MPBOriginalCJKMain[#1,#3]{FandolSong-Regular.otf}}}
+  \RenewDocumentCommand\setCJKsansfont{O{}mO{}}{%
+    \IfFontExistsTF{#2}{\MPBOriginalCJKSans[#1,#3]{#2}}{%
+      \MPBOriginalCJKSans[#1,#3]{FandolHei-Regular.otf}}}
+  \RenewDocumentCommand\setCJKmonofont{O{}mO{}}{%
+    \IfFontExistsTF{#2}{\MPBOriginalCJKMono[#1,#3]{#2}}{%
+      \MPBOriginalCJKMono[#1,#3]{FandolFang-Regular.otf}}}
+  \RenewDocumentCommand\setCJKfamilyfont{mO{}mO{}}{%
+    \IfFontExistsTF{#3}{\MPBOriginalCJKFamily{#1}[#2,#4]{#3}}{%
+      \MPBOriginalCJKFamily{#1}[#2,#4]{FandolKai-Regular.otf}}}
+}

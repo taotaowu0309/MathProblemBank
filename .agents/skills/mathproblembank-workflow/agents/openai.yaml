@@ -1,0 +1,4 @@
+interface:
+  display_name: "题库项目与讲义工作流"
+  short_description: "从教材获取、登记识别和网课材料到正式讲义的完整项目流程"
+  default_prompt: "使用 $mathproblembank-workflow 接续当前学习项目，读取项目状态并完成本次请求。"

@@ -1,0 +1,23 @@
+---
+description: MathProblemBank repository navigation and safety rules
+globs:
+  - "**/*.py"
+  - "**/*.pyw"
+  - "**/*.tex"
+  - "**/*.json"
+  - "**/*.md"
+alwaysApply: true
+---
+
+# MathProblemBank 工作规则
+
+先阅读仓库根目录 `AGENTS.md` 和 `docs/CURSOR_PROJECT_GUIDE.zh-CN.md`。`AGENTS.md` 优先级最高；本规则只提供 Cursor 导航，不覆盖用户指令。
+
+- 修改前先运行 `git status --short --branch`，把已有用户修改、数据库、PDF、TeX、备份和未跟踪产物视为用户数据；不要 reset、clean、破坏性 checkout/restore 或批量格式化。未经用户明确要求，不要 add、commit、amend、tag、push 或创建 PR。
+- 正式入口是 `LaunchStudyProblemBank.vbs` → `shared/scripts/launch_study_problem_bank.pyw` → `shared/scripts/problem_bank_center_qt.py:main()`。`problem_bank_center.py` 仍是正式依赖，不能按“旧实现”删除。
+- 路径统一使用 `shared/scripts/application_paths.py` 的 `APP_PATHS`、subject registry 和 service 参数；不要硬编码用户数据绝对路径。
+- 题库/项目/SQLite 先看 `study_project_service.py`、`init_databases.py` 和 `DashboardService`；词汇所有读写统一走 `vocabulary_manager.py`。
+- AI 新业务能力必须在 `ai_agent_operation_registry.py` 注册 `OperationSpec`，同步检查 schema、handler、权限、证据策略和测试；`formal_write`/`destructive` 必须有授权、预览、备份和写后回读。
+- LaTeX/PDF 使用 `latex_build_pipeline.py` 的统一管线；正式 PDF 替换和回读才算成功。写作规则唯一来源是 `shared/templates/latex_writing_rules.txt`。
+- 网课五分钟录制路径只做当前窗口证据处理；不要把正式小节审计、全量参考材料重读或多个 reviewer 加入实时路径。
+- 优先用 `rg` 找入口和调用链，做最小修改；完成后至少运行相关 `py_compile`、聚焦测试和 `git diff --check`，并报告未验证的真实 Windows/外部模型/PDF 边界。

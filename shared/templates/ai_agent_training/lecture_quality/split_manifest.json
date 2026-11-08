@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "dataset": "synthetic-algebra-demo",
+  "policy": "Synthetic fixtures only; no learner or production data.",
+  "train": ["synthetic-missing-core"],
+  "validation": ["synthetic-complete-subsection"],
+  "hidden_acceptance": []
+}

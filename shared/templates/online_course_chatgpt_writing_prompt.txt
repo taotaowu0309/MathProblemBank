@@ -1,0 +1,287 @@
+MATH PROBLEM BANK PERMANENT CHATGPT AUTHORING CONTRACT
+
+PRIORITY AND REQUIRED READING
+
+This is the highest-priority package-level authoring contract for every formal
+online-course Section or Subsection. Read this entire file and every permanent
+companion contract named by `TASK.md` before planning or drafting.
+`TASK.md` is only the package-specific dispatcher: it identifies the
+locked target, available materials, and read order, but it does not duplicate or
+replace the permanent rules in this file.
+
+CONTINUOUS WRITING MATERIALS (USER POLICY, 2026-11-04)
+
+When the current manifest names WRITING_MATERIALS.md as primary_read, read that
+complete continuous classroom record and the mapped textbook material. Raw ASR,
+board notes and historical extraction reports remain provenance archives: use
+their precise source anchors for doubts instead of reconstructing every file on
+every writing attempt. This derivative is not a finished lecture, a substitute
+for textbook reading, or independent mathematical approval. Expand its listed
+omitted arguments and calculations into full exposition. If a recorded unit has
+no validated record, use the explicit one-time material-preparation operation;
+never pretend a short summary covers the original evidence.
+
+NORMAL WRITING WORKFLOW (USER POLICY, 2026-11-02)
+
+The writer is responsible for checking mathematical correctness, continuity,
+detail, proofs, and the corresponding reference-note coverage. The user reads
+the finished notes to judge their quality. Do not invoke independent model
+auditors, specialist reviewers, or automatic repair Agents as part of ordinary
+writing. Atom IDs, realization comments, content contracts, and audit reports
+are navigation aids, not requirements for authoring, import, or PDF publication.
+Retain the detailed mathematics and the necessary local LaTeX/PDF checks.
+
+TEXTBOOK-LED COVERAGE (USER POLICY, 2026-11-02)
+
+Each episode is bounded by the primary-textbook range corresponding to its
+recording. When it uses a result whose proof belongs to a later textbook chapter
+or section, state the full version needed, identify its hypotheses and verified
+source, check the current application, and name the corresponding chapter or
+section where the detailed proof will be developed. Do not expand the episode's
+scope merely to complete prerequisite knowledge. Still prove the current range's
+results, local lemmas and intermediate computations in detail. Apply this boundary
+to reference-book supplements and the post-draft self-check as well.
+
+Read the primary textbook pages corresponding to the current topic; registration,
+indexing or downloading is not a substitute for reading them. Integrate their
+definitions, results, proofs and examples even when the lecture
+orders the topics differently. Expand compressed arguments to textbook detail.
+Use the primary textbook for the mathematical spine. ChatGPT Work reads the relevant
+reference books and author notes even when the primary treatment is complete. Find
+relevant passages missed by the mapping, compare their hypotheses and notation, and
+integrate the explanations, alternate arguments, worked examples and original figures
+that improve the in-scope account. Prepare the reading record and teaching plan in
+`SOURCES.json` before drafting as described in the task or Work guide. Introduce
+unfamiliar constructions through familiar examples and show intermediate calculations
+where helpful. Never write from memory what a course source says.
+Record the source of every item in `SOURCES.json` when the course has imported books.
+Maintain a cumulative page-to-topic mapping for content developed later. Prefer
+the original textbook artwork to a redrawn imitation, preserve its source quality,
+and credit the actual source. Do not attribute supplementary figures to a primary
+book whose corresponding pages have no figure. Use the indexed original-figure
+protocol, including verified PDF crops, as specified by the drawing contract.
+Recognize figures from the primary and all selected supplementary textbooks,
+compare their mathematical meaning and group redundant explanations while
+preserving originals and complementary alternatives. Select figures according
+to this lecture's argument; there is no requirement to insert every candidate.
+
+POST-DRAFT TEXTBOOK SELF-CHECK
+
+Before the import check, ChatGPT Work compares each finished subsection with the
+actual passages read in the primary textbook, reference books, and author notes.
+Look for in-scope explanations, missing steps, examples, counterexamples, results,
+and figures that make the argument easier for a beginner to follow. Check what each
+example computes and where each hypothesis is used. Add useful material to the
+body, reconcile its notation and assumptions, and update the affected items and
+reading notes in SOURCES.json. Record concrete reasons for deferring nearby topics.
+The writer completes this step using the existing source record.
+
+Compare the full hypotheses and generality of each relevant source result with
+the body. When the body gives only a two-factor, finite-dimensional or numerical
+case, assess whether the general statement should also be included. Look for
+equivalent formulations, nearby consequences and explicit constructions that
+connect the concepts already taught. Record the named result, its actual use in
+the body, or a concrete reason and destination for deferring it in reading.note.
+Overlapping definitions alone do not establish that an entire source section
+overlaps the finished notes.
+
+Match prerequisite reminders to the reader's recorded background. Trace every
+substantive proof step to its justification and hypotheses. Cite the specific
+earlier result when it has already been proved. For a nontrivial result used
+without a previous proof, state exactly the version needed with its hypotheses,
+identify the objects to which it applies, and check the conditions. Prove local
+lemmas and intermediate computations needed for the current topic. When a
+substantial theorem belongs outside the topic, explicitly identify it as an
+assumption and give a verified source and proof location. Check existence,
+uniqueness, well-definedness, choices of representatives, map properties,
+quantifiers, both directions of equivalences, and possible circular dependencies.
+Distinguish proofs owed in the current episode from prerequisites whose proofs
+belong to later textbook chapters or sections. Record each deferred result, its
+destination and the scope reason in reading.note. If the source only states a
+result, say so; never label that statement location as a proof location.
+
+EXACT WRITABLE SCOPE AND MATHEMATICAL OWNERSHIP
+
+Return one complete, integrated LaTeX body for the exact application-selected
+formal writing unit. Recording segments, timestamps, evidence blocks, textbook
+parts, continuity files, and conversation history are sources, not independent
+writing scopes. Content is writable only when it belongs to the locked target
+under the current recording/content contracts or an explicit reference mapping.
+Continuity alone never makes previously written material writable again.
+
+Before drafting, privately create a CONTINUITY COLLISION LEDGER. For every
+substantial definition, theorem, proof, construction, and major example that may
+appear, identify its principal ownership location and classify the proposed use as:
+
+- already established;
+- minimal restatement needed;
+- new strengthening;
+- new proof revisited;
+- preview becomes formal theory.
+
+Every substantial mathematical object should have one principal ownership
+location in the course. If it is already established, cite it or restate only the
+minimum needed for the current argument. Reproduce a complete proof or construction
+only for a genuine current strengthening, an explicitly revisited proof, or a
+preview that the locked target now develops as formal theory. Never repeat a result
+merely because the current evidence or mapped source mentions it again.
+
+WHOLE-UNIT EXPOSITION
+
+READABILITY STANDARD (USER POLICY, 2026-11-07)
+
+Use the user's step-by-step explanation of operators and polynomial modules as
+the required level of exposition. Begin with a familiar object or an actual
+calculation, explain the question a new concept answers, and connect it to what
+the reader has already seen. Distinguish elements, scalars, functions, spaces of
+functions, scalar rings and actions; give the domains and codomains of maps.
+Spell out the bridges between concepts, including constructions in both
+directions and why they recover the original data. Write the key intermediate
+equalities, their justifications, and where each hypothesis is used. Induction
+includes its base case and step; equivalences include both directions; constructed
+maps receive the relevant well-definedness, linearity, injectivity, surjectivity,
+inverse and uniqueness checks. Cite a specific earlier result when reusing it
+and explain its application to the current objects.
+
+Compute concrete examples and carry a useful example through related concepts.
+A formula or an example's name alone does not supply its explanation. The
+reader's prior algebra or analysis background is not permission to omit these
+connections. Check definitions, remarks, examples and transition paragraphs as
+carefully as named proofs. A reader's ability to reconstruct a missing argument
+is not the readability criterion. When revising existing notes, retain every
+existing in-scope conclusion, hypothesis, argument, example, reference contribution
+and original figure, and improve the whole requested range, not only the few
+locations the user has already identified. Keep the established scope rules;
+expository detail does not authorize developing later chapters early.
+
+DEFINITION BOUNDARIES (USER POLICY, 2026-11-07)
+
+Keep each definition concise and explicit. Its definition environment contains
+only the object being defined, necessary assumptions and conditions, terminology,
+notation and defining formulas. Put motivation, interpretation, comparisons,
+warnings, consequences and verifications in a remark immediately after the
+definition. Give standalone examples and proofs their appropriate environments.
+Preserve the full explanatory content when separating it; do not shorten a
+definition by deleting necessary hypotheses or discarding its explanation.
+Inspect every definition semantically rather than cutting at a fixed paragraph
+or word count. Update the source record and recheck numbering and cross-references
+when adding remarks.
+
+Obey `WHOLE_SUBSECTION_WRITING_PROMPT.txt`. Integrate all in-scope evidence before
+writing and organize the unit by mathematical dependency and teaching logic, not
+recording chronology or source order. Preserve every distinct supported
+hypothesis, definition, result, proof step, calculation, example, exercise,
+warning, and explanation that is owned by the target; remove genuine overlap.
+Read `LECTURE_ERRORS_AND_CORRECTIONS.md`, verify every reported diagnosis and
+correction, and independently check the complete target for additional mathematical
+errors. Never preserve a demonstrably false claim merely because it appears in a
+source.
+
+Use the supported semantic environments truthfully. Definitions, results,
+standalone examples, exercises, mathematical remarks or warnings, and target-owned
+proofs use their matching environments. Motivation, transitions, contextual
+claims, and connective reasoning remain ordinary prose. Never turn a contextual
+or motivational claim into a boxed theorem merely to make it look formal.
+
+PROOF OWNERSHIP
+
+Apply the five-category decision rule in `UNEXPANDED_PROOFS_PROMPT.txt` to every
+nontrivial result before deciding whether to prove it. Complete proofs are required
+for current target results and explicit current obligations. Previously established
+results are cited or minimally restated, not proved again. External prerequisites
+are stated in the exact version needed but are not proved unless current recording
+evidence, explicit mapped-reference coverage, or an evidence obligation assigns
+that proof to this target. Contextual claims remain prose. The mere use of a
+`theorem`, `lemma`, `proposition`, or `corollary` environment does not override
+this ownership decision.
+
+Every retained example must still contain the calculation or verification needed
+to establish what that example claims. Definitions must state complete hypotheses,
+object types, operations, and conditions. Do not manufacture a proof obligation
+for a definition, a motivational observation, or an already completed earlier
+result.
+
+CORE NARRATIVE AND OPTIONAL SUPPLEMENTS
+
+Mathematical completeness does not require every long technical proof to interrupt
+the first-reading path. State the core definition or theorem before a long
+target-owned technical supplement whenever mathematically legitimate. Mark the
+supplement clearly with a short first-reading remark, place supporting lemmas with
+it, and resume the main conceptual thread immediately afterward. Advanced material
+is retained when it is owned by the current target, but it must not obscure the
+unit's core narrative.
+
+When the unit invokes an external theorem, state the exact version and hypotheses
+needed before using it. Do not silently invoke an unspecified theorem, and do not
+expand the external theorem into a new chapter-length proof unless its proof is
+assigned to the current target.
+
+FORWARD-SCOPE CONTROL
+
+The end of the unit may contain a short transition explaining what the next formal
+unit will do. Do not systematically develop the next unit's definitions, theorems,
+constructions, examples, or proofs here. A brief preview does not transfer principal
+ownership into the current target.
+
+LANGUAGE, OUTPUT, AND IMPORT SAFETY
+
+Write entirely in polished academic English. Translate Chinese speech, OCR,
+headings, examples, and reference text while preserving mathematical notation.
+Return only compilable body LaTeX. The application owns and inserts the formal
+outline. Obey every command, environment, paragraph, proof-marker, diagram, and
+image-path rule in `LATEX_IMPORT_CONTRACT.txt` and `LATEX_DRAWING_RULES.txt`.
+
+EXERCISE AND SOLUTION CONTRACT
+
+A recorded lecture subsection contains no exercises or exercise solutions: the user
+requests them separately. This contract applies to textbook exercise companion units.
+
+Every exercise statement owned by the target must have exactly one complete solution
+immediately after it. Never write "left to the reader", "the proof is similar",
+"obvious", "routine", a hint instead of a solution, an answer-only line, or a
+placeholder.
+
+For a standalone exercise use:
+
+\begin{exercise}
+<complete exercise statement>
+\end{exercise}
+
+\begin{solution}
+<complete detailed solution>
+\end{solution}
+
+For a numbered exercise set inside a top-level `enumerate`, keep each statement
+and solution in the same `\item`; put `\textbf{Solution.}` alone on its own source
+line and begin the answer in the following paragraph. A detailed solution must
+justify every nontrivial implication and treat all relevant cases and boundary
+conditions.
+
+REFERENCE, CONTINUITY, AND DRAWINGS
+
+Read `REFERENCE_AND_CONTINUITY_PROMPT.txt` on every formal writing task. When
+reference files are present, obey the specialized coverage contract and its
+mathematical-ownership intersection. When continuity files are present, read the
+complete prior lecture PDF before drafting, use it to maintain notation and locate
+prior ownership, and never copy its wrappers or rewrite earlier content.
+
+Read `LATEX_DRAWING_RULES.txt` completely. Keyframes and screenshots are evidence
+only. Include a new TikZ figure only after its mathematical purpose, diagram type,
+object types, and relation to the surrounding prose pass that contract's private
+gates. When curated diagram materials assign a realization marker, preserve it
+immediately after the matching complete drawing; a marker without its drawing is
+invalid. Zero figures is a valid result.
+
+PRIVATE FINAL CHECK
+
+Before returning, check the complete draft against all permanent contracts and the
+private whole-unit plan and collision ledger. Confirm that every substantial item
+has a defensible ownership classification; no earlier proof, construction, or
+example has been repeated without a genuine current reason; the core narrative is
+visible before optional supplements; external prerequisites are stated at the
+right strength; no later unit has been developed early; and all explicit current
+proof obligations are resolved. Also confirm that the output is one complete
+body-only target unit, every required atom is substantively realized, no forbidden
+command, Chinese character, evidence timestamp, or unfinished marker remains, and
+every emitted figure is present, explained, and mathematically faithful. Return
+only LaTeX; do not print the plan, ledger, or check.

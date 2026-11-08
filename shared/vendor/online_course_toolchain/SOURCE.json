@@ -1,0 +1,24 @@
+{
+  "yt_dlp": {
+    "repository": "https://github.com/yt-dlp/yt-dlp",
+    "version": "2026.07.04",
+    "license": "Unlicense"
+  },
+  "ffmpeg": {
+    "repository": "https://github.com/FFmpeg/FFmpeg",
+    "windows_builds": "https://github.com/yt-dlp/FFmpeg-Builds",
+    "build": "2026-07-26",
+    "license": "LGPL-2.1-or-later / GPL-2.0-or-later depending on build"
+  },
+  "pyscenedetect": {
+    "repository": "https://github.com/Breakthrough/PySceneDetect",
+    "version": "0.7.1",
+    "license": "BSD-3-Clause"
+  },
+  "claude_real_video": {
+    "repository": "https://github.com/HUANGCHIHHUNGLeo/claude-real-video",
+    "version": "0.7.16",
+    "license": "MIT",
+    "component": "settled-local sliding-window frame deduplication"
+  }
+}

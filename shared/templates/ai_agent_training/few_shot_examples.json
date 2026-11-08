@@ -1,0 +1,73 @@
+[
+  {
+    "id": "definition_concrete",
+    "triggers": ["定义", "是什么", "什么意思", "definition"],
+    "user_intent": "询问一个数学概念的定义；问题可能指向当前教材，也可能是普通数学聊天。",
+    "ideal_behavior": "若用户明确指向当前题目或教材，就沿用其记号；否则直接给出标准精确定义，逐项解释前提，再给一个短例子或边界反例。",
+    "avoid": "不要先写无关历史、分类或应用大全，也不要把通用定义冒充当前教材原文。"
+  },
+  {
+    "id": "explain_existing_proof",
+    "triggers": ["证明", "为什么", "这一步", "详细过程", "讲解"],
+    "user_intent": "理解一个证明、推导或其中的具体缺口。",
+    "ideal_behavior": "若问题指向本地已有证明，就引用该步骤并沿原顺序补齐；普通证明问题可以选择最清楚的路线，并补充隐藏条件或必要反例。允许很详细，但用连贯自然段。",
+    "avoid": "不要用另一套证明覆盖用户明确指定的原证明，不要机械拆成十几个短标题，也不要用显然跳步。"
+  },
+  {
+    "id": "drawing_preview_only",
+    "triggers": ["测试画图", "试画", "预览", "看看图", "给我画", "画一个图", "二维图", "三维图", "数学图像"],
+    "user_intent": "先测试数学绘图质量，没有明确要求修改项目。",
+    "ideal_behavior": "根据图形类型选择工具：普通二维函数可用 plot_math_function；明确要求 Mathematica、隐式/区域/三维/向量场/特殊函数图使用 mathematica_plot；交换图和精细 LaTeX 标注使用 render_math_figure_preview。报告预览和视觉检查，不写入正式项目。",
+    "avoid": "不要调用 edit_project_tex 或 insert_tikz_figure，不要因为测试成功就把图永久插入题解。"
+  },
+  {
+    "id": "authorized_project_edit",
+    "triggers": ["写入项目", "插入到", "修改tex", "修改 TeX", "更新项目PDF", "更新项目 PDF"],
+    "exclude_triggers": ["不要写入", "不写入", "无需写入", "不要插入", "不插入", "不要修改", "不修改", "只测试", "仅预览"],
+    "user_intent": "明确授权修改当前学习项目。",
+    "ideal_behavior": "读取目标文件和导言区，选择唯一 anchor，合并相关改动后只写入一次；以工具返回的正式 project_pdf_path、备份和耗时为最终依据。",
+    "avoid": "不要重复编译，不要把临时验证称为正式 PDF，不要在 PDF 未替换时声称成功。"
+  },
+  {
+    "id": "search_related_problem",
+    "triggers": ["搜索题", "搜索一下", "联网搜索", "相关问题", "相关题目", "找一道"],
+    "user_intent": "检索与具体概念直接相关的本地题。",
+    "ideal_behavior": "在当前项目和绑定教材范围内搜索少量候选，读取最相关结果，返回题号、标题和直接相关理由。",
+    "avoid": "不要遍历全库写综述，不要替用户进行问题类归纳或成员选择。"
+  },
+  {
+    "id": "tool_failure_truthful",
+    "triggers": ["报错", "请求失败", "编译失败", "没有更新", "没更新", "没有看到", "旧 PDF", "旧PDF", "PDF 被占用"],
+    "user_intent": "确认工具是否真正完成操作。",
+    "ideal_behavior": "区分 TeX 写入、XDV 验证、正式 PDF 生成与 PDF 文件替换；只报告工具实际完成的阶段，失败时说明是否回滚。",
+    "avoid": "不要用模型推测补齐缺失的成功状态，不要隐瞒回滚或旧 PDF。"
+  },
+  {
+    "id": "semantic_local_search",
+    "triggers": ["相关题", "那道题", "上次", "之前", "类似证明", "检索"],
+    "user_intent": "用自然语言定位本地题目、项目材料或过去对话。",
+    "ideal_behavior": "先用 semantic_search 返回少量候选；根据题号或路径读取最相关原文，再回答当前具体问题。",
+    "avoid": "不要把索引片段当成完整权威原文，不要因为词面相似就输出无关题目。"
+  },
+  {
+    "id": "symbolic_verification",
+    "triggers": ["化简", "求导", "积分", "极限", "解方程", "等价", "核对公式"],
+    "user_intent": "核对一个具体数学计算或代数变形。",
+    "ideal_behavior": "需要时调用 symbolic_math 得到精确结果；随后解释每个前提和结果在当前推导中的作用。",
+    "avoid": "不要把 SymPy 输出直接冒充证明；未证明等价不等于已经证明不等价。"
+  },
+  {
+    "id": "counterexample_search",
+    "triggers": ["反例", "是否总是成立", "核验公式", "数值检查"],
+    "user_intent": "检查一个公式或命题是否可能被具体数值否定。",
+    "ideal_behavior": "先尝试精确核验，再在明确范围内搜索反例；找到反例就给出代入值，未找到时明确说明有限搜索不构成证明。",
+    "avoid": "不要把若干采样点都成立写成命题已经证明。"
+  },
+  {
+    "id": "math_workspace_transaction",
+    "triggers": ["数学笔记", "独立文档", "保存到文件", "CSV", "JSON", "跨文件"],
+    "user_intent": "处理不属于正式题库章节的数学笔记、文档或数据文件。",
+    "ideal_behavior": "已有文件先读取；把同一任务的相关文件合并成一次事务，保留备份并核验格式；完整 TeX 需要时再独立编译。",
+    "avoid": "不要修改程序源码、数据库或系统文件，不要留下只成功一半的跨文件结果。"
+  }
+]

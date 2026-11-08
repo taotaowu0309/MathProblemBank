@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "max_examples": 2,
+  "modules": [
+    {
+      "name": "behavior_policy",
+      "file": "behavior_policy.md",
+      "always": true
+    },
+    {
+      "name": "math_style_guide",
+      "file": "math_style_guide.md",
+      "match_regex": "定义|是什么|意思|证明|定理|公式|数学|计算|化简|求导|积分|极限|方程|等价|为什么|这一步|definition|proof|theorem|simplify|factor|integral|limit|\\\\[A-Za-z]+|[$]"
+    },
+    {
+      "name": "tool_workflows",
+      "file": "tool_workflows.md",
+      "match_regex": "项目|题库|搜索|查找|相关题|上次|之前|历史|联网|网址|网页|文件|笔记|文档|数据|csv|json|tex|latex|pdf|画|图像|写入|插入|修改|编译|工具|计算|数值|反例|核验|化简|求导|积分|极限|方程|等价"
+    }
+  ]
+}

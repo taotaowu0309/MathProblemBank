@@ -1,0 +1,36 @@
+\usepackage{amsmath,amsthm,amssymb,amsfonts,mathrsfs,mathtools,bm}
+\usepackage{graphicx}
+\usepackage{setspace}
+\usepackage{geometry}
+\usepackage{float}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{enumitem}
+
+% ctexbook 已经加载 fontspec 和 xeCJK，
+% 这里不能再次加载，否则会产生字体族重复定义警告。
+
+\usepackage[dvipsnames]{xcolor}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc}
+
+\usepackage{tikz-cd}
+
+% 保留复分析模板原有的定理环境支持。
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{breakable,theorems,skins}
+
+\usepackage{listings}
+
+% 关闭 PDF 页码标签，避免封面、前言和正文重新编号时
+% 出现 PageLabels 重复或要求重新运行的警告。
+\usepackage[
+    hidelinks,
+    pdfpagelabels=false
+]{hyperref}
+
+\usepackage{bookmark}
+\usepackage{anyfontsize}
+
+\allowdisplaybreaks[3]

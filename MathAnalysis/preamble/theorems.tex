@@ -1,0 +1,128 @@
+\RequirePackage{needspace}
+\RequirePackage{etoolbox}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{proposition}{Proposition}[section]
+\newtheorem{corollary}{Corollary}[section]
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{example}{Example}[section]
+\newtheorem{exercise}{Exercise}[section]
+
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}[section]
+
+\tcolorboxenvironment{theorem}{
+    enhanced,
+    breakable,
+    colback=white,
+    colframe=BlueMain,
+    boxrule=0.7pt,
+    borderline west={2.5pt}{0pt}{BlueMain},
+    left=8pt,right=8pt,top=6pt,bottom=6pt,
+    before skip=10pt,
+    after skip=10pt
+}
+
+\tcolorboxenvironment{lemma}{
+    enhanced,
+    breakable,
+    colback=white,
+    colframe=BlueMain,
+    boxrule=0.7pt,
+    borderline west={2.5pt}{0pt}{BlueMain},
+    left=8pt,right=8pt,top=6pt,bottom=6pt,
+    before skip=10pt,
+    after skip=10pt
+}
+
+\tcolorboxenvironment{proposition}{
+    enhanced,
+    breakable,
+    colback=white,
+    colframe=BlueMain,
+    boxrule=0.7pt,
+    borderline west={2.5pt}{0pt}{BlueMain},
+    left=8pt,right=8pt,top=6pt,bottom=6pt,
+    before skip=10pt,
+    after skip=10pt
+}
+
+\tcolorboxenvironment{corollary}{
+    enhanced,
+    breakable,
+    colback=white,
+    colframe=BlueMain,
+    boxrule=0.7pt,
+    borderline west={2.5pt}{0pt}{BlueMain},
+    left=8pt,right=8pt,top=6pt,bottom=6pt,
+    before skip=10pt,
+    after skip=10pt
+}
+
+\tcolorboxenvironment{definition}{
+    enhanced,
+    breakable,
+    colback=white,
+    colframe=GreenMain,
+    boxrule=0.7pt,
+    borderline west={2.5pt}{0pt}{GreenMain},
+    left=8pt,right=8pt,top=6pt,bottom=6pt,
+    before skip=10pt,
+    after skip=10pt
+}
+
+\tcolorboxenvironment{example}{
+    enhanced,
+    breakable,
+    colback=white,
+    colframe=GreenMain,
+    boxrule=0.7pt,
+    borderline west={2.5pt}{0pt}{GreenMain},
+    left=8pt,right=8pt,top=6pt,bottom=6pt,
+    before skip=10pt,
+    after skip=10pt
+}
+
+\tcolorboxenvironment{exercise}{
+    enhanced,
+    breakable,
+    colback=white,
+    colframe=GreenMain,
+    boxrule=0.7pt,
+    borderline west={2.5pt}{0pt}{GreenMain},
+    left=8pt,right=8pt,top=6pt,bottom=6pt,
+    before skip=10pt,
+    after skip=10pt
+}
+
+\tcolorboxenvironment{remark}{
+    enhanced,
+    breakable,
+    colback=white,
+    colframe=grayblue,
+    boxrule=0.7pt,
+    borderline west={2.5pt}{0pt}{grayblue},
+    left=8pt,right=8pt,top=6pt,bottom=6pt,
+    before skip=10pt,
+    after skip=10pt
+}
+
+\renewenvironment{proof}[1][Proof]{%
+    \par\proofFont\noindent\textbf{#1.}\quad
+}{%
+    \hfill$\square$\par
+}
+
+\newenvironment{solution}{%
+    \par\proofFont\MPBSolutionHeading
+}{%
+    \hfill$\square$\par
+}
+
+% These theorem-like environments are wrapped in breakable tcolorboxes.
+% Pagination is delegated to tcolorbox. Needspace hooks before a breakable
+% box can create an empty first fragment at a page boundary.

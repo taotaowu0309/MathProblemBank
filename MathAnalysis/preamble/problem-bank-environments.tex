@@ -1,0 +1,232 @@
+%================================================
+% 数学分析习题集题目环境
+%
+% 不使用 tcolorbox 绘制题目主体，
+% 仅用 tcolorbox 绘制元信息框。
+%================================================
+
+\newcounter{problem}[chapter]
+
+\renewcommand{\theproblem}{%
+    \thechapter.\arabic{problem}%
+}
+
+%================================================
+% 掌握程度文字
+%================================================
+
+\expandafter\def
+\csname mastery@text@mastered\endcsname
+{完全会}
+
+\expandafter\def
+\csname mastery@text@familiar\endcsname
+{熟悉}
+
+\expandafter\def
+\csname mastery@text@unfamiliar\endcsname
+{不熟悉}
+
+\expandafter\def
+\csname mastery@text@unknown\endcsname
+{完全不会}
+
+\expandafter\def
+\csname mastery@text@unrated\endcsname
+{未评定}
+
+%================================================
+% 掌握程度颜色
+%================================================
+
+\expandafter\def
+\csname mastery@color@mastered\endcsname
+{MasteredColor}
+
+\expandafter\def
+\csname mastery@color@familiar\endcsname
+{FamiliarColor}
+
+\expandafter\def
+\csname mastery@color@unfamiliar\endcsname
+{UnfamiliarColor}
+
+\expandafter\def
+\csname mastery@color@unknown\endcsname
+{UnknownColor}
+
+\expandafter\def
+\csname mastery@color@unrated\endcsname
+{UnratedColor}
+
+\newcommand{\MasteryText}[1]{%
+    \ifcsname mastery@text@#1\endcsname
+        \csname mastery@text@#1\endcsname
+    \else
+        未评定%
+    \fi
+}
+
+\newcommand{\MasteryColor}[1]{%
+    \ifcsname mastery@color@#1\endcsname
+        \csname mastery@color@#1\endcsname
+    \else
+        UnratedColor%
+    \fi
+}
+
+\newcommand{\CurrentProblemNumber}{}
+\newcommand{\CurrentProblemCode}{}
+
+%================================================
+% 元信息框（tcolorbox）
+%
+% 极浅底色 + 细边框，内容一行横排。
+%================================================
+
+\tcbuselibrary{skins}
+
+\newcommand{\probleminfobox}[4]{%
+    % #1 掌握程度 key，#2 编号，#3 难度，#4 题源
+    \begin{tcolorbox}[
+        enhanced,
+        boxrule=0.5pt,
+        colframe=grayblue!40,
+        colback=PaleSky,
+        sharp corners,
+        left=6pt,
+        right=6pt,
+        top=3pt,
+        bottom=3pt,
+        boxsep=0pt,
+    ]
+    \small
+    % 彩色小圆点 + 掌握程度文字
+    \textcolor{\MasteryColor{#1}}{$\bullet$}%
+    \,\textcolor{\MasteryColor{#1}}{\MasteryText{#1}}%
+    %
+    \if\relax\detokenize{#3}\relax\else
+        \quad
+        \textcolor{grayblue}{难度：#3}%
+    \fi
+    %
+    \if\relax\detokenize{#2}\relax\else
+        \quad
+        \textcolor{grayblue}{编号：#2}%
+    \fi
+    %
+    \if\relax\detokenize{#4}\relax\else
+        \quad
+        \textcolor{grayblue}{题源：#4}%
+    \fi
+    \end{tcolorbox}%
+}
+
+%================================================
+% 题目环境
+%
+% 用法：
+%
+% \begin{problem}
+%   [mastered]
+%   {MA-P000001}
+%   {题目名称}
+%   {难度}
+%   {题源}
+%
+% 题目正文
+%
+% \end{problem}
+%================================================
+
+\newenvironment{problem}[5][unrated]{%
+
+    \refstepcounter{problem}%
+
+    \xdef\CurrentProblemNumber{\theproblem}%
+    \gdef\CurrentProblemCode{#2}%
+
+    \par
+    \addvspace{1.25em}%
+
+    % 题号 + 题名标题行
+    \noindent
+    {%
+        \large\bfseries
+        题~\theproblem\quad #3%
+        \par
+    }%
+
+    \vspace{0.3em}%
+
+    % 元信息框
+    \probleminfobox{#1}{#2}{#4}{#5}%
+
+    \vspace{0.45em}%
+
+}{%
+
+    \par
+    \addvspace{0.35em}%
+
+}
+
+%================================================
+% 解答环境
+%================================================
+
+\newenvironment{problemsolution}{%
+
+    \par
+    \addvspace{0.35em}%
+
+    \proofFont
+    \noindent
+    \textbf{解.}\quad
+
+}{%
+
+    \hfill$\square$%
+
+    \par
+    \addvspace{0.65em}%
+
+}
+
+%================================================
+% 注记环境
+%================================================
+
+\newenvironment{problemnote}{%
+
+    \par
+    \addvspace{0.35em}%
+
+    \small
+    \noindent
+    \textbf{注.}\quad
+
+}{%
+
+    \par
+    \normalsize
+    \addvspace{0.35em}%
+
+}
+
+%================================================
+% 掌握程度图例
+%================================================
+
+\newcommand{\masterylegend}{%
+    \noindent
+    \textcolor{MasteredColor}{$\bullet$}~\textcolor{MasteredColor}{完全会}%
+    \qquad
+    \textcolor{FamiliarColor}{$\bullet$}~\textcolor{FamiliarColor}{熟悉}%
+    \qquad
+    \textcolor{UnfamiliarColor}{$\bullet$}~\textcolor{UnfamiliarColor}{不熟悉}%
+    \qquad
+    \textcolor{UnknownColor}{$\bullet$}~\textcolor{UnknownColor}{完全不会}%
+    \qquad
+    \textcolor{UnratedColor}{$\bullet$}~\textcolor{UnratedColor}{未评定}%
+}

@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "purpose": "公开合成校正示例；不来自使用者项目或教材。",
+  "examples": [
+    {
+      "id": "synthetic-slot-notation",
+      "status": "synthetic_public_fixture",
+      "failure_class": "slot_notation",
+      "source_locator": {
+        "source": "synthetic_public_fixture"
+      },
+      "mineru_raw": "For B(x,y), the left slot is B( ,y).",
+      "agent_rejected": "The left slot is B(x,y).",
+      "accepted_repair": "The left slot is B( ,y).",
+      "generalized_rule": "Preserve slot-specific fragments as printed; compare the actual source before correcting notation."
+    }
+  ]
+}

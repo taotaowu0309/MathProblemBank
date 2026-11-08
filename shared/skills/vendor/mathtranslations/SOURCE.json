@@ -1,0 +1,10 @@
+{
+  "repository": "https://github.com/libinyam/mathtranslations-skill",
+  "revision": "9c1c049811cf2d52cc170a268446b110fe6e130e",
+  "imported_at": "2026-08-28",
+  "files": [
+    "SKILL.md",
+    "LICENSE"
+  ],
+  "note": "Vendored immutable upstream subset. Do not edit in place; update by reviewing an explicit upstream revision."
+}

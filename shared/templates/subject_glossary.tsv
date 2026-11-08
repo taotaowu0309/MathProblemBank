@@ -1,0 +1,600 @@
+# 学科术语表：PDF 阅读器查词时排在“词汇库”之后、“本地词典”之前。
+# 每行：英文术语<TAB>学科<TAB>中文<TAB>说明（可空）。以 # 开头的行是注释。
+# 收录通用词典释义容易误导的词（ring、field、gate、well……）和常见专业短语。
+# 同一术语在不同学科意思不同时分行写；查词卡片会把各学科的意思都列出来。
+ring	数学	环	带加法和乘法的代数结构
+field	数学	域	每个非零元都可逆的交换环
+field	物理	场	电场、磁场、规范场等
+group	数学	群
+module	数学	模	环上的“向量空间”
+ideal	数学	理想	环中对乘法吸收的加法子群
+prime ideal	数学	素理想
+maximal ideal	数学	极大理想
+principal ideal	数学	主理想
+radical	数学	根；根理想	如 nilradical 幂零根、Jacobson radical 雅各布森根
+nilradical	数学	幂零根
+nilpotent	数学	幂零的
+idempotent	数学	幂等的
+unit	数学	单位；可逆元	在环论中指可逆元素
+zero divisor	数学	零因子
+zero-divisor	数学	零因子
+integral domain	数学	整环
+domain	数学	整环；定义域	代数中多指整环，函数中指定义域
+codomain	数学	陪域
+range	数学	值域；像
+image	数学	像
+kernel	数学	核
+cokernel	数学	余核
+quotient	数学	商	商群、商环、商空间
+quotient ring	数学	商环
+residue field	数学	剩余域
+localization	数学	局部化
+local ring	数学	局部环	只有一个极大理想的环
+noetherian	数学	诺特的	满足升链条件
+artinian	数学	阿廷的	满足降链条件
+spectrum	数学	谱	Spec A 为素理想集；算子的谱
+algebra	数学	代数	如 R-algebra：带环同态的环
+polynomial	数学	多项式
+monic	数学	首一的
+irreducible	数学	不可约的
+reducible	数学	可约的
+primitive	数学	本原的
+splitting field	数学	分裂域
+extension	数学	扩张	域扩张、群扩张
+degree	数学	次数；度数	多项式次数、扩张次数、映射度
+separable	数学	可分的	可分扩张；拓扑中指有可数稠密子集
+normal	数学	正规的	正规子群、正规扩张、正规空间
+normal subgroup	数学	正规子群
+coset	数学	陪集
+index	数学	指数	子群的指数
+order	数学	阶；序	群或元素的阶；偏序
+abelian	数学	阿贝尔的；交换的
+cyclic	数学	循环的
+torsion	数学	挠	挠元、挠子模；几何中的挠率
+torsion-free	数学	无挠的
+free module	数学	自由模
+projective	数学	射影的；投射的	投射模 projective module；射影空间
+injective	数学	单射的；内射的	injective map 单射；injective module 内射模
+surjective	数学	满射的
+bijective	数学	双射的
+flat	数学	平坦的	平坦模；几何中指平直的
+exact	数学	正合的	正合列；微分形式中指恰当的
+exact sequence	数学	正合列
+short exact sequence	数学	短正合列
+split	数学	分裂的	分裂正合列
+resolution	数学	分解	投射分解、内射分解
+complex	数学	复形；复数的	链复形 chain complex
+chain complex	数学	链复形
+cochain	数学	上链
+homology	数学	同调
+cohomology	数学	上同调
+homotopy	数学	同伦
+homotopic	数学	同伦的
+functor	数学	函子
+covariant	数学	协变的
+contravariant	数学	反变的
+natural transformation	数学	自然变换
+adjoint	数学	伴随	伴随函子；伴随算子
+adjunction	数学	伴随
+category	数学	范畴
+morphism	数学	态射
+isomorphism	数学	同构
+homomorphism	数学	同态
+endomorphism	数学	自同态
+automorphism	数学	自同构
+epimorphism	数学	满态射
+monomorphism	数学	单态射
+object	数学	对象	范畴中的对象
+limit	数学	极限
+colimit	数学	余极限
+direct limit	数学	正向极限
+inverse limit	数学	逆向极限
+product	数学	积
+coproduct	数学	余积
+direct sum	数学	直和
+tensor product	数学	张量积
+tensor	数学	张量
+pullback	数学	拉回
+pushout	数学	推出
+pushforward	数学	前推
+diagram	数学	图表	交换图
+commutative diagram	数学	交换图
+commute	数学	交换	图表交换：各条路径复合相等
+universal property	数学	泛性质
+representable	数学	可表的
+Yoneda lemma	数学	米田引理
+sheaf	数学	层
+presheaf	数学	预层
+stalk	数学	茎
+germ	数学	芽
+section	数学	截面	层或丛的截面
+bundle	数学	丛	向量丛、纤维丛
+vector bundle	数学	向量丛
+fiber	数学	纤维
+fibre	数学	纤维
+fibration	数学	纤维化
+cover	数学	覆盖
+covering	数学	覆盖
+open cover	数学	开覆盖
+refinement	数学	加细
+manifold	数学	流形
+smooth	数学	光滑的
+chart	数学	坐标卡
+atlas	数学	图册
+coordinate chart	数学	坐标卡
+tangent space	数学	切空间
+tangent bundle	数学	切丛
+cotangent	数学	余切
+differential	数学	微分
+differential form	数学	微分形式
+exterior derivative	数学	外微分
+wedge product	数学	楔积
+immersion	数学	浸入
+submersion	数学	淹没
+embedding	数学	嵌入
+submanifold	数学	子流形
+diffeomorphism	数学	微分同胚
+homeomorphism	数学	同胚
+orientation	数学	定向
+orientable	数学	可定向的
+partition of unity	数学	单位分解
+Lie group	数学	李群
+Lie algebra	数学	李代数
+bracket	数学	括号	李括号 Lie bracket
+vector field	数学	向量场
+flow	数学	流	向量场生成的流
+integral curve	数学	积分曲线
+foliation	数学	叶状结构
+connection	数学	联络
+curvature	数学	曲率
+geodesic	数学	测地线
+metric	数学	度量
+metric space	数学	度量空间
+topology	数学	拓扑
+topological space	数学	拓扑空间
+open set	数学	开集
+closed set	数学	闭集
+closure	数学	闭包
+interior	数学	内部
+boundary	数学	边界
+neighborhood	数学	邻域
+neighbourhood	数学	邻域
+compact	数学	紧的
+compactness	数学	紧性
+locally compact	数学	局部紧的
+connected	数学	连通的
+path-connected	数学	道路连通的
+Hausdorff	数学	豪斯多夫的
+second countable	数学	第二可数的
+dense	数学	稠密的
+nowhere dense	数学	无处稠密的
+meager	数学	第一纲的
+complete	数学	完备的
+completion	数学	完备化
+Cauchy sequence	数学	柯西列
+convergent	数学	收敛的
+converge	数学	收敛
+uniform convergence	数学	一致收敛
+pointwise	数学	逐点的
+uniformly	数学	一致地
+continuous	数学	连续的
+uniformly continuous	数学	一致连续的
+equicontinuous	数学	等度连续的
+bounded	数学	有界的
+totally bounded	数学	完全有界的
+supremum	数学	上确界
+infimum	数学	下确界
+limsup	数学	上极限
+liminf	数学	下极限
+measure	数学	测度
+measurable	数学	可测的
+sigma-algebra	数学	σ-代数
+almost everywhere	数学	几乎处处
+integrable	数学	可积的
+Lebesgue integral	数学	勒贝格积分
+norm	数学	范数
+normed space	数学	赋范空间
+Banach space	数学	巴拿赫空间
+Hilbert space	数学	希尔伯特空间
+inner product	数学	内积
+orthogonal	数学	正交的
+orthonormal	数学	标准正交的
+basis	数学	基
+span	数学	张成	span 作动词“张成”，作名词“张成的子空间”
+linear	数学	线性的
+linear functional	数学	线性泛函
+functional	数学	泛函
+dual space	数学	对偶空间
+dual	数学	对偶
+operator	数学	算子
+bounded operator	数学	有界算子
+compact operator	数学	紧算子
+self-adjoint	数学	自伴的
+eigenvalue	数学	特征值
+eigenvector	数学	特征向量
+eigenspace	数学	特征子空间
+characteristic polynomial	数学	特征多项式
+minimal polynomial	数学	极小多项式
+trace	数学	迹
+determinant	数学	行列式
+rank	数学	秩
+nullity	数学	零化度
+weak topology	数学	弱拓扑
+weak-star	数学	弱*
+reflexive	数学	自反的
+separating	数学	分离的
+convex	数学	凸的
+hull	数学	包	凸包 convex hull
+cone	数学	锥
+lattice	数学	格
+poset	数学	偏序集
+partial order	数学	偏序
+total order	数学	全序
+chain	数学	链	偏序集中的全序子集；链复形
+upper bound	数学	上界
+well-ordered	数学	良序的
+countable	数学	可数的
+uncountable	数学	不可数的
+cardinality	数学	基数
+finite	数学	有限的
+infinite	数学	无限的
+finitely generated	数学	有限生成的
+finite type	数学	有限型
+finite presentation	数学	有限表示
+generator	数学	生成元
+relation	数学	关系	群表示中的关系式
+presentation	数学	表示	群的生成元与关系表示
+representation	数学	表示	群表示
+character	数学	特征标
+orbit	数学	轨道
+stabilizer	数学	稳定子
+action	数学	作用	群作用
+equivariant	数学	等变的
+invariant	数学	不变量；不变的
+well-defined	数学	良定义的
+canonical	数学	典范的；自然的
+natural	数学	自然的
+trivial	数学	平凡的
+nontrivial	数学	非平凡的
+induced	数学	诱导的
+restriction	数学	限制
+inclusion	数学	包含映射
+identity	数学	恒等；单位元	恒等映射；群的单位元
+inverse	数学	逆
+composite	数学	复合
+composition	数学	复合
+lemma	数学	引理
+theorem	数学	定理
+proposition	数学	命题
+corollary	数学	推论
+conjecture	数学	猜想
+claim	数学	断言
+proof	数学	证明
+remark	数学	注
+axiom	数学	公理
+hypothesis	数学	假设
+assumption	数学	假设
+converse	数学	逆命题
+contrapositive	数学	逆否命题
+contradiction	数学	矛盾	proof by contradiction 反证法
+induction	数学	归纳法
+iff	数学	当且仅当
+if and only if	数学	当且仅当
+without loss of generality	数学	不失一般性
+WLOG	数学	不失一般性
+respectively	数学	分别地
+namely	数学	即
+i.e.	数学	即
+e.g.	数学	例如
+cf.	数学	参见
+resp.	数学	分别地
+vanish	数学	为零；消失
+vanishing	数学	消失；为零
+arbitrary	数学	任意的
+fix	数学	固定	Fix x：取定 x
+let	数学	设
+suppose	数学	假设
+yield	数学	得出；给出
+satisfy	数学	满足
+hence	数学	因此
+thus	数学	因此
+whence	数学	由此
+holds	数学	成立
+derivative	数学	导数
+partial derivative	数学	偏导数
+gradient	数学	梯度
+divergence	数学	散度
+curl	数学	旋度
+Jacobian	数学	雅可比矩阵；雅可比行列式
+Hessian	数学	黑塞矩阵
+integral	数学	积分；整的	代数中 integral element 指整元
+integral closure	数学	整闭包
+integrally closed	数学	整闭的
+series	数学	级数
+power series	数学	幂级数
+sequence	数学	序列
+subsequence	数学	子列
+residue	数学	留数；剩余	复分析中的留数
+holomorphic	数学	全纯的
+meromorphic	数学	亚纯的
+analytic	数学	解析的
+pole	数学	极点
+singularity	数学	奇点
+branch	数学	分支	多值函数的分支
+contour	数学	围道
+simply connected	数学	单连通的
+fundamental group	数学	基本群
+deformation retract	数学	形变收缩
+retract	数学	收缩核
+simplicial	数学	单纯的
+simplex	数学	单形
+CW complex	数学	CW 复形
+Euler characteristic	数学	欧拉示性数
+genus	数学	亏格
+variety	数学	簇	代数簇
+scheme	数学	概形
+affine	数学	仿射的
+locus	数学	轨迹；零点集
+valuation	数学	赋值
+discrete valuation ring	数学	离散赋值环
+Dedekind domain	数学	戴德金整环
+UFD	数学	唯一分解整环
+PID	数学	主理想整环
+Ext	数学	Ext 函子
+Tor	数学	Tor 函子
+derived functor	数学	导出函子
+spectral sequence	数学	谱序列
+filtration	数学	滤过
+graded	数学	分次的
+dimension	数学	维数
+Krull dimension	数学	克鲁尔维数
+height	数学	高度	素理想的高度
+depth	数学	深度
+regular sequence	数学	正则序列
+Cohen-Macaulay	数学	科恩–麦考莱
+Gorenstein	数学	戈伦斯坦
+probability	数学	概率
+random variable	数学	随机变量
+expectation	数学	期望
+variance	数学	方差
+distribution	数学	分布；广义函数	分析中的 distribution 指广义函数
+martingale	数学	鞅
+stochastic	数学	随机的
+mean	数学	均值
+median	数学	中位数
+estimator	数学	估计量
+momentum	物理	动量
+moment	物理	矩	力矩、磁矩
+torque	物理	力矩
+inertia	物理	惯性
+moment of inertia	物理	转动惯量
+work	物理	功
+power	物理	功率	数学中 power 指幂
+energy	物理	能量
+potential	物理	势；电势	potential energy 势能
+potential energy	物理	势能
+kinetic energy	物理	动能
+force	物理	力
+mass	物理	质量
+charge	物理	电荷
+current	物理	电流
+voltage	物理	电压
+resistance	物理	电阻
+capacitance	物理	电容
+inductance	物理	电感
+impedance	物理	阻抗
+flux	物理	通量
+displacement	物理	位移
+velocity	物理	速度
+acceleration	物理	加速度
+frequency	物理	频率
+wavelength	物理	波长
+amplitude	物理	振幅
+phase	物理	相位；相	物态中的相
+interference	物理	干涉
+diffraction	物理	衍射
+polarization	物理	偏振；极化
+entropy	物理	熵
+enthalpy	物理	焓
+temperature	物理	温度
+heat	物理	热量
+pressure	物理	压强
+state	物理	态；状态
+quantum	物理	量子
+wave function	物理	波函数
+Hamiltonian	物理	哈密顿量
+Lagrangian	物理	拉格朗日量
+observable	物理	可观测量
+spin	物理	自旋
+photon	物理	光子
+electron	物理	电子
+lattice	物理	晶格
+band	物理	能带
+band gap	物理	禁带；带隙
+Fermi level	物理	费米能级
+conductor	物理	导体
+insulator	物理	绝缘体
+semiconductor	物理	半导体
+dielectric	物理	电介质
+permittivity	物理	介电常数
+permeability	物理	磁导率
+gauge	物理	规范
+symmetry	物理	对称性
+conservation	物理	守恒
+oscillator	物理	振子
+harmonic	物理	谐波；简谐的
+damping	物理	阻尼
+resonance	物理	共振；谐振
+relativity	物理	相对论
+inertial frame	物理	惯性系
+algorithm	计算机	算法
+complexity	计算机	复杂度
+runtime	计算机	运行时；运行时间
+array	计算机	数组
+list	计算机	列表
+linked list	计算机	链表
+stack	计算机	栈
+queue	计算机	队列
+heap	计算机	堆
+tree	计算机	树
+binary tree	计算机	二叉树
+graph	计算机	图
+node	计算机	结点
+vertex	计算机	顶点
+edge	计算机	边
+hash	计算机	哈希；散列
+hash table	计算机	哈希表
+pointer	计算机	指针
+reference	计算机	引用
+variable	计算机	变量
+function	计算机	函数
+procedure	计算机	过程
+recursion	计算机	递归
+iteration	计算机	迭代
+loop	计算机	循环
+branch	计算机	分支
+compile	计算机	编译
+compiler	计算机	编译器
+interpreter	计算机	解释器
+parse	计算机	解析
+parser	计算机	解析器
+token	计算机	词法单元；令牌
+syntax	计算机	语法
+semantics	计算机	语义
+type	计算机	类型
+class	计算机	类
+object	计算机	对象
+instance	计算机	实例
+inheritance	计算机	继承
+interface	计算机	接口
+thread	计算机	线程
+process	计算机	进程
+concurrency	计算机	并发
+parallel	计算机	并行的
+lock	计算机	锁
+deadlock	计算机	死锁
+cache	计算机	缓存
+memory	计算机	内存；存储器
+register	计算机	寄存器
+instruction	计算机	指令
+pipeline	计算机	流水线
+throughput	计算机	吞吐量
+latency	计算机	延迟
+bandwidth	计算机	带宽
+kernel	计算机	内核	操作系统内核
+shell	计算机	外壳；命令行
+file system	计算机	文件系统
+protocol	计算机	协议
+packet	计算机	数据包
+router	计算机	路由器
+socket	计算机	套接字
+database	计算机	数据库
+query	计算机	查询
+transaction	计算机	事务
+index	计算机	索引
+key	计算机	键
+bit	计算机	位；比特
+byte	计算机	字节
+word	计算机	字	机器字长
+overflow	计算机	溢出
+gate	计算机	门	逻辑门
+logic gate	计算机	逻辑门
+flip-flop	计算机	触发器
+latch	计算机	锁存器
+multiplexer	计算机	多路选择器
+decoder	计算机	译码器
+encoder	计算机	编码器
+adder	计算机	加法器
+clock	计算机	时钟
+finite automaton	计算机	有限自动机
+Turing machine	计算机	图灵机
+decidable	计算机	可判定的
+NP-complete	计算机	NP 完全的
+reduction	计算机	归约
+greedy	计算机	贪心的
+dynamic programming	计算机	动态规划
+gate	微电子	栅极	MOS 管的栅极
+source	微电子	源极
+drain	微电子	漏极
+well	微电子	阱	n 阱、p 阱
+substrate	微电子	衬底
+body	微电子	体端；衬底端
+channel	微电子	沟道
+threshold voltage	微电子	阈值电压
+doping	微电子	掺杂
+dopant	微电子	掺杂剂
+donor	微电子	施主
+acceptor	微电子	受主
+carrier	微电子	载流子
+majority carrier	微电子	多数载流子
+minority carrier	微电子	少数载流子
+mobility	微电子	迁移率
+diffusion	微电子	扩散
+drift	微电子	漂移
+depletion	微电子	耗尽
+depletion region	微电子	耗尽区
+junction	微电子	结	PN 结
+diode	微电子	二极管
+transistor	微电子	晶体管
+MOSFET	微电子	金属氧化物半导体场效应晶体管
+CMOS	微电子	互补金属氧化物半导体
+bipolar	微电子	双极型的
+emitter	微电子	发射极
+collector	微电子	集电极
+base	微电子	基极
+oxide	微电子	氧化层
+gate oxide	微电子	栅氧化层
+wafer	微电子	晶圆
+die	微电子	裸片；晶粒
+chip	微电子	芯片
+lithography	微电子	光刻
+photoresist	微电子	光刻胶
+mask	微电子	掩膜
+etching	微电子	刻蚀
+deposition	微电子	淀积；沉积
+implantation	微电子	注入	离子注入
+annealing	微电子	退火
+layout	微电子	版图
+netlist	微电子	网表
+interconnect	微电子	互连
+via	微电子	通孔
+metal layer	微电子	金属层
+saturation	微电子	饱和区；饱和
+cutoff	微电子	截止区；截止
+linear region	微电子	线性区
+triode region	微电子	三极管区；线性区
+pinch-off	微电子	夹断
+leakage	微电子	漏电；泄漏
+short-channel effect	微电子	短沟道效应
+inverter	微电子	反相器
+fan-out	微电子	扇出
+fanout	微电子	扇出
+propagation delay	微电子	传播延迟
+noise margin	微电子	噪声容限
+power dissipation	微电子	功耗
+gain	微电子	增益
+bias	微电子	偏置
+amplifier	微电子	放大器
+operational amplifier	微电子	运算放大器
+op-amp	微电子	运算放大器
+transconductance	微电子	跨导
+small-signal	微电子	小信号
+feedback	微电子	反馈
+bandgap reference	微电子	带隙基准
+yield	微电子	良率
+Riemannian metric	数学	黎曼度量	切空间上光滑变化的内积
+Noetherian ring	数学	诺特环	理想满足升链条件（每个理想有限生成）
+Noetherian module	数学	诺特模	子模满足升链条件
+partition function	物理	配分函数	统计力学中 Z=Σe^{-βE}
+electric field	物理	电场
+magnetic field	物理	磁场
+gauge invariance	物理	规范不变性
+gauge transformation	物理	规范变换
+mutex	计算机	互斥锁	mutual exclusion lock
+graph traversal	计算机	图遍历	如 BFS、DFS
+p-n junction	微电子	PN 结
+pn junction	微电子	PN 结
+inductor	微电子	电感器	元件；电感量写作 inductance
+inductance	微电子	电感
+carrier mobility	微电子	载流子迁移率
+leakage current	微电子	漏电流	器件关断时的泄漏电流

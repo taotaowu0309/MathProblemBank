@@ -1,0 +1,133 @@
+{
+  "version": 1,
+  "purpose": "把用户提供的可移植 skill 中适合本应用的稳定流程映射到现有正式工具；不复制外部脚本，不创建第二套业务实现。",
+  "profiles": [
+    {
+      "id": "math-science-computation",
+      "source_skill": "math-science-computation",
+      "target_agents": [
+        "assistant"
+      ],
+      "execution_mode": "native_registered_tools",
+      "activation": {
+        "tool_any": [
+          "symbolic_math",
+          "numerical_math",
+          "verify_formula",
+          "find_counterexample",
+          "plot_math_function",
+          "mathematica_compute",
+          "mathematica_plot",
+          "dual_verify_math"
+        ]
+      },
+      "native_tools": [
+        "symbolic_math",
+        "numerical_math",
+        "verify_formula",
+        "find_counterexample",
+        "plot_math_function",
+        "mathematica_compute",
+        "mathematica_plot",
+        "dual_verify_math"
+      ],
+      "rules": [
+        "先界定计算对象、定义域、假设、精确或数值目标、精度和用户真正要求的交付结果，再估计时间、内存、精度与输出规模是否可行。",
+        "在本轮已暴露的工具中选择能够支持目标结论的最低成本路线；不要探测或调用未出现在 native_tools_available 中的后端。",
+        "用户明确要求具体数值或精确结果且现有工具可合理完成时，必须实际调用工具并返回结果，不能只给代码、未求值表达式或可计算性说明。",
+        "用边界值、代回、残差、精度提升或独立小例子做最低充分核验；只有出现分歧、证据不足或用户要求高保证时才增加第二后端。",
+        "把证据明确区分为形式验证、精确检查、有界检查或数值证据；CAS 输出和有限采样都不能冒充一般性数学证明。"
+      ]
+    },
+    {
+      "id": "pdf-problem-search",
+      "source_skill": "pdf-problem-search",
+      "target_agents": [
+        "assistant"
+      ],
+      "execution_mode": "native_registered_tools",
+      "activation": {
+        "match_regex": "PDF|pdf|教材|讲义|书中|原文|页码|哪一页|题目检索|找题|习题|例题",
+        "tool_any": [
+          "list_textbooks",
+          "search_textbook_content",
+          "read_local_pdf_pages",
+          "read_local_pdf_evidence_batch",
+          "inspect_textbook_pages_visual"
+        ]
+      },
+      "native_tools": [
+        "list_textbooks",
+        "search_textbook_content",
+        "read_local_pdf_pages",
+        "read_local_pdf_evidence_batch",
+        "inspect_textbook_pages_visual"
+      ],
+      "rules": [
+        "先把自然语言问题归一化为概念名、标准英文术语、关键符号和可能的定理或题型短语，再做一次窄检索；不要从第一页开始遍历整本 PDF。",
+        "先用文本索引定位教材与一基页码，再读取最小充分页段；公式、上下标、图形或版面影响判断时才对最多四个精确页做视觉核对。",
+        "命中摘要只负责定位，不能代替当前 PDF 页正文；最终保留教材编号、文件和一基 PDF 页码，并把印刷页码与 PDF 页码分开。",
+        "抽取失败、OCR 乱码或低相关命中属于检索诊断，不是不存在相关内容的证据；应缩小或改写查询，并如实报告仍缺少的证据。"
+      ]
+    },
+    {
+      "id": "manage-personal-knowledge",
+      "source_skill": "manage-personal-knowledge",
+      "target_agents": [
+        "assistant"
+      ],
+      "execution_mode": "native_read_only_tools",
+      "activation": {
+        "match_regex": "本机资料|本地资料|资料库|知识库|共享笔记|笔记库|外部资料|相关笔记|以前写过|语义检索",
+        "tool_any": [
+          "semantic_search",
+          "search_local_files",
+          "read_local_file",
+          "read_local_pdf_pages"
+        ]
+      },
+      "native_tools": [
+        "semantic_search",
+        "search_local_files",
+        "read_local_file",
+        "read_local_pdf_pages"
+      ],
+      "rules": [
+        "先用语义检索或文件元数据得到少量候选，再读取当前磁盘文件或精确 PDF 页；索引片段和文件名不能冒充当前正文。",
+        "只读取解决当前问题所需的最小候选集合，记录真实路径或页码；不得因为发现相关目录就扩展为全库读取。",
+        "当前题目、绑定教材、用户附件和外部资料冲突时分别保留来源、假设与口径，不得静默合并。",
+        "这些映射只授权现有只读工具，不授权向外部知识库写回、移动、删除、提交或运行外部 skill 自带脚本。"
+      ]
+    },
+    {
+      "id": "online-course-evidence-adaptation",
+      "source_skills": [
+        "math-science-computation",
+        "pdf-problem-search",
+        "manage-personal-knowledge"
+      ],
+      "target_agents": [
+        "online_course"
+      ],
+      "execution_mode": "evidence_only_no_tools",
+      "native_tools": [],
+      "rules": [
+        "Use only transcript, images, reference pages, indexes, and metadata already supplied in the current payload; never request or claim a tool, shell, CAS, Vault, or external-skill execution.",
+        "Treat indexed text and OCR as locators rather than final authority when formulas, subscripts, diagrams, or layout matter; use the supplied exact page image as the visual authority and preserve one-based PDF page locators.",
+        "A computed-looking identity in the lecture remains source evidence, not a verified theorem. Preserve the lecturer's statement, mark a genuine conflict or uncertainty, and never silently repair it by imagined computation.",
+        "Use the least evidence sufficient for the bounded stage, preserve source provenance and hypotheses, and distinguish faithful transcription from proof, exact verification, bounded checking, and numerical evidence.",
+        "Validate the required JSON or Markdown contract before returning; missing fields, uncovered candidates, unsupported reconstruction, or unreadable core mathematics must remain explicit instead of being guessed."
+      ]
+    }
+  ],
+  "not_automatically_imported": [
+    {
+      "id": "math-coach",
+      "reason": "它会改变普通答题边界并依赖持久状态、完成门和防泄露保证；应作为用户显式选择的独立模式实现，不能默认混入通用助手。"
+    },
+    {
+      "id": "obsidian-vault-notes",
+      "reason": "它包含 Vault 写回、跨笔记维护与 Git 协议；当前请求只需要训练与只读能力，不应把外部知识库写权限授予 AI 或网课证据 agent。"
+    }
+  ]
+}
