@@ -1114,8 +1114,9 @@ class LookupPopup(QFrame):
         layout.addLayout(row)
         self.audio_status = QLabel("")
         self.audio_status.setWordWrap(True)
+        self.audio_status.setVisible(False)  # an empty row would take the meaning's height
         layout.addWidget(self.audio_status)
-        self.source.audio.status_changed.connect(self.audio_status.setText)
+        self.source.audio.status_changed.connect(self._show_audio_status)
         self.play_button.setEnabled(False)
         self.add_button.setEnabled(False)
         self._anchor = QPoint(0, 0)
@@ -1127,12 +1128,13 @@ class LookupPopup(QFrame):
         self.play_button.setEnabled(ok)
         # Book words are collected with their book card; other words are saved to the 词汇库.
         book = bool(result.get("book"))
-        self.add_button.setVisible(ok)
+        collectable = ok and bool(book or result.get("in_library") or result.get("chinese") or result.get("english"))
+        self.add_button.setVisible(collectable)
         if result.get("in_library"):
             self.add_button.setText("已收藏（原书卡片）" if book else "已在词汇库")
         else:
             self.add_button.setText("收藏（原书卡片）" if book else "收藏到词汇库")
-        self.add_button.setEnabled(ok and not result.get("in_library"))
+        self.add_button.setEnabled(collectable and not result.get("in_library"))
         self.place(self._anchor)  # fit the height to the result
 
     def place(self, anchor: QPoint) -> None:
@@ -1141,7 +1143,12 @@ class LookupPopup(QFrame):
         self._anchor = QPoint(anchor)
         width = min(480, max(300, self.window_.width() - 48))
         content = self.body.heightForWidth(width - 46)
-        height = min(int(self.window_.height() * 0.82), max(120, content + 72))
+        layout = self.layout()
+        margins = layout.contentsMargins()
+        chrome = margins.top() + margins.bottom() + layout.spacing() + self.play_button.sizeHint().height()
+        if not self.audio_status.isHidden():
+            chrome += layout.spacing() + self.audio_status.heightForWidth(width - 28)
+        height = min(int(self.window_.height() * 0.82), max(120, content + chrome + 6))
         self.setFixedSize(width, height)
         x = min(max(16, anchor.x() + 8), self.window_.width() - width - 16)
         y = anchor.y() + 18
@@ -1149,6 +1156,11 @@ class LookupPopup(QFrame):
             y = max(16, anchor.y() - height - 12)
         self.move(x, y)
         self.raise_()
+
+    def _show_audio_status(self, message: str) -> None:
+        self.audio_status.setText(message)
+        self.audio_status.setVisible(bool(message))
+        self.place(self._anchor)
 
     def resizeEvent(self, event) -> None:  # type: ignore[override]
         super().resizeEvent(event)
@@ -1179,7 +1191,11 @@ class LookupPopup(QFrame):
         try:
             self.source.service.collect_terms([str(self.result.get("lemma") or self.result.get("selected"))])
         except Exception as error:
-            QMessageBox.critical(self, "收藏失败", str(error))
+            # The modal deactivates the window, which dismisses and deletes this popup; a
+            # dialog parented here would be destroyed inside its own event loop.
+            window = self.window_
+            self.close()
+            QMessageBox.critical(window, "收藏失败", str(error))
             return
         self.add_button.setText("已收藏（原书卡片）" if self.result.get("book") else "已收藏到词汇库")
         self.add_button.setEnabled(False)

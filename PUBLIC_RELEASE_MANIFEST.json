@@ -1,7 +1,7 @@
 {
   "format_version": 1,
   "profile": "public-math-english-v0.2",
-  "release_version": "0.2.0rc6",
+  "release_version": "0.2.0rc7",
   "python_requires": ">=3.12,<3.13",
   "file_count": 259,
   "files": [
@@ -28,7 +28,7 @@
     {
       "path": "pyproject.toml",
       "bytes": 1148,
-      "sha256": "737d182af6d93dcf35e6219d92e0578b09c37b9ab739b1050c7e623a05a7e05e"
+      "sha256": "0512885e9d8f7cc2621b7a96bcd13590f14e49e86969bd06ca2e3de81199cc53"
     },
     {
       "path": "requirements-public.txt",
@@ -492,8 +492,8 @@
     },
     {
       "path": "shared/scripts/platform_runtime.py",
-      "bytes": 4497,
-      "sha256": "f95a6e76ca5ddb692a277f198e95b0ca61d981ea7acb0898a10f6d9ef81ac4fa"
+      "bytes": 5125,
+      "sha256": "4a55563e5230c55243e7f193c9e4a455ea238513af88f40d15339eebd24fbf50"
     },
     {
       "path": "shared/scripts/problem_bank_center.py",
@@ -502,8 +502,8 @@
     },
     {
       "path": "shared/scripts/problem_bank_center_qt.py",
-      "bytes": 1290280,
-      "sha256": "b5713bae8207f4e12b8f4c075c7673645700b99afcd0d983920caa3e6b4e42f6"
+      "bytes": 1290423,
+      "sha256": "b1bdbf8e7d725fab80756a06fede740f2553f0eafbe9315e27293b7e4e76264d"
     },
     {
       "path": "shared/scripts/public_regression_core.py",
@@ -657,8 +657,8 @@
     },
     {
       "path": "shared/scripts/vocabulary_review_qt.py",
-      "bytes": 119289,
-      "sha256": "509fa0ee41c072cfab538ffe305afd15f60d4ed7ab9c380886162cfa175e6df0"
+      "bytes": 120253,
+      "sha256": "8e3acc9d891d838dfec0c4335cc0146c01b7eab2bdc9f2c6dba3c9fc80dfe5fd"
     },
     {
       "path": "shared/scripts/vocabulary_review_service.py",
@@ -1143,22 +1143,22 @@
     {
       "path": "README.md",
       "bytes": 3789,
-      "sha256": "8558f55655184c0c5bdfd15546ddf3a31b2c0d5cd9cec144aa1c0def6da23408"
+      "sha256": "8cd7fd423c2ccd4d3f9048d57b2f20b2ef7a83782763b73dce086b18d8b6031b"
     },
     {
       "path": "README.zh-CN.md",
       "bytes": 3789,
-      "sha256": "8558f55655184c0c5bdfd15546ddf3a31b2c0d5cd9cec144aa1c0def6da23408"
+      "sha256": "8cd7fd423c2ccd4d3f9048d57b2f20b2ef7a83782763b73dce086b18d8b6031b"
     },
     {
       "path": "GETTING_STARTED.md",
       "bytes": 4024,
-      "sha256": "898f4cde1a39a4afac6f64f4b6fcc88682112b6d4c0b3304b8a340e79e84d99f"
+      "sha256": "67eb80225d57eba9224ef9038b73b8c2541fd1a5bc01a38158e8c07bfa1174b3"
     },
     {
       "path": "GETTING_STARTED.zh-CN.md",
       "bytes": 4024,
-      "sha256": "898f4cde1a39a4afac6f64f4b6fcc88682112b6d4c0b3304b8a340e79e84d99f"
+      "sha256": "67eb80225d57eba9224ef9038b73b8c2541fd1a5bc01a38158e8c07bfa1174b3"
     },
     {
       "path": "USER_GUIDE.md",

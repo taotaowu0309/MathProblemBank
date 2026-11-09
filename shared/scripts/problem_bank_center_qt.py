@@ -24605,7 +24605,10 @@ class BackgroundWindow(QWidget):
                 return 0
 
         def update_pdf_controls() -> None:
-            count = max(0, int(pdf_document.pageCount()))
+            try:
+                count = max(0, int(pdf_document.pageCount()))
+            except RuntimeError:
+                return  # the dialog is being destroyed while the document still signals
             current = current_pdf_page()
             if count <= 0:
                 page_label.setText("0 / 0")

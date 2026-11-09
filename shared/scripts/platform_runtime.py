@@ -8,8 +8,25 @@ import subprocess
 import sys
 
 
+def install_windows_https_roots() -> None:
+    """Trust certifi's roots too: a fresh Windows store only gains a root once something else needs it."""
+    try:
+        import ssl
+        import urllib.request
+
+        import certifi
+
+        context = ssl.create_default_context()
+        context.load_verify_locations(certifi.where())
+    except Exception:
+        return  # certifi comes with edge-tts; without it keep Python's default behaviour
+    urllib.request.install_opener(urllib.request.build_opener(urllib.request.HTTPSHandler(context=context)))
+
+
 def configure_runtime_environment() -> None:
     """Finder does not inherit a login shell's TeX or developer-tool PATH."""
+    if sys.platform == "win32":
+        install_windows_https_roots()
     if sys.platform != "darwin":
         return
     root = Path(__file__).resolve().parents[2]
