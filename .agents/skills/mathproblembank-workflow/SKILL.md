@@ -29,6 +29,7 @@ description: 在MathProblemBank中从创建学习项目、取得和登记教材�
 - 刚录好的一集先 `course intake-task <课程> <集>`，读转写和全部截图缩略图，直接从截图提取板书内容（不选帧），写 `INTAKE.json` 定分节和教材，再 `course intake-apply <课程> <集>`，详见指南 3.0a。分集的 `package_status` 为 `pending` 是这一步的正常起点。讲义不写习题和解答，习题由用户另外安排。
 - 讲义建立在已导入的教材上，不凭记忆写：先按主教材讲法，主教材没有或太略时用参考书，都查过没有才自己写。课程导入过教材时，`OUTPUT.tex` 旁边必须有 `SOURCES.json`，逐条记录来源（指南3.0b）。
 - 网课讲义默认按整集写：`course episode-task <课程> <集>` → 写整集 `OUTPUT.tex`（每节以标记行开头）→ `course episode-check` → `course episode-collect`（逐节导入、只编译一次）。规则和往期讲义只读一次，原始转写和板书只按出处回查（指南3.0）。单独补写一节时才用单节流程：
+- 教材翻译：先运行 `translation progress <项目>` 看下一步，按节循环 `repair-task`→写校正稿→`repair-check`→`repair-collect`→`translation prepare`→写 `OUTPUT.tex` 并维护全书术语表→`translation collect`（指南3.3）。
 - 用户要求讲解 PDF 阅读器里标记为“不懂”的句子时：`reading list`→`reading task <文档>`→按 `TASK.md` 的讲解规则写 `OUTPUT.json`→`reading check`→`reading collect`（指南3.9）。
 - 每次含英文正文的讲义写作或修订后，Work自己按指南3.0c逐段自检英文阅读难点，不等用户点名。正式PDF生成后，按指南3.9批量标记筛出的原句、写好详细讲解并收取到阅读器，核对实际显示；保留原有内容，记录检查范围及保存结果，不能只标记或留草稿。
 - `course check`→`course collect`，验证实际更新的正式PDF、目录和图文。写作者自行检查数学；日常独立模型数学审计、专项review、自动Repair均关闭。

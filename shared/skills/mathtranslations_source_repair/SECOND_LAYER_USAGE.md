@@ -10,11 +10,11 @@
 随后才附加当前 section 的 MinerU Markdown、完整章 PDF 中对应页面、该节高清
 截图与 `images/manifest.json`，以及必要的少量章内上下文。不要反复附加整本书。
 
-若 provider 支持 prompt caching，应把 upstream Skill 与 adapter 作为不变前缀。
+正常入口是 `translation repair-task`，它把上述规则写成 `RULES.md`，把当前节写成 `REQUEST.md`。
 同一本译本项目锁定 `vendor/mathtranslations/SOURCE.json` 中记录的 revision；不在
 处理中自动联网更新。
 
-一次调用只返回完整 `corrected.md` 和简短 `report.md`。不要新增 patch、verifier、
+一次校正写出完整 `corrected.md`、简短 `report.md` 和 `reference_catalog.json`。不要新增 patch、verifier、
 judge 或多轮复核。上游中关于中文翻译、最终 LaTeX、模板、封面、术语索引、
 TikZ/`tikz-cd` 重绘、编译和最终审计的指令均被 adapter 明确关闭。
 

@@ -1,7 +1,7 @@
 {
   "format_version": 1,
   "profile": "public-math-english-v0.2",
-  "release_version": "0.2.0rc8",
+  "release_version": "0.2.0rc9",
   "python_requires": ">=3.12,<3.13",
   "file_count": 259,
   "files": [
@@ -28,7 +28,7 @@
     {
       "path": "pyproject.toml",
       "bytes": 1148,
-      "sha256": "4612e808c69d5f7635455633b43eb6fe2ae56ebe34c5e923efbb7ce930f713aa"
+      "sha256": "c1efef764307fb06e44569e0964d1a696ac0320558a08d136781ac7142f034e3"
     },
     {
       "path": "requirements-public.txt",
@@ -147,8 +147,8 @@
     },
     {
       "path": "shared/scripts/ai_agent_repository.py",
-      "bytes": 447554,
-      "sha256": "391def951c6c7906eabfc7ef788c4828bdbb4589a2eccbb23cb9b3262357525d"
+      "bytes": 450816,
+      "sha256": "1c1581b27de769dadaf2986895414d309683fe3f52243a9e490a26f207677de1"
     },
     {
       "path": "shared/scripts/ai_agent_resources.py",
@@ -202,8 +202,8 @@
     },
     {
       "path": "shared/scripts/chatgpt_work.py",
-      "bytes": 39265,
-      "sha256": "e152b947ebfa346cfc04ad8fb27f3641f6c570233288c4ca5e35b148545385b9"
+      "bytes": 40523,
+      "sha256": "cd37fcc1c291d17b4e61ec3a36acd6972edb5043d8cfad9ed8a1e6193d49d57a"
     },
     {
       "path": "shared/scripts/chatgpt_work_activity.py",
@@ -627,13 +627,13 @@
     },
     {
       "path": "shared/scripts/translation_project_qt.py",
-      "bytes": 93393,
-      "sha256": "a63510076b5776e42c8d9167bb343c552849656495fd1827e9b44f914900db49"
+      "bytes": 93407,
+      "sha256": "bb0f0c26d91be384855b28ad9f5cab04fd4e969f82e262a1c70903a9e1f9cfe9"
     },
     {
       "path": "shared/scripts/translation_project_service.py",
-      "bytes": 267560,
-      "sha256": "dfe43c5db70a26d9479ca24e497ce0f379a18ed0315ac5b6cfb84943b11574d4"
+      "bytes": 274628,
+      "sha256": "f01f1ca461e3a6d51a1e1a2c97c370f26148620880f1ecf5cbf3f73c45e797b9"
     },
     {
       "path": "shared/scripts/validate_latex_punctuation.py",
@@ -982,13 +982,13 @@
     },
     {
       "path": "shared/templates/translation_chatgpt_latex_prompt.txt",
-      "bytes": 5378,
-      "sha256": "e35bb4fb41a225e964ddc6c556a6d3c33291b3e0261074e6f33fc5887a4ecb96"
+      "bytes": 5522,
+      "sha256": "9dffa7e453325bfe50ffbe1455b31ebb15dca53f538aba9b85e26128c601f41f"
     },
     {
       "path": "shared/skills/mathtranslations_source_repair/SECOND_LAYER_USAGE.md",
-      "bytes": 1178,
-      "sha256": "53a07b744f31d84cf75fe2b58bcdff3b0351ac77aae5736d84885d539a6ddad2"
+      "bytes": 1227,
+      "sha256": "9dd7139492b5f98061245fda2738c3f0c33fd0dbc2fca02dd68d60d2cdcbe666"
     },
     {
       "path": "shared/skills/mathtranslations_source_repair/SKILL.md",
@@ -1122,8 +1122,8 @@
     },
     {
       "path": ".agents/skills/mathproblembank-workflow/SKILL.md",
-      "bytes": 6270,
-      "sha256": "0954acd2a358fbac7e35ba6e68e10c42cdbad162a96343a97441062b0d5523e1"
+      "bytes": 6532,
+      "sha256": "e839fbb9270ffd5e68a541438d761721c57607b0754e5d550b19ccb7a57d1cba"
     },
     {
       "path": ".agents/skills/mathproblembank-workflow/agents/openai.yaml",
@@ -1142,23 +1142,23 @@
     },
     {
       "path": "README.md",
-      "bytes": 3789,
-      "sha256": "8eec274f0d11edb936fa26fb337fca2f745e9a6b57832e2de94c372ff49305a2"
+      "bytes": 4448,
+      "sha256": "0516b30fb2ed53c34faed4888f9c52d3da0e2de4614835114dc5de368a6bab91"
     },
     {
       "path": "README.zh-CN.md",
-      "bytes": 3789,
-      "sha256": "8eec274f0d11edb936fa26fb337fca2f745e9a6b57832e2de94c372ff49305a2"
+      "bytes": 4448,
+      "sha256": "0516b30fb2ed53c34faed4888f9c52d3da0e2de4614835114dc5de368a6bab91"
     },
     {
       "path": "GETTING_STARTED.md",
-      "bytes": 4024,
-      "sha256": "a62e8877f18e3ab498959181840872409567bd3fbc8af7115b0113fa2f722dc5"
+      "bytes": 4262,
+      "sha256": "84d524ddf7af7aff8d2eecdfd0f69f9633fcefa21847b5434df28eb06c1d3b50"
     },
     {
       "path": "GETTING_STARTED.zh-CN.md",
-      "bytes": 4024,
-      "sha256": "a62e8877f18e3ab498959181840872409567bd3fbc8af7115b0113fa2f722dc5"
+      "bytes": 4262,
+      "sha256": "84d524ddf7af7aff8d2eecdfd0f69f9633fcefa21847b5434df28eb06c1d3b50"
     },
     {
       "path": "USER_GUIDE.md",
@@ -1202,8 +1202,8 @@
     },
     {
       "path": "docs/CHATGPT_WORK_GUIDE.zh-CN.md",
-      "bytes": 53743,
-      "sha256": "4e62e14580c0e74e297c4cb006ca34b3bbdbd391a767ff056a4314518071334e"
+      "bytes": 54512,
+      "sha256": "47274346b8bda7a3d70f0dc6582995ff35bd0e922ec56326c217ed39474acead"
     },
     {
       "path": "docs/MACOS_SETUP.zh-CN.md",
@@ -1212,13 +1212,13 @@
     },
     {
       "path": "docs/AGENT_PROMPTS.zh-CN.md",
-      "bytes": 6046,
-      "sha256": "1d16c8e452284b96d2c25c25004ff7235095d5d81e42636aa5d5e10b6a589321"
+      "bytes": 8614,
+      "sha256": "48e20007e301d2630a1f07a5265907e165a7ff05933f29a285e1a00ead8c4892"
     },
     {
       "path": "docs/PROMPTS.zh-CN.md",
-      "bytes": 2351,
-      "sha256": "48ae04a301867858394a490dd390b4ae80fdecc187b29d3917ccef6ef2fa46b8"
+      "bytes": 2694,
+      "sha256": "44cb6cfbb6b8edb15447a0df44b4ab5a00651c3fe4db06237158a1c44649282c"
     },
     {
       "path": "docs/ARCHITECTURE.zh-CN.md",

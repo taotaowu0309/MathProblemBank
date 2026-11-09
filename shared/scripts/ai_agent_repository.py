@@ -5019,11 +5019,79 @@ for _operation_spec in (
         evidence_policy="backup_atomic_write_and_corrected_report_agent_labels_readback",
     ),
     OperationSpec(
+        operation_id="translation.source_repair.task",
+        tool_name="prepare_translation_source_repair_task",
+        description="把一个完整 section 的校正写成 Agent 任务文件夹（TASK.md、规则、请求和原书页码），Agent 写 corrected.md、report.md、reference_catalog.json；不调用模型。",
+        parameters={
+            "type": "object",
+            "properties": {
+                "project_code": {"type": "string", "pattern": "^TR-C[0-9]{4}$"},
+                "section_id": {"type": "string", "minLength": 1},
+            },
+            "required": ["project_code", "section_id"],
+            "additionalProperties": False,
+        },
+        handler_name="_tool_prepare_translation_source_repair_task",
+        access_level=DERIVED_WRITE,
+        category="translation_projects",
+    ),
+    OperationSpec(
+        operation_id="translation.source_repair.check",
+        tool_name="check_translation_source_repair",
+        description="用正式校验规则检查校正任务文件夹里的三个产物，不写入任何内容。",
+        parameters={
+            "type": "object",
+            "properties": {
+                "project_code": {"type": "string", "pattern": "^TR-C[0-9]{4}$"},
+                "section_id": {"type": "string", "minLength": 1},
+            },
+            "required": ["project_code", "section_id"],
+            "additionalProperties": False,
+        },
+        handler_name="_tool_check_translation_source_repair",
+        category="translation_projects",
+        evidence_policy="task_files_validated_against_reference_index",
+    ),
+    OperationSpec(
+        operation_id="translation.source_repair.collect",
+        tool_name="collect_translation_source_repair",
+        description="校验通过后，把校正任务文件夹里的产物经正式写入保存，覆盖前保留备份、写后回读，并归档任务产物。需要逐次授权。",
+        parameters={
+            "type": "object",
+            "properties": {
+                "project_code": {"type": "string", "pattern": "^TR-C[0-9]{4}$"},
+                "section_id": {"type": "string", "minLength": 1},
+            },
+            "required": ["project_code", "section_id"],
+            "additionalProperties": False,
+        },
+        handler_name="_tool_collect_translation_source_repair",
+        access_level=FORMAL_WRITE,
+        category="translation_projects",
+        evidence_policy="backup_atomic_write_and_corrected_report_agent_labels_readback",
+    ),
+    OperationSpec(
+        operation_id="translation.progress.read",
+        tool_name="get_translation_progress",
+        description="读取一本译本的整体进度和下一步应运行的具体操作：目录是否锁定、各节处于哪个阶段、全书术语表位置。",
+        parameters={
+            "type": "object",
+            "properties": {
+                "project_code": {"type": "string", "pattern": "^TR-C[0-9]{4}$"},
+                "granularity": {"type": "string", "enum": ["section", "subsection"]},
+            },
+            "required": ["project_code"],
+            "additionalProperties": False,
+        },
+        handler_name="_tool_get_translation_progress",
+        category="translation_projects",
+    ),
+    OperationSpec(
         operation_id="translation.materials.prepare",
         tool_name="prepare_translation_material_package",
         description=(
-            "生成节或小节的 ChatGPT Work 任务文件夹（TASK.md 与全部材料）；若完整 section 的第二层 Agent 产物缺失或过期，"
-            "本操作会先自动运行一次 Agent，由其检查并写入全部英文 ASCII 标签，再继续生成。"
+            "生成节或小节的 Agent 任务文件夹（TASK.md 与全部材料）；若完整 section 的校正产物缺失或过期会报错，"
+            "由 Agent 先完成校正任务再重新生成；本操作不调用模型。"
             "同一 section 的已验证产物会复用，且任务文件夹始终携带完整章 PDF。需要逐次授权。"
         ),
         parameters={
@@ -5039,7 +5107,7 @@ for _operation_spec in (
         access_level=FORMAL_WRITE,
         category="translation_projects",
         evidence_policy=(
-            "conditional_api_usage_backup_atomic_corrected_report_agent_labels_readback_"
+            "verified_second_layer_"
             "task_folder_required_members_chapter_pdf_and_target_readback"
         ),
     ),
@@ -7724,50 +7792,12 @@ class AiAgentToolExecutor:
         }
 
     def _tool_prepare_translation_second_layer_prompt(self, arguments: dict[str, Any]) -> dict[str, Any]:
-        from shared.scripts.translation_agent_prompts import build_second_layer_prompt
-
         code = str(arguments.get("project_code") or "")
         section_id = str(arguments.get("section_id") or "")
-        project = self.translation_projects.project(code)
-        chapter, section = self.translation_projects._find_section(project, section_id)
-        project_dir = self.translation_projects._project_dir(code)
-        raw_path = project_dir / str(section.get("raw_markdown") or "")
-        image_manifest_path = project_dir / "images" / "manifest.json"
-        if not raw_path.is_file() or not image_manifest_path.is_file():
-            raise RuntimeError("当前 section 缺少 MinerU Markdown 或图片清单。")
-        image_manifest = json.loads(image_manifest_path.read_text(encoding="utf-8"))
-        raw_markdown = raw_path.read_text(encoding="utf-8")
-        reference_index = self.translation_projects._translation_reference_index(
-            project,
-            project_dir,
-        )
-        bundle = build_second_layer_prompt(
-            project,
-            chapter,
-            section,
-            raw_markdown,
-            image_manifest,
-            self.translation_projects._agent_reference_candidates(
-                reference_index,
-                raw_markdown,
-                section_id,
-            ),
-            self.translation_projects._deterministic_reference_mentions(
-                raw_markdown,
-                reference_index,
-            ),
-        )
-        chapter_pdf = project_dir / str(chapter.get("pdf_path") or "")
-        attachment_paths = [chapter_pdf]
-        figure_ids = set(section.get("figure_ids") or [])
-        attachment_paths.extend(
-            project_dir / str(item.get("path") or "")
-            for item in image_manifest.get("figures") or []
-            if str(item.get("figure_id") or "") in figure_ids
-        )
-        for path in attachment_paths:
-            if path.is_file():
-                self.resources.authorize_generated_path(str(path))
+        request = self.translation_projects.source_repair_request(code, section_id)
+        bundle = request["bundle"]
+        for path in request["attachments"]:
+            self.resources.authorize_generated_path(str(path))
         return {
             "project_code": code,
             "section_id": section_id,
@@ -7775,9 +7805,41 @@ class AiAgentToolExecutor:
             "stable_prefix_sha256": bundle.stable_prefix_sha256,
             "upstream_revision": bundle.upstream_revision,
             "task_prompt": bundle.task_prompt,
-            "attachments": [str(path) for path in attachment_paths if path.is_file()],
+            "attachments": [str(path) for path in request["attachments"]],
             "agent_call_performed": False,
         }
+
+    def _tool_prepare_translation_source_repair_task(self, arguments: dict[str, Any]) -> dict[str, Any]:
+        result = self.translation_projects.prepare_source_repair_task(
+            str(arguments.get("project_code") or ""), str(arguments.get("section_id") or "")
+        )
+        self.resources.authorize_generated_path(str(result["task_dir"]))
+        return {**result, "task_dir": str(result["task_dir"]), "task_file": str(result["task_file"])}
+
+    def _tool_check_translation_source_repair(self, arguments: dict[str, Any]) -> dict[str, Any]:
+        return self.translation_projects.check_source_repair_task(
+            str(arguments.get("project_code") or ""), str(arguments.get("section_id") or "")
+        )
+
+    def _tool_collect_translation_source_repair(self, arguments: dict[str, Any]) -> dict[str, Any]:
+        result = self.translation_projects.collect_source_repair_task(
+            str(arguments.get("project_code") or ""), str(arguments.get("section_id") or "")
+        )
+        return {
+            "corrected_markdown_path": str(result["corrected_markdown"]),
+            "report_markdown_path": str(result.get("report_markdown") or ""),
+            "reference_catalog_path": str(result.get("reference_catalog") or ""),
+            "archived": str(result["archived"]),
+            "readback_verified": result["corrected_markdown"].is_file(),
+        }
+
+    def _tool_get_translation_progress(self, arguments: dict[str, Any]) -> dict[str, Any]:
+        result = self.translation_projects.translation_progress(
+            str(arguments.get("project_code") or ""), str(arguments.get("granularity") or "section")
+        )
+        if result.get("terminology"):
+            result["terminology"] = str(result["terminology"])
+        return result
 
     def _tool_save_translation_second_layer_result(self, arguments: dict[str, Any]) -> dict[str, Any]:
         result = self.translation_projects.save_agent_result(

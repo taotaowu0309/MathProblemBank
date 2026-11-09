@@ -2,6 +2,8 @@
 
 先打开本仓库作为 Agent 的工作目录。下面的提示词适用于能读取本地文件和运行命令的 ChatGPT Work、Codex、Claude Code 等外部工具。普通网页聊天若无本地访问能力，需由用户提供任务材料；不能声称已读本机文件。把方括号替换成自己的信息即可，其他参数由 Agent 查正式工具目录。
 
+几乎所有实质工作都由 Agent 完成，程序只提供工作流提示词、任务文件夹、校验和正式导入。开发者日常使用 ChatGPT Work 中的 ChatGPT 6.1 sol high；建议至少使用智能不低于 DeepSeek v4.1 flash 的模型，并配合成熟的 Agent 软件（例如 Claude Code）。
+
 ## A. 第一次安装与环境准备
 
 ```text
@@ -43,6 +45,36 @@
 试卷正式导入前把题数、题型、新增/更新、答案来源和留空项给我预览；得到同意再用正式入口导入。不要直接写 SQL、猜答案或把少数样题冒充整份试卷。
 对我的作答批改时用 grading prepare，并在指定 FEEDBACK.md 写完整反馈；阅读器讲解用 reading task/check/collect 保存。遵守 TASK 的格式和唯一规范，保留原文、来源及我的想法。
 完成后重新读取正式目标，核对笔记PDF或阅读器显示，列明实际入库和待办。
+```
+
+## D1. 系统翻译一本数学教材
+
+```text
+请把[教材名称，PDF 位置]系统翻译成中文译本，范围是[全书/第几章]。
+先完整读 AGENTS.md、学习流程和提示词目录，运行 workflow start，再运行 translation progress（新书先用正式工具建立译本项目并取得 MinerU 文本）。
+严格按 translation progress 给的下一步推进：先锁定中文目录和前言；每节先 repair-task，对照原书页校正源文字和交叉引用标签，repair-check 通过后 repair-collect；再 translation prepare，读全书术语表，逐页对照原书翻译写 OUTPUT.tex，把新术语追加进术语表，最后 translation collect 并实际检查该节 PDF。
+译文忠实于原书，每个自然段一一对应，不概述、不扩写、不静默修正原书错误；原图用任务里的截图。完成一节继续下一节，直到范围完成或遇到真正的阻碍，并保存交接。
+```
+
+## D2. 根据教材写题库标准题
+
+```text
+请根据[教材/章节]为[学习问题集]写标准题。先读学习流程并运行 workflow start。
+用 problems prepare 生成带 SOURCES.md 的任务，按其中的教材和读取方式写完整解答，题目原图用正式裁图工具；problems check 通过后 problems collect --build-pdf，实际检查 PDF。
+```
+
+## D3. 单词卡片：收词、音频与字源
+
+```text
+请把[单词表/阅读材料中我收藏的词]做成背单词卡片。先读学习流程，运行 workflow start，用 workflow describe 查实时参数。
+先用 get_vocabulary_import_format 确认格式，再用 import_vocabulary_entries 导入词条，释义和词性写准确，不确定的不要编。需要音频时用 prepare_vocabulary_cards。
+需要字源时，用 get_vocabulary_etymology_evidence 取本地证据，写清来源、构词和词义发展，用 save_vocabulary_etymology 保存；证据不足的写入 uncertain，不要编造词源。完成后重新读取并报告实际入库数量。
+```
+
+## D4. 有声书逐句译文
+
+```text
+请给有声书[书名，第几章]写逐句中文译文。用 read_audiobook_chapter 读整章句子，结合上下文逐句翻译，句数必须相同，用 save_audiobook_chapter_translation 保存并回读。
 ```
 
 ## E. 修改工具与排障

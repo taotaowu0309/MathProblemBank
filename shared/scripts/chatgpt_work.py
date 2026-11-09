@@ -326,6 +326,22 @@ def translation_units(args: argparse.Namespace) -> Any:
     ]}
 
 
+def translation_progress(args: argparse.Namespace) -> Any:
+    return _translations().translation_progress(args.project, args.granularity)
+
+
+def translation_repair_task(args: argparse.Namespace) -> Any:
+    return _translations().prepare_source_repair_task(args.project, args.section)
+
+
+def translation_repair_check(args: argparse.Namespace) -> Any:
+    return _translations().check_source_repair_task(args.project, args.section)
+
+
+def translation_repair_collect(args: argparse.Namespace) -> Any:
+    return _translations().collect_source_repair_task(args.project, args.section, _emit)
+
+
 def translation_prepare(args: argparse.Namespace) -> Any:
     service = _translations()
     service.generate_material_package(args.project, args.target, _emit)
@@ -643,8 +659,19 @@ def _parser() -> argparse.ArgumentParser:
     sub = command(translation, "units", translation_units, "列出一个译本的节（或 --granularity subsection 列小节）")
     sub.add_argument("project")
     sub.add_argument("--granularity", choices=["section", "subsection"], default="section")
+    sub = command(translation, "progress", translation_progress, "全书进度和下一步应运行的操作")
+    sub.add_argument("project")
+    sub.add_argument("--granularity", choices=["section", "subsection"], default="section")
     for name, handler, help_text in (
-        ("prepare", translation_prepare, "生成目标的任务文件夹（第二层产物过期时报错，由 Work 校正后再生成）"),
+        ("repair-task", translation_repair_task, "生成一节的校正任务文件夹"),
+        ("repair-check", translation_repair_check, "检查校正产物，不写入"),
+        ("repair-collect", translation_repair_collect, "正式保存校正产物"),
+    ):
+        sub = command(translation, name, handler, help_text)
+        sub.add_argument("project")
+        sub.add_argument("section")
+    for name, handler, help_text in (
+        ("prepare", translation_prepare, "生成目标的翻译任务文件夹（校正产物过期时报错，先完成 repair-task）"),
         ("collect", translation_collect, "正式导入 OUTPUT.tex 并从头编译译本 PDF"),
     ):
         sub = command(translation, name, handler, help_text)

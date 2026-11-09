@@ -65,6 +65,8 @@ TRANSLATION_CATALOG_RULES = (
 # A target's material folder is read in place by ChatGPT Work, which writes its
 # draft beside TASK.md; the application imports the draft from there.
 CHATGPT_WORK_TASK_FILENAME = "TASK.md"
+SOURCE_REPAIR_TASK_DIRNAME = "source_repair_tasks"
+TERMINOLOGY_FILENAME = "TERMINOLOGY.md"
 CHATGPT_WORK_OUTPUT_FILENAME = "OUTPUT.tex"
 CHATGPT_WORK_IMPORTED_DIRNAME = "imported_drafts"
 THIRD_LAYER_PROMPT_PATH = (
@@ -288,15 +290,22 @@ class _TaskFolder:
         return (self.root / name).read_bytes()
 
 
-def _translation_task_text(inventory: Iterable[str]) -> str:
+def _translation_task_text(inventory: Iterable[str], terminology_path: Path | str = "") -> str:
     listed = "\n".join(f"- `{name}`" for name in sorted(dict.fromkeys(inventory)))
     return (
-        "# ChatGPT Work 翻译任务\n\n"
+        "# Agent 翻译任务\n\n"
         "本文件中的路径都相对于本文件所在的文件夹。\n\n"
+        + (
+            f"开始前读全书术语表 `{terminology_path}`，沿用已有译法；"
+            "译完后把本节新出现或改定的术语、人名译法追加进去，这是唯一可以写的其他文件。\n\n"
+            if terminology_path
+            else ""
+        )
+        +
         "先完整阅读 `INSTRUCTIONS.md`，按其中要求完成 `target.json` 指定的目标。"
         f"把最终 LaTeX 正文写入本文件夹的 `{CHATGPT_WORK_OUTPUT_FILENAME}`，只写 LaTeX 正文。"
         f"`INSTRUCTIONS.md` 中的“输出”“给出最终 LaTeX”都指 `{CHATGPT_WORK_OUTPUT_FILENAME}` 的内容。"
-        "不要创建、修改或删除其他文件；程序会自己校验、导入并编译。\n\n"
+        "除术语表外不要创建、修改或删除其他文件；程序会自己校验、导入并编译。\n\n"
         "下面的文件清单就是本任务的全部材料；文件夹里的其他文件是旧版本留下的缓存，忽略它们。\n\n"
         "## 文件清单\n\n"
         + listed
@@ -364,7 +373,7 @@ def _translation_latex_contract() -> str:
         "`\\bracket{}`、`\\angles{}`、`\\Arg`、`\\Log`、`\\Res`、`\\Rea`、"
         "`\\Ima`、`\\Hol`、`\\Mer`、`\\ord`。\n"
         f"- 正式模板加载的宏包：{packages}。\n"
-        "- `tikz`、`tikz-cd` 虽由共用模板加载，但原书插图仍必须引用 ZIP 中截图，"
+        "- `tikz`、`tikz-cd` 虽由共用模板加载，但原书插图仍必须引用任务文件夹中的截图，"
         "不得重画。\n\n"
         "## 禁止事项（编译边界）\n\n"
         "- 不输出完整导言区、`\\documentclass` 或 document 环境。\n"
@@ -2039,93 +2048,6 @@ class TranslationProjectService:
         if not rendered:
             raise RuntimeError("未能渲染当前节的原书页证据。")
         return rendered
-
-    def _backfill_agent_reference_catalog(
-        self,
-        project_ref: str,
-        section_id: str,
-        emit: Callable[[str], None] | None = None,
-    ) -> Path:
-        """One-time migration for completed layer-two outputs created before labels v2."""
-
-        emit = emit or (lambda _message: None)
-        project = self._read_project(project_ref)
-        _chapter, section = self._find_section(project, section_id)
-        project_dir = self._project_dir(project_ref)
-        corrected_path = project_dir / str(section.get("corrected_markdown") or "")
-        report_path = project_dir / str(section.get("agent_report") or "")
-        if not corrected_path.is_file() or not report_path.is_file():
-            raise RuntimeError("旧第二层结果缺少 corrected.md 或 report.md，不能补做标签审计。")
-        corrected = corrected_path.read_text(encoding="utf-8")
-        reference_index = self._translation_reference_index(project, project_dir)
-        candidates = self._agent_reference_candidates(
-            reference_index,
-            corrected,
-            section_id,
-        )
-        _profile, effective, provider = self._high_intelligence_translation_provider()
-        task = {
-            "mode": "BACKFILL_SECOND_LAYER_REFERENCE_CATALOG",
-            "target_id": section_id,
-            "section_number": section.get("number"),
-            "allowed_reference_labels": candidates,
-            "deterministic_minimum_reference_mentions": (
-                self._deterministic_reference_mentions(
-                    corrected, reference_index, target_id=section_id
-                )
-            ),
-            "corrected_markdown": corrected,
-            "output_contract": {
-                "definitions": (
-                    "every numbered object defined in this Markdown; use exact allowed labels"
-                ),
-                "references": (
-                    "every explicit backward or forward prose reference; include kind, number, "
-                    "label, exact source_text, occurrences and target_id"
-                ),
-            },
-        }
-        emit(
-            f"[标签 Agent] 正在用 {effective.model} / {effective.reasoning_effort} "
-            f"审计 {section.get('number')} 的全部定义与引用。"
-        )
-        result, effective, provider = self._run_high_intelligence_translation_turn(
-            _profile,
-            effective,
-            provider,
-            [{"role": "user", "content": json.dumps(task, ensure_ascii=False), "attachments": []}],
-            "你是数学教材交叉引用审计 Agent。不得翻译、改写或概述正文。"
-            "只返回 JSON object：definitions 与 references。每个标签必须逐字复制自"
-            " allowed_reference_labels，标签只能是英文 ASCII。references 必须穷尽正文中"
-            "章、节、小节、定理、引理、命题、推论、定义、例、练习、注记、公式、图、表"
-            "的每一次显式引用；未来目标也必须保留。source_text 必须是 corrected_markdown"
-            "中的精确连续子串，occurrences 为该子串对应此标签的出现次数。",
-            [],
-            lambda _name, _arguments: {
-                "ok": False,
-                "error": "标签审计 Agent 不允许调用工具。",
-            },
-            lambda message: emit(f"[标签 Agent API] {message}"),
-        )
-        answer = str(result.answer or "").strip()
-        fenced = re.match(r"^```(?:json)?\s*(.*?)\s*```$", answer, re.I | re.S)
-        if fenced:
-            answer = fenced.group(1).strip()
-        try:
-            catalog = json.loads(answer)
-        except json.JSONDecodeError as error:
-            raise ValueError(f"标签 Agent JSON 无法解析：{error}") from None
-        saved = self.save_agent_result(
-            project_ref,
-            section_id,
-            corrected,
-            report_path.read_text(encoding="utf-8"),
-            reference_catalog=catalog,
-            emit=lambda message: emit(f"[标签保存] {message}"),
-        )
-        output = Path(saved["reference_catalog"])
-        emit(f"[标签 Agent] 已写后回读：{output}")
-        return output
 
     @staticmethod
     def _translated_outline_candidate(project: dict[str, Any]) -> dict[str, Any]:
@@ -4008,7 +3930,7 @@ class TranslationProjectService:
             ]
             if missing_references:
                 raise ValueError(
-                    "ChatGPT 未落实第二层 Agent 标出的全部正文引用："
+                    "译文未落实校正 Agent 标出的全部正文引用："
                     + "、".join(missing_references)
                 )
         return text
@@ -4093,8 +4015,9 @@ class TranslationProjectService:
         preflight = self.material_package_preflight(project_ref, target_id)
         if bool(preflight["requires_second_layer"]):
             raise RuntimeError(
-                f"第二层校正产物缺失或过期（{preflight['reason']}）。Work 先用 prepare_translation_second_layer_prompt "
-                "取得任务，写好校正稿后用 save_translation_second_layer_result 保存，再重新生成。"
+                f"校正产物缺失或过期（{preflight['reason']}）。先运行 translation repair-task "
+                f"{project_ref} {preflight.get('section_id', target_id)}，按任务写好校正稿后用 translation repair-collect 收取"
+                "（也可用已注册工具 prepare_translation_second_layer_prompt / save_translation_second_layer_result），再重新生成。"
             )
         emit("[材料包前置] 当前 section 的第二层产物已验证，直接生成材料包。")
         payload = self._read_project(project_ref)
@@ -4114,7 +4037,7 @@ class TranslationProjectService:
             or not reference_catalog_path.is_file()
         ):
             raise RuntimeError(
-                "第二层 Agent 自动完成后，材料包所需的 corrected.md、Agent report "
+                "校正阶段完成后，材料包所需的 corrected.md、校正报告 "
                 "或 agent_labels.json 仍然缺失。"
             )
         source_state = dict(section.get("agent_source_state") or {})
@@ -4128,7 +4051,7 @@ class TranslationProjectService:
             != _sha256(reference_catalog_path)
         ):
             raise RuntimeError(
-                "第二层 Agent 自动完成后，产物仍不是当前 MinerU Markdown 的已验证结果。"
+                "校正产物不是当前 MinerU Markdown 的已验证结果。"
             )
         emit(
             f"[1/4] 准备最小单位材料：{(subsection or section)['number']} "
@@ -4516,7 +4439,10 @@ class TranslationProjectService:
                 archive.write(source, Path("latex_context") / source.relative_to(project_dir))
             archive.writestr(
                 CHATGPT_WORK_TASK_FILENAME,
-                _translation_task_text([*archive.namelist(), CHATGPT_WORK_TASK_FILENAME]),
+                _translation_task_text(
+                    [*archive.namelist(), CHATGPT_WORK_TASK_FILENAME],
+                    self._ensure_terminology_file(project_ref),
+                ),
             )
         with folder as archive:
             required = {
@@ -5479,6 +5405,198 @@ class TranslationProjectService:
         return {
             "latex_path": output,
             **compiled,
+        }
+
+    def _ensure_terminology_file(self, project_ref: str) -> Path:
+        """The book-wide glossary every section reads and extends, kept across Agent sessions."""
+        path = self._project_dir(project_ref) / TERMINOLOGY_FILENAME
+        if not path.is_file():
+            _atomic_write_text(
+                path,
+                "# 全书术语表\n\n每行一条：`原文术语 | 中文译法 | 首次出现的节 | 说明（可空）`。"
+                "译法一旦确定，全书沿用；需要改定时在这里说明原因。\n\n",
+            )
+        return path
+
+    def source_repair_request(self, project_ref: str, section_id: str) -> dict[str, Any]:
+        """Build the locked source-repair request for one complete section; calls no model."""
+        from shared.scripts.translation_agent_prompts import build_second_layer_prompt
+
+        project = self._read_project(project_ref)
+        chapter, section = self._find_section(project, section_id)
+        project_dir = self._project_dir(project_ref)
+        raw_path = project_dir / str(section.get("raw_markdown") or "")
+        image_manifest_path = project_dir / "images" / "manifest.json"
+        if not raw_path.is_file() or not image_manifest_path.is_file():
+            raise RuntimeError("当前 section 缺少 MinerU Markdown 或图片清单。")
+        image_manifest = json.loads(image_manifest_path.read_text(encoding="utf-8"))
+        raw_markdown = raw_path.read_text(encoding="utf-8")
+        reference_index = self._translation_reference_index(project, project_dir)
+        bundle = build_second_layer_prompt(
+            project,
+            chapter,
+            section,
+            raw_markdown,
+            image_manifest,
+            self._agent_reference_candidates(reference_index, raw_markdown, section_id),
+            self._deterministic_reference_mentions(raw_markdown, reference_index),
+        )
+        chapter_pdf = project_dir / str(chapter.get("pdf_path") or "")
+        figure_ids = set(section.get("figure_ids") or [])
+        attachments = [chapter_pdf] + [
+            project_dir / str(item.get("path") or "")
+            for item in image_manifest.get("figures") or []
+            if str(item.get("figure_id") or "") in figure_ids
+        ]
+        return {
+            "bundle": bundle,
+            "chapter_pdf": chapter_pdf,
+            "attachments": [path for path in attachments if path.is_file()],
+            "page_start": int(section.get("evidence_page_start") or section.get("page_start") or 1),
+            "page_end": int(section.get("evidence_page_end") or section.get("page_end") or 1),
+            "section_number": str(section.get("number") or ""),
+            "section_title": str(section.get("title") or ""),
+        }
+
+    def _source_repair_task_dir(self, project_ref: str, section_id: str) -> Path:
+        self._find_section(self._read_project(project_ref), section_id)  # an unknown id raises here
+        return self._project_dir(project_ref) / SOURCE_REPAIR_TASK_DIRNAME / section_id
+
+    def prepare_source_repair_task(self, project_ref: str, section_id: str) -> dict[str, Any]:
+        """Write the repair of one section as a task folder an Agent can work through."""
+        request = self.source_repair_request(project_ref, section_id)
+        bundle = request["bundle"]
+        task_dir = self._source_repair_task_dir(project_ref, section_id)
+        task_dir.mkdir(parents=True, exist_ok=True)
+        _atomic_write_text(task_dir / "RULES.md", bundle.stable_prefix)
+        _atomic_write_text(task_dir / "REQUEST.md", bundle.task_prompt + "\n")
+        attachments = "\n".join(f"- `{path}`" for path in request["attachments"])
+        task_file = task_dir / CHATGPT_WORK_TASK_FILENAME
+        _atomic_write_text(
+            task_file,
+            f"# 校正 {request['section_number']} {request['section_title']}\n\n"
+            "先完整读本文件夹的 `RULES.md` 和 `REQUEST.md`。`REQUEST.md` 末尾说只返回 JSON，"
+            "这里改为写成下面三个文件，放在本文件夹：\n\n"
+            "- `corrected.md`：这一节完整的原语言校正稿，不翻译；\n"
+            "- `report.md`：简短报告，写主要修复、`SUSPECTED_SOURCE_ERROR` 和 `UNCERTAIN`，带页码；不能为空；\n"
+            "- `reference_catalog.json`：含 `definitions` 与 `references` 两个数组的标签目录。\n\n"
+            f"必须实际看原书第 {request['page_start']}–{request['page_end']} 页（章 PDF 内的页码），"
+            "每次最多读 4 页，不能只改 Markdown。原书和图片：\n\n"
+            f"{attachments}\n\n"
+            f"写完运行 `translation repair-check {project_ref} {section_id}`，通过后运行 "
+            f"`translation repair-collect {project_ref} {section_id}`。\n",
+        )
+        return {
+            "task_dir": task_dir,
+            "task_file": task_file,
+            "task_line": f"请阅读 {task_file} 并按其中要求完成。",
+            "page_start": request["page_start"],
+            "page_end": request["page_end"],
+        }
+
+    def _read_source_repair_outputs(
+        self, project_ref: str, section_id: str
+    ) -> tuple[Path, str, str, dict[str, Any]]:
+        task_dir = self._source_repair_task_dir(project_ref, section_id)
+        contents: dict[str, str] = {}
+        for name in ("corrected.md", "report.md", "reference_catalog.json"):
+            path = task_dir / name
+            contents[name] = path.read_text(encoding="utf-8").strip() if path.is_file() else ""
+        missing = [name for name, text in contents.items() if not text]
+        if missing:
+            raise ValueError(f"任务文件夹里还缺：{'、'.join(missing)}（{task_dir}）")
+        try:
+            catalog = json.loads(contents["reference_catalog.json"])
+        except json.JSONDecodeError as error:
+            raise ValueError(f"reference_catalog.json 不是合法 JSON：{error}") from None
+        return task_dir, contents["corrected.md"], contents["report.md"], catalog
+
+    def check_source_repair_task(self, project_ref: str, section_id: str) -> dict[str, Any]:
+        """Apply the formal validation to the task files without writing anything."""
+        _task_dir, corrected, _report, catalog = self._read_source_repair_outputs(project_ref, section_id)
+        payload = self._read_project(project_ref)
+        validated = self._validate_agent_reference_catalog(
+            catalog,
+            target_id=section_id,
+            reference_index=self._translation_reference_index(payload, self._project_dir(project_ref)),
+            corrected_markdown=corrected,
+        )
+        return {
+            "ok": True,
+            "definitions": len(validated.get("definitions") or []),
+            "references": len(validated.get("references") or []),
+        }
+
+    def collect_source_repair_task(
+        self,
+        project_ref: str,
+        section_id: str,
+        emit: Callable[[str], None] | None = None,
+    ) -> dict[str, Any]:
+        """Save the checked repair through the formal writer, then archive the task outputs."""
+        self.check_source_repair_task(project_ref, section_id)
+        task_dir, corrected, report, catalog = self._read_source_repair_outputs(project_ref, section_id)
+        saved = self.save_agent_result(
+            project_ref, section_id, corrected, report, reference_catalog=catalog, emit=emit
+        )
+        archive = task_dir / CHATGPT_WORK_IMPORTED_DIRNAME / datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+        archive.mkdir(parents=True, exist_ok=True)
+        for name in ("corrected.md", "report.md", "reference_catalog.json"):
+            os.replace(task_dir / name, archive / name)
+        return {**saved, "archived": archive}
+
+    def translation_progress(self, project_ref: str, granularity: str = "section") -> dict[str, Any]:
+        """Where a book stands and the one command an Agent should run next."""
+        payload = self._read_project(project_ref)
+        code = str(payload.get("code") or project_ref)
+        if str((payload.get("translation_context") or {}).get("status") or "") != "locked":
+            return {
+                "project": code,
+                "context_locked": False,
+                "next": {
+                    "stage": "lock_context",
+                    "action": (
+                        "workflow run 调用 get_translation_context_task，把完整目录译成中文后用 "
+                        "save_translation_context 锁定，前言等非正文节用 save_translation_paratext 保存"
+                    ),
+                },
+            }
+        counts: dict[str, int] = {}
+        first: dict[str, Any] | None = None
+        units = self.list_units(project_ref, granularity)
+        for unit in units:
+            target = str(unit["target_id"])
+            if unit["mineru_status"] != "完成":
+                stage, action = "mineru", "用 run_translation_mineru 或 import_translation_mineru_output 取得正文"
+            elif self.material_package_preflight(project_ref, target)["requires_second_layer"]:
+                section = self.material_package_preflight(project_ref, target)["section_id"]
+                stage, action = "repair", f"translation repair-task {code} {section}"
+            elif unit["latex_status"] == "已导入" and unit["compile_status"] == "已编译":
+                stage, action = "done", ""
+            elif self.chatgpt_work_task(project_ref, target)["draft_exists"]:
+                stage, action = "collect", f"translation collect {code} {target}"
+            elif unit["latex_status"] == "已导入":
+                stage, action = "compile", f"translation prepare {code} {target} 后重新翻译或收取，使正式 PDF 与当前 TeX 一致"
+            elif unit["package_status"] == "已生成":
+                stage, action = "write", f"按 {self.chatgpt_work_task(project_ref, target)['task_file']} 写 OUTPUT.tex"
+            else:
+                stage, action = "prepare", f"translation prepare {code} {target}"
+            counts[stage] = counts.get(stage, 0) + 1
+            if first is None and stage != "done":
+                first = {
+                    "stage": stage,
+                    "action": action,
+                    "target_id": target,
+                    "number": unit["number"],
+                    "title": unit["title"],
+                }
+        return {
+            "project": code,
+            "context_locked": True,
+            "units": len(units),
+            "counts": counts,
+            "next": first,
+            "terminology": self._ensure_terminology_file(project_ref),
         }
 
     def chatgpt_work_task(self, project_ref: str, target_id: str) -> dict[str, Any]:

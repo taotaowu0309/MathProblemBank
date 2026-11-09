@@ -127,7 +127,7 @@ python -m shared.scripts.chatgpt_work workflow run tmp/work/项目编号/本次�
 | 要找的 | 命令 |
 |---|---|
 | 网课 / 教材习题集讲义 | `course list`，再 `course units <course_id>` |
-| 译本项目和节 | `translation list`，再 `translation units <项目编号>`（小节用 `--granularity subsection`） |
+| 译本项目和节 | `translation list`，再 `translation progress <项目编号>` 看下一步；`translation units <项目编号>` 列全部节（小节用 `--granularity subsection`） |
 | 教材 PDF 的书签 | `notes outline <PDF 路径>` |
 | 已有的试卷任务 | `exam tasks` |
 
@@ -281,10 +281,15 @@ ChatGPT Work 同时负责阅读、备课和写作。录课决定范围、主题�
 
 ### 3.3 教材翻译
 
+每次开始或续接都先运行 `translation progress <项目编号>`：它给出目录是否锁定、各节所处阶段和下一条该运行的操作。翻译按节循环到全书完成，由 Agent 自己推进，不需要把内容贴到聊天窗口。
+
 0. 新译本第一次翻译前，`workflow run` 调用 `get_translation_context_task` 取得完整目录和未翻译的前言等非正文节。把目录译成中文后用 `save_translation_context` 锁定，非正文节用 `save_translation_paratext` 保存。
-1. `translation prepare <项目编号> <目标>`。报错说第二层产物缺失或过期时，用 `prepare_translation_second_layer_prompt` 取得这一节的校正任务，由 Work 校正 MinerU 文本，再用 `save_translation_second_layer_result` 保存，然后重新运行。
-2. 按 `TASK.md`（核心是 `INSTRUCTIONS.md`）写中文 LaTeX 到 `OUTPUT.tex`。
-3. `translation collect <项目编号> <目标>`：正式导入并从头编译译本 PDF。
+1. **校正（不翻译）**：`translation repair-task <项目编号> <节>` 生成任务文件夹，读其中的 `TASK.md`、`RULES.md`、`REQUEST.md`，实际对照原书页修 MinerU 文本，写 `corrected.md`、`report.md`、`reference_catalog.json`，再 `translation repair-check`，通过后 `translation repair-collect`。
+2. **翻译**：`translation prepare <项目编号> <目标>`，先读 `TASK.md` 指定的全书术语表 `TERMINOLOGY.md`，再按 `INSTRUCTIONS.md` 写中文 LaTeX 到 `OUTPUT.tex`，译完把新术语追加进术语表。
+3. `translation collect <项目编号> <目标>`：正式导入并从头编译译本 PDF，实际检查该节的页面、公式、图和交叉引用。
+4. 再运行 `translation progress` 进入下一节。每完成一节用 `save_workflow_context` 记录进度。
+
+译文由当前 Agent 亲自逐页阅读和翻译，不换用外部翻译接口。
 
 ### 3.3a 字源、有声书译文
 

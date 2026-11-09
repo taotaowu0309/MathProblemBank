@@ -1696,15 +1696,15 @@ class TranslationProjectPage(QWidget):
             f"稳定前缀 revision={bundle.upstream_revision}，sha256={bundle.stable_prefix_sha256}"
         )
         self.append_process_log(
-            "[第二层 Agent] 当前界面只负责准备锁定提示词和附件清单；"
-            "模型返回后请用“导入 Agent 校正版”写回 corrected.md/report.md。"
+            "[校正] 本界面只准备规则和附件清单，由外部 Agent 完成校正；"
+            "推荐让 Agent 运行 translation repair-task，也可用“导入 Agent 校正版”写回。"
         )
         dialog = QDialog(self)
         dialog.setWindowTitle(f"第二层 Agent 提示词 - {row['number']} {row['title']}")
         dialog.resize(1100, 760)
         layout = QVBoxLayout(dialog)
         note = QLabel(
-            "稳定前缀应放在 provider 缓存区；当前节任务与附件清单如下。此处不执行模型调用。"
+            "当前节的规则、任务与附件清单如下，交给外部 Agent 使用。程序不调用模型。"
         )
         note.setObjectName("pageNote")
         note.setWordWrap(True)
@@ -1735,7 +1735,7 @@ class TranslationProjectPage(QWidget):
             QMessageBox.information(
                 self,
                 "校正版尚不存在",
-                "请先运行第二层 Agent。运行完成后会自动保存 corrected.md 和 report.md。",
+                "这一节还没有校正稿。请让外部 Agent 运行 translation repair-task 完成校正。",
             )
             return
         image_items: list[dict[str, str]] = []
