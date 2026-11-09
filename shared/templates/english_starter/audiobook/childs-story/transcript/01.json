@@ -1,0 +1,8647 @@
+{
+ "words": [
+  {
+   "word": "story",
+   "startMs": 640,
+   "endMs": 840
+  },
+  {
+   "word": "of",
+   "startMs": 840,
+   "endMs": 1380
+  },
+  {
+   "word": "some",
+   "startMs": 1380,
+   "endMs": 1620
+  },
+  {
+   "word": "short",
+   "startMs": 1620,
+   "endMs": 2060
+  },
+  {
+   "word": "christmas",
+   "startMs": 2060,
+   "endMs": 2560
+  },
+  {
+   "word": "stories",
+   "startMs": 2560,
+   "endMs": 3080
+  },
+  {
+   "word": "by",
+   "startMs": 3080,
+   "endMs": 3300
+  },
+  {
+   "word": "charles",
+   "startMs": 3300,
+   "endMs": 3720
+  },
+  {
+   "word": "dickens",
+   "startMs": 3720,
+   "endMs": 4300
+  },
+  {
+   "word": "this",
+   "startMs": 4300,
+   "endMs": 5120
+  },
+  {
+   "word": "recording",
+   "startMs": 5120,
+   "endMs": 5580
+  },
+  {
+   "word": "is",
+   "startMs": 5580,
+   "endMs": 6280
+  },
+  {
+   "word": "in",
+   "startMs": 6280,
+   "endMs": 6420
+  },
+  {
+   "word": "the",
+   "startMs": 6420,
+   "endMs": 6500
+  },
+  {
+   "word": "public",
+   "startMs": 6500,
+   "endMs": 6780
+  },
+  {
+   "word": "domain",
+   "startMs": 6780,
+   "endMs": 7300
+  },
+  {
+   "word": "the",
+   "startMs": 7300,
+   "endMs": 9520
+  },
+  {
+   "word": "child's",
+   "startMs": 9520,
+   "endMs": 10180
+  },
+  {
+   "word": "story",
+   "startMs": 10180,
+   "endMs": 10520
+  },
+  {
+   "word": "once",
+   "startMs": 12500,
+   "endMs": 12720
+  },
+  {
+   "word": "upon",
+   "startMs": 12720,
+   "endMs": 12960
+  },
+  {
+   "word": "a",
+   "startMs": 12960,
+   "endMs": 13100
+  },
+  {
+   "word": "time",
+   "startMs": 13100,
+   "endMs": 13440
+  },
+  {
+   "word": "a",
+   "startMs": 13440,
+   "endMs": 13860
+  },
+  {
+   "word": "good",
+   "startMs": 13860,
+   "endMs": 14040
+  },
+  {
+   "word": "many",
+   "startMs": 14040,
+   "endMs": 14440
+  },
+  {
+   "word": "years",
+   "startMs": 14440,
+   "endMs": 14800
+  },
+  {
+   "word": "ago",
+   "startMs": 14800,
+   "endMs": 15100
+  },
+  {
+   "word": "there",
+   "startMs": 15100,
+   "endMs": 16180
+  },
+  {
+   "word": "was",
+   "startMs": 16180,
+   "endMs": 16300
+  },
+  {
+   "word": "a",
+   "startMs": 16300,
+   "endMs": 16400
+  },
+  {
+   "word": "traveller",
+   "startMs": 16400,
+   "endMs": 16920
+  },
+  {
+   "word": "and",
+   "startMs": 16920,
+   "endMs": 17360
+  },
+  {
+   "word": "he",
+   "startMs": 17360,
+   "endMs": 17460
+  },
+  {
+   "word": "set",
+   "startMs": 17460,
+   "endMs": 17780
+  },
+  {
+   "word": "out",
+   "startMs": 17780,
+   "endMs": 17980
+  },
+  {
+   "word": "upon",
+   "startMs": 17980,
+   "endMs": 18300
+  },
+  {
+   "word": "a",
+   "startMs": 18300,
+   "endMs": 18580
+  },
+  {
+   "word": "journey",
+   "startMs": 18580,
+   "endMs": 18840
+  },
+  {
+   "word": "it",
+   "startMs": 18840,
+   "endMs": 20180
+  },
+  {
+   "word": "was",
+   "startMs": 20180,
+   "endMs": 20360
+  },
+  {
+   "word": "a",
+   "startMs": 20360,
+   "endMs": 20460
+  },
+  {
+   "word": "magic",
+   "startMs": 20460,
+   "endMs": 20740
+  },
+  {
+   "word": "journey",
+   "startMs": 20740,
+   "endMs": 21080
+  },
+  {
+   "word": "and",
+   "startMs": 21080,
+   "endMs": 21960
+  },
+  {
+   "word": "was",
+   "startMs": 21960,
+   "endMs": 22180
+  },
+  {
+   "word": "to",
+   "startMs": 22180,
+   "endMs": 22280
+  },
+  {
+   "word": "seem",
+   "startMs": 22280,
+   "endMs": 22560
+  },
+  {
+   "word": "very",
+   "startMs": 22560,
+   "endMs": 22880
+  },
+  {
+   "word": "long",
+   "startMs": 22880,
+   "endMs": 23220
+  },
+  {
+   "word": "when",
+   "startMs": 23220,
+   "endMs": 23420
+  },
+  {
+   "word": "he",
+   "startMs": 23420,
+   "endMs": 23560
+  },
+  {
+   "word": "began",
+   "startMs": 23560,
+   "endMs": 23840
+  },
+  {
+   "word": "it",
+   "startMs": 23840,
+   "endMs": 24120
+  },
+  {
+   "word": "and",
+   "startMs": 24120,
+   "endMs": 24740
+  },
+  {
+   "word": "very",
+   "startMs": 24740,
+   "endMs": 24940
+  },
+  {
+   "word": "short",
+   "startMs": 24940,
+   "endMs": 25340
+  },
+  {
+   "word": "when",
+   "startMs": 25340,
+   "endMs": 25580
+  },
+  {
+   "word": "he",
+   "startMs": 25580,
+   "endMs": 25680
+  },
+  {
+   "word": "got",
+   "startMs": 25680,
+   "endMs": 25820
+  },
+  {
+   "word": "half-way",
+   "startMs": 25820,
+   "endMs": 26220
+  },
+  {
+   "word": "through",
+   "startMs": 26220,
+   "endMs": 26540
+  },
+  {
+   "word": "he",
+   "startMs": 27740,
+   "endMs": 27840
+  },
+  {
+   "word": "travelled",
+   "startMs": 27840,
+   "endMs": 28180
+  },
+  {
+   "word": "along",
+   "startMs": 28180,
+   "endMs": 28600
+  },
+  {
+   "word": "a",
+   "startMs": 28600,
+   "endMs": 28800
+  },
+  {
+   "word": "rather",
+   "startMs": 28800,
+   "endMs": 29080
+  },
+  {
+   "word": "dark",
+   "startMs": 29080,
+   "endMs": 29420
+  },
+  {
+   "word": "path",
+   "startMs": 29420,
+   "endMs": 29800
+  },
+  {
+   "word": "for",
+   "startMs": 29800,
+   "endMs": 30080
+  },
+  {
+   "word": "some",
+   "startMs": 30080,
+   "endMs": 30320
+  },
+  {
+   "word": "little",
+   "startMs": 30320,
+   "endMs": 30580
+  },
+  {
+   "word": "time",
+   "startMs": 30580,
+   "endMs": 30980
+  },
+  {
+   "word": "without",
+   "startMs": 30980,
+   "endMs": 31960
+  },
+  {
+   "word": "meeting",
+   "startMs": 31960,
+   "endMs": 32300
+  },
+  {
+   "word": "anything",
+   "startMs": 32300,
+   "endMs": 32700
+  },
+  {
+   "word": "until",
+   "startMs": 32700,
+   "endMs": 33920
+  },
+  {
+   "word": "at",
+   "startMs": 33920,
+   "endMs": 34100
+  },
+  {
+   "word": "last",
+   "startMs": 34100,
+   "endMs": 34420
+  },
+  {
+   "word": "he",
+   "startMs": 34420,
+   "endMs": 34700
+  },
+  {
+   "word": "came",
+   "startMs": 34700,
+   "endMs": 35040
+  },
+  {
+   "word": "to",
+   "startMs": 35040,
+   "endMs": 35240
+  },
+  {
+   "word": "a",
+   "startMs": 35240,
+   "endMs": 35380
+  },
+  {
+   "word": "beautiful",
+   "startMs": 35380,
+   "endMs": 35720
+  },
+  {
+   "word": "child",
+   "startMs": 35720,
+   "endMs": 36260
+  },
+  {
+   "word": "so",
+   "startMs": 36260,
+   "endMs": 37660
+  },
+  {
+   "word": "he",
+   "startMs": 37660,
+   "endMs": 37820
+  },
+  {
+   "word": "said",
+   "startMs": 37820,
+   "endMs": 38020
+  },
+  {
+   "word": "to",
+   "startMs": 38020,
+   "endMs": 38160
+  },
+  {
+   "word": "the",
+   "startMs": 38160,
+   "endMs": 38280
+  },
+  {
+   "word": "child",
+   "startMs": 38280,
+   "endMs": 38660
+  },
+  {
+   "word": "what",
+   "startMs": 38660,
+   "endMs": 40040
+  },
+  {
+   "word": "do",
+   "startMs": 40040,
+   "endMs": 40240
+  },
+  {
+   "word": "you",
+   "startMs": 40240,
+   "endMs": 40380
+  },
+  {
+   "word": "do",
+   "startMs": 40380,
+   "endMs": 40620
+  },
+  {
+   "word": "here",
+   "startMs": 40620,
+   "endMs": 40960
+  },
+  {
+   "word": "and",
+   "startMs": 40960,
+   "endMs": 42120
+  },
+  {
+   "word": "the",
+   "startMs": 42120,
+   "endMs": 42220
+  },
+  {
+   "word": "child",
+   "startMs": 42220,
+   "endMs": 42560
+  },
+  {
+   "word": "said",
+   "startMs": 42560,
+   "endMs": 43060
+  },
+  {
+   "word": "i",
+   "startMs": 43780,
+   "endMs": 44200
+  },
+  {
+   "word": "am",
+   "startMs": 44200,
+   "endMs": 44420
+  },
+  {
+   "word": "always",
+   "startMs": 44420,
+   "endMs": 44800
+  },
+  {
+   "word": "at",
+   "startMs": 44800,
+   "endMs": 45020
+  },
+  {
+   "word": "play",
+   "startMs": 45020,
+   "endMs": 45360
+  },
+  {
+   "word": "come",
+   "startMs": 45360,
+   "endMs": 46540
+  },
+  {
+   "word": "and",
+   "startMs": 46540,
+   "endMs": 46720
+  },
+  {
+   "word": "play",
+   "startMs": 46720,
+   "endMs": 46920
+  },
+  {
+   "word": "with",
+   "startMs": 46920,
+   "endMs": 47140
+  },
+  {
+   "word": "me",
+   "startMs": 47140,
+   "endMs": 47380
+  },
+  {
+   "word": "so",
+   "startMs": 47380,
+   "endMs": 49080
+  },
+  {
+   "word": "he",
+   "startMs": 49080,
+   "endMs": 49960
+  },
+  {
+   "word": "played",
+   "startMs": 49960,
+   "endMs": 50260
+  },
+  {
+   "word": "with",
+   "startMs": 50260,
+   "endMs": 50460
+  },
+  {
+   "word": "that",
+   "startMs": 50460,
+   "endMs": 50680
+  },
+  {
+   "word": "child",
+   "startMs": 50680,
+   "endMs": 51140
+  },
+  {
+   "word": "the",
+   "startMs": 51140,
+   "endMs": 51360
+  },
+  {
+   "word": "whole",
+   "startMs": 51360,
+   "endMs": 51620
+  },
+  {
+   "word": "day",
+   "startMs": 51620,
+   "endMs": 51860
+  },
+  {
+   "word": "long",
+   "startMs": 51860,
+   "endMs": 52320
+  },
+  {
+   "word": "and",
+   "startMs": 52320,
+   "endMs": 52660
+  },
+  {
+   "word": "they",
+   "startMs": 52660,
+   "endMs": 52920
+  },
+  {
+   "word": "were",
+   "startMs": 52920,
+   "endMs": 53080
+  },
+  {
+   "word": "very",
+   "startMs": 53080,
+   "endMs": 53360
+  },
+  {
+   "word": "merry",
+   "startMs": 53360,
+   "endMs": 53680
+  },
+  {
+   "word": "the",
+   "startMs": 53740,
+   "endMs": 54640
+  },
+  {
+   "word": "sky",
+   "startMs": 54640,
+   "endMs": 54940
+  },
+  {
+   "word": "was",
+   "startMs": 54940,
+   "endMs": 55140
+  },
+  {
+   "word": "so",
+   "startMs": 55140,
+   "endMs": 55300
+  },
+  {
+   "word": "blue",
+   "startMs": 55300,
+   "endMs": 55720
+  },
+  {
+   "word": "the",
+   "startMs": 55720,
+   "endMs": 56640
+  },
+  {
+   "word": "sun",
+   "startMs": 56640,
+   "endMs": 56860
+  },
+  {
+   "word": "was",
+   "startMs": 56860,
+   "endMs": 57060
+  },
+  {
+   "word": "so",
+   "startMs": 57060,
+   "endMs": 57220
+  },
+  {
+   "word": "bright",
+   "startMs": 57220,
+   "endMs": 57620
+  },
+  {
+   "word": "the",
+   "startMs": 57620,
+   "endMs": 58500
+  },
+  {
+   "word": "water",
+   "startMs": 58500,
+   "endMs": 58780
+  },
+  {
+   "word": "was",
+   "startMs": 58780,
+   "endMs": 59040
+  },
+  {
+   "word": "so",
+   "startMs": 59040,
+   "endMs": 59240
+  },
+  {
+   "word": "sparkling",
+   "startMs": 59240,
+   "endMs": 60020
+  },
+  {
+   "word": "the",
+   "startMs": 60020,
+   "endMs": 60420
+  },
+  {
+   "word": "leaves",
+   "startMs": 60420,
+   "endMs": 60740
+  },
+  {
+   "word": "were",
+   "startMs": 60740,
+   "endMs": 60920
+  },
+  {
+   "word": "so",
+   "startMs": 60920,
+   "endMs": 61160
+  },
+  {
+   "word": "green",
+   "startMs": 61160,
+   "endMs": 61640
+  },
+  {
+   "word": "the",
+   "startMs": 61640,
+   "endMs": 62360
+  },
+  {
+   "word": "flowers",
+   "startMs": 62360,
+   "endMs": 62840
+  },
+  {
+   "word": "were",
+   "startMs": 62840,
+   "endMs": 63080
+  },
+  {
+   "word": "so",
+   "startMs": 63080,
+   "endMs": 63280
+  },
+  {
+   "word": "lovely",
+   "startMs": 63280,
+   "endMs": 63880
+  },
+  {
+   "word": "and",
+   "startMs": 63880,
+   "endMs": 64640
+  },
+  {
+   "word": "they",
+   "startMs": 64640,
+   "endMs": 64780
+  },
+  {
+   "word": "heard",
+   "startMs": 64780,
+   "endMs": 64980
+  },
+  {
+   "word": "such",
+   "startMs": 64980,
+   "endMs": 65320
+  },
+  {
+   "word": "singing",
+   "startMs": 65320,
+   "endMs": 65660
+  },
+  {
+   "word": "birds",
+   "startMs": 65660,
+   "endMs": 66200
+  },
+  {
+   "word": "and",
+   "startMs": 66200,
+   "endMs": 66420
+  },
+  {
+   "word": "saw",
+   "startMs": 66420,
+   "endMs": 66680
+  },
+  {
+   "word": "so",
+   "startMs": 66680,
+   "endMs": 66980
+  },
+  {
+   "word": "many",
+   "startMs": 66980,
+   "endMs": 67460
+  },
+  {
+   "word": "butterflies",
+   "startMs": 67460,
+   "endMs": 68100
+  },
+  {
+   "word": "that",
+   "startMs": 68100,
+   "endMs": 68960
+  },
+  {
+   "word": "everything",
+   "startMs": 68960,
+   "endMs": 69600
+  },
+  {
+   "word": "was",
+   "startMs": 69600,
+   "endMs": 70020
+  },
+  {
+   "word": "beautiful",
+   "startMs": 70020,
+   "endMs": 70560
+  },
+  {
+   "word": "this",
+   "startMs": 72000,
+   "endMs": 72200
+  },
+  {
+   "word": "was",
+   "startMs": 72200,
+   "endMs": 72520
+  },
+  {
+   "word": "in",
+   "startMs": 72520,
+   "endMs": 72720
+  },
+  {
+   "word": "fine",
+   "startMs": 72720,
+   "endMs": 73040
+  },
+  {
+   "word": "weather",
+   "startMs": 73040,
+   "endMs": 73440
+  },
+  {
+   "word": "when",
+   "startMs": 73440,
+   "endMs": 74640
+  },
+  {
+   "word": "it",
+   "startMs": 74640,
+   "endMs": 74800
+  },
+  {
+   "word": "rained",
+   "startMs": 74800,
+   "endMs": 75180
+  },
+  {
+   "word": "they",
+   "startMs": 75180,
+   "endMs": 75740
+  },
+  {
+   "word": "loved",
+   "startMs": 75740,
+   "endMs": 76000
+  },
+  {
+   "word": "to",
+   "startMs": 76000,
+   "endMs": 76160
+  },
+  {
+   "word": "watch",
+   "startMs": 76160,
+   "endMs": 76400
+  },
+  {
+   "word": "the",
+   "startMs": 76400,
+   "endMs": 76540
+  },
+  {
+   "word": "falling",
+   "startMs": 76540,
+   "endMs": 76880
+  },
+  {
+   "word": "drops",
+   "startMs": 76880,
+   "endMs": 77420
+  },
+  {
+   "word": "and",
+   "startMs": 77420,
+   "endMs": 77700
+  },
+  {
+   "word": "to",
+   "startMs": 77700,
+   "endMs": 77820
+  },
+  {
+   "word": "smell",
+   "startMs": 77820,
+   "endMs": 78220
+  },
+  {
+   "word": "the",
+   "startMs": 78220,
+   "endMs": 78480
+  },
+  {
+   "word": "fresh",
+   "startMs": 78480,
+   "endMs": 78820
+  },
+  {
+   "word": "scents",
+   "startMs": 78820,
+   "endMs": 79320
+  },
+  {
+   "word": "when",
+   "startMs": 79320,
+   "endMs": 80320
+  },
+  {
+   "word": "it",
+   "startMs": 80320,
+   "endMs": 80480
+  },
+  {
+   "word": "blew",
+   "startMs": 80480,
+   "endMs": 80680
+  },
+  {
+   "word": "it",
+   "startMs": 80680,
+   "endMs": 81480
+  },
+  {
+   "word": "was",
+   "startMs": 81480,
+   "endMs": 81700
+  },
+  {
+   "word": "delightful",
+   "startMs": 81700,
+   "endMs": 82200
+  },
+  {
+   "word": "to",
+   "startMs": 82200,
+   "endMs": 82520
+  },
+  {
+   "word": "listen",
+   "startMs": 82520,
+   "endMs": 82780
+  },
+  {
+   "word": "to",
+   "startMs": 82780,
+   "endMs": 83000
+  },
+  {
+   "word": "the",
+   "startMs": 83000,
+   "endMs": 83120
+  },
+  {
+   "word": "wind",
+   "startMs": 83120,
+   "endMs": 83440
+  },
+  {
+   "word": "and",
+   "startMs": 83440,
+   "endMs": 83780
+  },
+  {
+   "word": "fancy",
+   "startMs": 83780,
+   "endMs": 84240
+  },
+  {
+   "word": "what",
+   "startMs": 84240,
+   "endMs": 84500
+  },
+  {
+   "word": "it",
+   "startMs": 84500,
+   "endMs": 84620
+  },
+  {
+   "word": "said",
+   "startMs": 84620,
+   "endMs": 84900
+  },
+  {
+   "word": "as",
+   "startMs": 84900,
+   "endMs": 85140
+  },
+  {
+   "word": "it",
+   "startMs": 85140,
+   "endMs": 85240
+  },
+  {
+   "word": "came",
+   "startMs": 85240,
+   "endMs": 85520
+  },
+  {
+   "word": "rushing",
+   "startMs": 85520,
+   "endMs": 85900
+  },
+  {
+   "word": "from",
+   "startMs": 85900,
+   "endMs": 86280
+  },
+  {
+   "word": "its",
+   "startMs": 86280,
+   "endMs": 86460
+  },
+  {
+   "word": "home",
+   "startMs": 86460,
+   "endMs": 86800
+  },
+  {
+   "word": "where",
+   "startMs": 86800,
+   "endMs": 88260
+  },
+  {
+   "word": "was",
+   "startMs": 88260,
+   "endMs": 88440
+  },
+  {
+   "word": "that",
+   "startMs": 88440,
+   "endMs": 88920
+  },
+  {
+   "word": "they",
+   "startMs": 88920,
+   "endMs": 89460
+  },
+  {
+   "word": "wondered",
+   "startMs": 89460,
+   "endMs": 89820
+  },
+  {
+   "word": "whistling",
+   "startMs": 91060,
+   "endMs": 91400
+  },
+  {
+   "word": "and",
+   "startMs": 91400,
+   "endMs": 91820
+  },
+  {
+   "word": "howling",
+   "startMs": 91820,
+   "endMs": 92440
+  },
+  {
+   "word": "driving",
+   "startMs": 92440,
+   "endMs": 93000
+  },
+  {
+   "word": "the",
+   "startMs": 93000,
+   "endMs": 93200
+  },
+  {
+   "word": "clouds",
+   "startMs": 93200,
+   "endMs": 93680
+  },
+  {
+   "word": "before",
+   "startMs": 93680,
+   "endMs": 94060
+  },
+  {
+   "word": "it",
+   "startMs": 94060,
+   "endMs": 94400
+  },
+  {
+   "word": "bending",
+   "startMs": 94400,
+   "endMs": 95220
+  },
+  {
+   "word": "the",
+   "startMs": 95220,
+   "endMs": 95460
+  },
+  {
+   "word": "trees",
+   "startMs": 95460,
+   "endMs": 96180
+  },
+  {
+   "word": "rumbling",
+   "startMs": 96180,
+   "endMs": 96880
+  },
+  {
+   "word": "in",
+   "startMs": 96880,
+   "endMs": 97120
+  },
+  {
+   "word": "the",
+   "startMs": 97120,
+   "endMs": 97240
+  },
+  {
+   "word": "chimneys",
+   "startMs": 97240,
+   "endMs": 97720
+  },
+  {
+   "word": "shaking",
+   "startMs": 97720,
+   "endMs": 98580
+  },
+  {
+   "word": "the",
+   "startMs": 98580,
+   "endMs": 98820
+  },
+  {
+   "word": "house",
+   "startMs": 98820,
+   "endMs": 99280
+  },
+  {
+   "word": "and",
+   "startMs": 99280,
+   "endMs": 99900
+  },
+  {
+   "word": "making",
+   "startMs": 99900,
+   "endMs": 100140
+  },
+  {
+   "word": "the",
+   "startMs": 100140,
+   "endMs": 100360
+  },
+  {
+   "word": "sea",
+   "startMs": 100360,
+   "endMs": 100700
+  },
+  {
+   "word": "roar",
+   "startMs": 100700,
+   "endMs": 101220
+  },
+  {
+   "word": "in",
+   "startMs": 101220,
+   "endMs": 101580
+  },
+  {
+   "word": "fury",
+   "startMs": 101580,
+   "endMs": 102100
+  },
+  {
+   "word": "but",
+   "startMs": 103560,
+   "endMs": 103740
+  },
+  {
+   "word": "when",
+   "startMs": 103740,
+   "endMs": 104700
+  },
+  {
+   "word": "it",
+   "startMs": 104700,
+   "endMs": 104840
+  },
+  {
+   "word": "snowed",
+   "startMs": 104840,
+   "endMs": 105420
+  },
+  {
+   "word": "that",
+   "startMs": 105420,
+   "endMs": 105740
+  },
+  {
+   "word": "was",
+   "startMs": 105740,
+   "endMs": 105920
+  },
+  {
+   "word": "best",
+   "startMs": 105920,
+   "endMs": 106300
+  },
+  {
+   "word": "of",
+   "startMs": 106300,
+   "endMs": 106480
+  },
+  {
+   "word": "all",
+   "startMs": 106480,
+   "endMs": 106700
+  },
+  {
+   "word": "for",
+   "startMs": 106700,
+   "endMs": 107560
+  },
+  {
+   "word": "they",
+   "startMs": 107560,
+   "endMs": 107700
+  },
+  {
+   "word": "liked",
+   "startMs": 107700,
+   "endMs": 107920
+  },
+  {
+   "word": "nothing",
+   "startMs": 107920,
+   "endMs": 108300
+  },
+  {
+   "word": "so",
+   "startMs": 108300,
+   "endMs": 108720
+  },
+  {
+   "word": "well",
+   "startMs": 108720,
+   "endMs": 109020
+  },
+  {
+   "word": "as",
+   "startMs": 109020,
+   "endMs": 109260
+  },
+  {
+   "word": "to",
+   "startMs": 109260,
+   "endMs": 109400
+  },
+  {
+   "word": "look",
+   "startMs": 109400,
+   "endMs": 109640
+  },
+  {
+   "word": "up",
+   "startMs": 109640,
+   "endMs": 109860
+  },
+  {
+   "word": "at",
+   "startMs": 109860,
+   "endMs": 110000
+  },
+  {
+   "word": "the",
+   "startMs": 110000,
+   "endMs": 110140
+  },
+  {
+   "word": "white",
+   "startMs": 110140,
+   "endMs": 110400
+  },
+  {
+   "word": "flakes",
+   "startMs": 110400,
+   "endMs": 110780
+  },
+  {
+   "word": "falling",
+   "startMs": 110780,
+   "endMs": 111220
+  },
+  {
+   "word": "fast",
+   "startMs": 111220,
+   "endMs": 111740
+  },
+  {
+   "word": "and",
+   "startMs": 111740,
+   "endMs": 112080
+  },
+  {
+   "word": "thick",
+   "startMs": 112080,
+   "endMs": 112460
+  },
+  {
+   "word": "like",
+   "startMs": 112460,
+   "endMs": 113300
+  },
+  {
+   "word": "down",
+   "startMs": 113300,
+   "endMs": 113680
+  },
+  {
+   "word": "from",
+   "startMs": 113680,
+   "endMs": 113900
+  },
+  {
+   "word": "the",
+   "startMs": 113900,
+   "endMs": 114040
+  },
+  {
+   "word": "breasts",
+   "startMs": 114040,
+   "endMs": 114400
+  },
+  {
+   "word": "of",
+   "startMs": 114400,
+   "endMs": 114640
+  },
+  {
+   "word": "millions",
+   "startMs": 114640,
+   "endMs": 115180
+  },
+  {
+   "word": "of",
+   "startMs": 115180,
+   "endMs": 115480
+  },
+  {
+   "word": "white",
+   "startMs": 115480,
+   "endMs": 115760
+  },
+  {
+   "word": "birds",
+   "startMs": 115760,
+   "endMs": 116180
+  },
+  {
+   "word": "and",
+   "startMs": 116180,
+   "endMs": 117140
+  },
+  {
+   "word": "to",
+   "startMs": 117140,
+   "endMs": 117260
+  },
+  {
+   "word": "see",
+   "startMs": 117260,
+   "endMs": 117400
+  },
+  {
+   "word": "how",
+   "startMs": 117400,
+   "endMs": 117540
+  },
+  {
+   "word": "smooth",
+   "startMs": 117540,
+   "endMs": 117980
+  },
+  {
+   "word": "and",
+   "startMs": 117980,
+   "endMs": 118400
+  },
+  {
+   "word": "deep",
+   "startMs": 118400,
+   "endMs": 118680
+  },
+  {
+   "word": "the",
+   "startMs": 118680,
+   "endMs": 118880
+  },
+  {
+   "word": "drift",
+   "startMs": 118880,
+   "endMs": 119100
+  },
+  {
+   "word": "was",
+   "startMs": 119100,
+   "endMs": 119540
+  },
+  {
+   "word": "and",
+   "startMs": 120300,
+   "endMs": 120440
+  },
+  {
+   "word": "to",
+   "startMs": 120440,
+   "endMs": 120580
+  },
+  {
+   "word": "listen",
+   "startMs": 120580,
+   "endMs": 120860
+  },
+  {
+   "word": "to",
+   "startMs": 120860,
+   "endMs": 121060
+  },
+  {
+   "word": "the",
+   "startMs": 121060,
+   "endMs": 121220
+  },
+  {
+   "word": "hush",
+   "startMs": 121220,
+   "endMs": 121600
+  },
+  {
+   "word": "upon",
+   "startMs": 121600,
+   "endMs": 121960
+  },
+  {
+   "word": "the",
+   "startMs": 121960,
+   "endMs": 122140
+  },
+  {
+   "word": "paths",
+   "startMs": 122140,
+   "endMs": 122540
+  },
+  {
+   "word": "and",
+   "startMs": 122540,
+   "endMs": 122800
+  },
+  {
+   "word": "roads",
+   "startMs": 122800,
+   "endMs": 123300
+  },
+  {
+   "word": "they",
+   "startMs": 123300,
+   "endMs": 125260
+  },
+  {
+   "word": "had",
+   "startMs": 125260,
+   "endMs": 125420
+  },
+  {
+   "word": "plenty",
+   "startMs": 125420,
+   "endMs": 125820
+  },
+  {
+   "word": "of",
+   "startMs": 125820,
+   "endMs": 126040
+  },
+  {
+   "word": "the",
+   "startMs": 126040,
+   "endMs": 126120
+  },
+  {
+   "word": "finest",
+   "startMs": 126120,
+   "endMs": 126480
+  },
+  {
+   "word": "toys",
+   "startMs": 126480,
+   "endMs": 126900
+  },
+  {
+   "word": "in",
+   "startMs": 126900,
+   "endMs": 127080
+  },
+  {
+   "word": "the",
+   "startMs": 127080,
+   "endMs": 127160
+  },
+  {
+   "word": "world",
+   "startMs": 127160,
+   "endMs": 127580
+  },
+  {
+   "word": "and",
+   "startMs": 127580,
+   "endMs": 128420
+  },
+  {
+   "word": "the",
+   "startMs": 128420,
+   "endMs": 128480
+  },
+  {
+   "word": "most",
+   "startMs": 128480,
+   "endMs": 128720
+  },
+  {
+   "word": "astonishing",
+   "startMs": 128720,
+   "endMs": 129240
+  },
+  {
+   "word": "picture",
+   "startMs": 129240,
+   "endMs": 129800
+  },
+  {
+   "word": "books",
+   "startMs": 129800,
+   "endMs": 130160
+  },
+  {
+   "word": "all",
+   "startMs": 130160,
+   "endMs": 131060
+  },
+  {
+   "word": "about",
+   "startMs": 131060,
+   "endMs": 131340
+  },
+  {
+   "word": "scimitars",
+   "startMs": 131340,
+   "endMs": 132200
+  },
+  {
+   "word": "and",
+   "startMs": 132200,
+   "endMs": 132460
+  },
+  {
+   "word": "slippers",
+   "startMs": 132460,
+   "endMs": 132920
+  },
+  {
+   "word": "and",
+   "startMs": 132920,
+   "endMs": 133440
+  },
+  {
+   "word": "turbans",
+   "startMs": 133440,
+   "endMs": 134060
+  },
+  {
+   "word": "and",
+   "startMs": 134800,
+   "endMs": 135000
+  },
+  {
+   "word": "dwarfs",
+   "startMs": 135000,
+   "endMs": 135660
+  },
+  {
+   "word": "and",
+   "startMs": 135660,
+   "endMs": 135880
+  },
+  {
+   "word": "giants",
+   "startMs": 135880,
+   "endMs": 136460
+  },
+  {
+   "word": "and",
+   "startMs": 136460,
+   "endMs": 136800
+  },
+  {
+   "word": "genii",
+   "startMs": 136800,
+   "endMs": 137140
+  },
+  {
+   "word": "and",
+   "startMs": 137140,
+   "endMs": 137640
+  },
+  {
+   "word": "fairies",
+   "startMs": 137640,
+   "endMs": 138220
+  },
+  {
+   "word": "and",
+   "startMs": 138220,
+   "endMs": 138980
+  },
+  {
+   "word": "bluebeards",
+   "startMs": 138980,
+   "endMs": 139680
+  },
+  {
+   "word": "and",
+   "startMs": 139680,
+   "endMs": 140000
+  },
+  {
+   "word": "beanstalks",
+   "startMs": 140000,
+   "endMs": 141080
+  },
+  {
+   "word": "and",
+   "startMs": 141080,
+   "endMs": 141760
+  },
+  {
+   "word": "riches",
+   "startMs": 141760,
+   "endMs": 142000
+  },
+  {
+   "word": "and",
+   "startMs": 142000,
+   "endMs": 142700
+  },
+  {
+   "word": "caverns",
+   "startMs": 142700,
+   "endMs": 143380
+  },
+  {
+   "word": "and",
+   "startMs": 143380,
+   "endMs": 143500
+  },
+  {
+   "word": "forests",
+   "startMs": 143500,
+   "endMs": 144060
+  },
+  {
+   "word": "and",
+   "startMs": 144060,
+   "endMs": 144400
+  },
+  {
+   "word": "valentines",
+   "startMs": 144400,
+   "endMs": 145200
+  },
+  {
+   "word": "and",
+   "startMs": 145200,
+   "endMs": 145560
+  },
+  {
+   "word": "orsons",
+   "startMs": 145560,
+   "endMs": 146220
+  },
+  {
+   "word": "and",
+   "startMs": 146220,
+   "endMs": 147120
+  },
+  {
+   "word": "all",
+   "startMs": 147120,
+   "endMs": 147360
+  },
+  {
+   "word": "new",
+   "startMs": 147360,
+   "endMs": 147660
+  },
+  {
+   "word": "and",
+   "startMs": 147660,
+   "endMs": 148620
+  },
+  {
+   "word": "all",
+   "startMs": 148620,
+   "endMs": 148800
+  },
+  {
+   "word": "true",
+   "startMs": 148800,
+   "endMs": 149220
+  },
+  {
+   "word": "but",
+   "startMs": 150400,
+   "endMs": 150560
+  },
+  {
+   "word": "one",
+   "startMs": 150560,
+   "endMs": 150840
+  },
+  {
+   "word": "day",
+   "startMs": 150840,
+   "endMs": 151180
+  },
+  {
+   "word": "of",
+   "startMs": 151180,
+   "endMs": 151480
+  },
+  {
+   "word": "a",
+   "startMs": 151480,
+   "endMs": 151580
+  },
+  {
+   "word": "sudden",
+   "startMs": 151580,
+   "endMs": 151900
+  },
+  {
+   "word": "the",
+   "startMs": 151900,
+   "endMs": 152840
+  },
+  {
+   "word": "traveller",
+   "startMs": 152840,
+   "endMs": 153180
+  },
+  {
+   "word": "lost",
+   "startMs": 153180,
+   "endMs": 153480
+  },
+  {
+   "word": "the",
+   "startMs": 153480,
+   "endMs": 153640
+  },
+  {
+   "word": "child",
+   "startMs": 153640,
+   "endMs": 154000
+  },
+  {
+   "word": "he",
+   "startMs": 154000,
+   "endMs": 155380
+  },
+  {
+   "word": "called",
+   "startMs": 155380,
+   "endMs": 155700
+  },
+  {
+   "word": "to",
+   "startMs": 155700,
+   "endMs": 155860
+  },
+  {
+   "word": "him",
+   "startMs": 155860,
+   "endMs": 156020
+  },
+  {
+   "word": "over",
+   "startMs": 156020,
+   "endMs": 156340
+  },
+  {
+   "word": "and",
+   "startMs": 156340,
+   "endMs": 156560
+  },
+  {
+   "word": "over",
+   "startMs": 156560,
+   "endMs": 156740
+  },
+  {
+   "word": "again",
+   "startMs": 156740,
+   "endMs": 157160
+  },
+  {
+   "word": "but",
+   "startMs": 157160,
+   "endMs": 157420
+  },
+  {
+   "word": "got",
+   "startMs": 157420,
+   "endMs": 157620
+  },
+  {
+   "word": "no",
+   "startMs": 157620,
+   "endMs": 157860
+  },
+  {
+   "word": "answer",
+   "startMs": 157860,
+   "endMs": 158240
+  },
+  {
+   "word": "so",
+   "startMs": 158240,
+   "endMs": 159600
+  },
+  {
+   "word": "he",
+   "startMs": 159600,
+   "endMs": 160420
+  },
+  {
+   "word": "went",
+   "startMs": 160420,
+   "endMs": 160620
+  },
+  {
+   "word": "upon",
+   "startMs": 160620,
+   "endMs": 160820
+  },
+  {
+   "word": "his",
+   "startMs": 160820,
+   "endMs": 161080
+  },
+  {
+   "word": "road",
+   "startMs": 161080,
+   "endMs": 161360
+  },
+  {
+   "word": "and",
+   "startMs": 161360,
+   "endMs": 161620
+  },
+  {
+   "word": "went",
+   "startMs": 161620,
+   "endMs": 161820
+  },
+  {
+   "word": "on",
+   "startMs": 161820,
+   "endMs": 162100
+  },
+  {
+   "word": "for",
+   "startMs": 162100,
+   "endMs": 162280
+  },
+  {
+   "word": "a",
+   "startMs": 162280,
+   "endMs": 162440
+  },
+  {
+   "word": "little",
+   "startMs": 162440,
+   "endMs": 162580
+  },
+  {
+   "word": "while",
+   "startMs": 162580,
+   "endMs": 163040
+  },
+  {
+   "word": "without",
+   "startMs": 163040,
+   "endMs": 163400
+  },
+  {
+   "word": "meeting",
+   "startMs": 163400,
+   "endMs": 163780
+  },
+  {
+   "word": "anything",
+   "startMs": 163780,
+   "endMs": 164260
+  },
+  {
+   "word": "until",
+   "startMs": 164460,
+   "endMs": 165520
+  },
+  {
+   "word": "at",
+   "startMs": 165520,
+   "endMs": 165780
+  },
+  {
+   "word": "last",
+   "startMs": 165780,
+   "endMs": 166080
+  },
+  {
+   "word": "he",
+   "startMs": 166080,
+   "endMs": 166360
+  },
+  {
+   "word": "came",
+   "startMs": 166360,
+   "endMs": 166600
+  },
+  {
+   "word": "to",
+   "startMs": 166600,
+   "endMs": 166760
+  },
+  {
+   "word": "a",
+   "startMs": 166760,
+   "endMs": 166880
+  },
+  {
+   "word": "handsome",
+   "startMs": 166880,
+   "endMs": 167280
+  },
+  {
+   "word": "boy",
+   "startMs": 167280,
+   "endMs": 167720
+  },
+  {
+   "word": "so",
+   "startMs": 167720,
+   "endMs": 168960
+  },
+  {
+   "word": "he",
+   "startMs": 168960,
+   "endMs": 169080
+  },
+  {
+   "word": "said",
+   "startMs": 169080,
+   "endMs": 169340
+  },
+  {
+   "word": "to",
+   "startMs": 169340,
+   "endMs": 169500
+  },
+  {
+   "word": "the",
+   "startMs": 169500,
+   "endMs": 169620
+  },
+  {
+   "word": "boy",
+   "startMs": 169620,
+   "endMs": 169880
+  },
+  {
+   "word": "what",
+   "startMs": 169880,
+   "endMs": 170840
+  },
+  {
+   "word": "do",
+   "startMs": 170840,
+   "endMs": 171080
+  },
+  {
+   "word": "you",
+   "startMs": 171080,
+   "endMs": 171220
+  },
+  {
+   "word": "do",
+   "startMs": 171220,
+   "endMs": 171420
+  },
+  {
+   "word": "here",
+   "startMs": 171420,
+   "endMs": 171760
+  },
+  {
+   "word": "and",
+   "startMs": 171760,
+   "endMs": 172940
+  },
+  {
+   "word": "the",
+   "startMs": 172940,
+   "endMs": 173020
+  },
+  {
+   "word": "boy",
+   "startMs": 173020,
+   "endMs": 173240
+  },
+  {
+   "word": "said",
+   "startMs": 173240,
+   "endMs": 173600
+  },
+  {
+   "word": "i",
+   "startMs": 173600,
+   "endMs": 174740
+  },
+  {
+   "word": "am",
+   "startMs": 174740,
+   "endMs": 174940
+  },
+  {
+   "word": "always",
+   "startMs": 174940,
+   "endMs": 175420
+  },
+  {
+   "word": "learning",
+   "startMs": 175420,
+   "endMs": 175880
+  },
+  {
+   "word": "come",
+   "startMs": 175880,
+   "endMs": 177000
+  },
+  {
+   "word": "and",
+   "startMs": 177000,
+   "endMs": 177240
+  },
+  {
+   "word": "learn",
+   "startMs": 177240,
+   "endMs": 177480
+  },
+  {
+   "word": "with",
+   "startMs": 177480,
+   "endMs": 177720
+  },
+  {
+   "word": "me",
+   "startMs": 177720,
+   "endMs": 177980
+  },
+  {
+   "word": "so",
+   "startMs": 179420,
+   "endMs": 179580
+  },
+  {
+   "word": "he",
+   "startMs": 179580,
+   "endMs": 179800
+  },
+  {
+   "word": "learned",
+   "startMs": 179800,
+   "endMs": 180020
+  },
+  {
+   "word": "with",
+   "startMs": 180020,
+   "endMs": 180240
+  },
+  {
+   "word": "that",
+   "startMs": 180240,
+   "endMs": 180500
+  },
+  {
+   "word": "boy",
+   "startMs": 180500,
+   "endMs": 180900
+  },
+  {
+   "word": "about",
+   "startMs": 180900,
+   "endMs": 181280
+  },
+  {
+   "word": "jupiter",
+   "startMs": 181280,
+   "endMs": 181720
+  },
+  {
+   "word": "and",
+   "startMs": 181720,
+   "endMs": 182100
+  },
+  {
+   "word": "juno",
+   "startMs": 182100,
+   "endMs": 182540
+  },
+  {
+   "word": "and",
+   "startMs": 182540,
+   "endMs": 183300
+  },
+  {
+   "word": "the",
+   "startMs": 183300,
+   "endMs": 183400
+  },
+  {
+   "word": "greeks",
+   "startMs": 183400,
+   "endMs": 183740
+  },
+  {
+   "word": "and",
+   "startMs": 183740,
+   "endMs": 183960
+  },
+  {
+   "word": "the",
+   "startMs": 183960,
+   "endMs": 184060
+  },
+  {
+   "word": "romans",
+   "startMs": 184060,
+   "endMs": 184500
+  },
+  {
+   "word": "and",
+   "startMs": 184500,
+   "endMs": 185300
+  },
+  {
+   "word": "i",
+   "startMs": 185300,
+   "endMs": 185840
+  },
+  {
+   "word": "don't",
+   "startMs": 185840,
+   "endMs": 186020
+  },
+  {
+   "word": "know",
+   "startMs": 186020,
+   "endMs": 186180
+  },
+  {
+   "word": "what",
+   "startMs": 186180,
+   "endMs": 186540
+  },
+  {
+   "word": "and",
+   "startMs": 186540,
+   "endMs": 186760
+  },
+  {
+   "word": "learned",
+   "startMs": 186760,
+   "endMs": 187180
+  },
+  {
+   "word": "more",
+   "startMs": 187180,
+   "endMs": 187560
+  },
+  {
+   "word": "than",
+   "startMs": 187560,
+   "endMs": 187740
+  },
+  {
+   "word": "i",
+   "startMs": 187740,
+   "endMs": 187860
+  },
+  {
+   "word": "could",
+   "startMs": 187860,
+   "endMs": 188080
+  },
+  {
+   "word": "tell",
+   "startMs": 188080,
+   "endMs": 188600
+  },
+  {
+   "word": "or",
+   "startMs": 188714,
+   "endMs": 189094
+  },
+  {
+   "word": "he",
+   "startMs": 189094,
+   "endMs": 189294
+  },
+  {
+   "word": "either,",
+   "startMs": 189294,
+   "endMs": 189854
+  },
+  {
+   "word": "for",
+   "startMs": 189854,
+   "endMs": 189974
+  },
+  {
+   "word": "he",
+   "startMs": 189974,
+   "endMs": 190114
+  },
+  {
+   "word": "soon",
+   "startMs": 190114,
+   "endMs": 190354
+  },
+  {
+   "word": "forgot",
+   "startMs": 190354,
+   "endMs": 190654
+  },
+  {
+   "word": "a",
+   "startMs": 190654,
+   "endMs": 190874
+  },
+  {
+   "word": "great",
+   "startMs": 190874,
+   "endMs": 191054
+  },
+  {
+   "word": "deal",
+   "startMs": 191054,
+   "endMs": 191294
+  },
+  {
+   "word": "of",
+   "startMs": 191294,
+   "endMs": 191474
+  },
+  {
+   "word": "it.",
+   "startMs": 191474,
+   "endMs": 191654
+  },
+  {
+   "word": "But",
+   "startMs": 191654,
+   "endMs": 192614
+  },
+  {
+   "word": "they",
+   "startMs": 192614,
+   "endMs": 193514
+  },
+  {
+   "word": "were",
+   "startMs": 193514,
+   "endMs": 193654
+  },
+  {
+   "word": "not",
+   "startMs": 193654,
+   "endMs": 193814
+  },
+  {
+   "word": "always",
+   "startMs": 193814,
+   "endMs": 194314
+  },
+  {
+   "word": "learning.",
+   "startMs": 194314,
+   "endMs": 194774
+  },
+  {
+   "word": "They",
+   "startMs": 194774,
+   "endMs": 195654
+  },
+  {
+   "word": "had",
+   "startMs": 195654,
+   "endMs": 195854
+  },
+  {
+   "word": "the",
+   "startMs": 195854,
+   "endMs": 195974
+  },
+  {
+   "word": "merriest",
+   "startMs": 195974,
+   "endMs": 196454
+  },
+  {
+   "word": "games",
+   "startMs": 196014,
+   "endMs": 197014
+  },
+  {
+   "word": "that",
+   "startMs": 197014,
+   "endMs": 197294
+  },
+  {
+   "word": "ever",
+   "startMs": 197294,
+   "endMs": 197534
+  },
+  {
+   "word": "were",
+   "startMs": 197534,
+   "endMs": 197714
+  },
+  {
+   "word": "played.",
+   "startMs": 197714,
+   "endMs": 198074
+  },
+  {
+   "word": "They",
+   "startMs": 198074,
+   "endMs": 198794
+  },
+  {
+   "word": "rode",
+   "startMs": 198794,
+   "endMs": 199094
+  },
+  {
+   "word": "upon",
+   "startMs": 199094,
+   "endMs": 199374
+  },
+  {
+   "word": "the",
+   "startMs": 199374,
+   "endMs": 199574
+  },
+  {
+   "word": "river",
+   "startMs": 199574,
+   "endMs": 199794
+  },
+  {
+   "word": "in",
+   "startMs": 199794,
+   "endMs": 200054
+  },
+  {
+   "word": "summer",
+   "startMs": 200054,
+   "endMs": 200354
+  },
+  {
+   "word": "and",
+   "startMs": 200354,
+   "endMs": 200554
+  },
+  {
+   "word": "skated",
+   "startMs": 200554,
+   "endMs": 201034
+  },
+  {
+   "word": "on",
+   "startMs": 201034,
+   "endMs": 201294
+  },
+  {
+   "word": "the",
+   "startMs": 201294,
+   "endMs": 201394
+  },
+  {
+   "word": "ice",
+   "startMs": 201394,
+   "endMs": 201694
+  },
+  {
+   "word": "in",
+   "startMs": 201694,
+   "endMs": 201934
+  },
+  {
+   "word": "winter.",
+   "startMs": 201934,
+   "endMs": 202254
+  },
+  {
+   "word": "They",
+   "startMs": 203154,
+   "endMs": 203334
+  },
+  {
+   "word": "were",
+   "startMs": 203334,
+   "endMs": 203514
+  },
+  {
+   "word": "active",
+   "startMs": 203514,
+   "endMs": 203934
+  },
+  {
+   "word": "afoot",
+   "startMs": 203934,
+   "endMs": 204274
+  },
+  {
+   "word": "and",
+   "startMs": 204274,
+   "endMs": 204494
+  },
+  {
+   "word": "active",
+   "startMs": 204494,
+   "endMs": 204954
+  },
+  {
+   "word": "on",
+   "startMs": 204954,
+   "endMs": 205214
+  },
+  {
+   "word": "horseback,",
+   "startMs": 205214,
+   "endMs": 205974
+  },
+  {
+   "word": "at",
+   "startMs": 205974,
+   "endMs": 206814
+  },
+  {
+   "word": "cricket",
+   "startMs": 206814,
+   "endMs": 207114
+  },
+  {
+   "word": "and",
+   "startMs": 207114,
+   "endMs": 207494
+  },
+  {
+   "word": "all",
+   "startMs": 207494,
+   "endMs": 207834
+  },
+  {
+   "word": "games",
+   "startMs": 207834,
+   "endMs": 208214
+  },
+  {
+   "word": "at",
+   "startMs": 208214,
+   "endMs": 208414
+  },
+  {
+   "word": "ball,",
+   "startMs": 208414,
+   "endMs": 208794
+  },
+  {
+   "word": "at",
+   "startMs": 208794,
+   "endMs": 209734
+  },
+  {
+   "word": "prisoner's",
+   "startMs": 209734,
+   "endMs": 210374
+  },
+  {
+   "word": "base,",
+   "startMs": 210374,
+   "endMs": 211134
+  },
+  {
+   "word": "heron",
+   "startMs": 211134,
+   "endMs": 211394
+  },
+  {
+   "word": "hounds,",
+   "startMs": 211394,
+   "endMs": 212154
+  },
+  {
+   "word": "follow",
+   "startMs": 212154,
+   "endMs": 212374
+  },
+  {
+   "word": "my",
+   "startMs": 212374,
+   "endMs": 212614
+  },
+  {
+   "word": "leader",
+   "startMs": 212614,
+   "endMs": 212954
+  },
+  {
+   "word": "in",
+   "startMs": 212954,
+   "endMs": 213134
+  },
+  {
+   "word": "more",
+   "startMs": 213134,
+   "endMs": 213354
+  },
+  {
+   "word": "sports",
+   "startMs": 213354,
+   "endMs": 213874
+  },
+  {
+   "word": "than",
+   "startMs": 213874,
+   "endMs": 214074
+  },
+  {
+   "word": "I",
+   "startMs": 214074,
+   "endMs": 214214
+  },
+  {
+   "word": "can",
+   "startMs": 214214,
+   "endMs": 214374
+  },
+  {
+   "word": "think",
+   "startMs": 214374,
+   "endMs": 214674
+  },
+  {
+   "word": "of.",
+   "startMs": 214674,
+   "endMs": 214994
+  },
+  {
+   "word": "Nobody",
+   "startMs": 214994,
+   "endMs": 216094
+  },
+  {
+   "word": "could",
+   "startMs": 216094,
+   "endMs": 216474
+  },
+  {
+   "word": "beat",
+   "startMs": 216474,
+   "endMs": 216754
+  },
+  {
+   "word": "them.",
+   "startMs": 216754,
+   "endMs": 217554
+  },
+  {
+   "word": "They",
+   "startMs": 218234,
+   "endMs": 218434
+  },
+  {
+   "word": "had",
+   "startMs": 218434,
+   "endMs": 218634
+  },
+  {
+   "word": "holidays",
+   "startMs": 218634,
+   "endMs": 219134
+  },
+  {
+   "word": "too,",
+   "startMs": 219134,
+   "endMs": 219754
+  },
+  {
+   "word": "and",
+   "startMs": 219754,
+   "endMs": 219894
+  },
+  {
+   "word": "twelfth",
+   "startMs": 219894,
+   "endMs": 220314
+  },
+  {
+   "word": "cakes,",
+   "startMs": 220314,
+   "endMs": 220934
+  },
+  {
+   "word": "and",
+   "startMs": 220934,
+   "endMs": 221054
+  },
+  {
+   "word": "parties",
+   "startMs": 221054,
+   "endMs": 221474
+  },
+  {
+   "word": "where",
+   "startMs": 221474,
+   "endMs": 221674
+  },
+  {
+   "word": "they",
+   "startMs": 221674,
+   "endMs": 221774
+  },
+  {
+   "word": "danced",
+   "startMs": 221774,
+   "endMs": 222114
+  },
+  {
+   "word": "till",
+   "startMs": 222114,
+   "endMs": 222394
+  },
+  {
+   "word": "midnight,",
+   "startMs": 222394,
+   "endMs": 222874
+  },
+  {
+   "word": "and",
+   "startMs": 223554,
+   "endMs": 223774
+  },
+  {
+   "word": "real",
+   "startMs": 223774,
+   "endMs": 224074
+  },
+  {
+   "word": "theaters",
+   "startMs": 224074,
+   "endMs": 224494
+  },
+  {
+   "word": "where",
+   "startMs": 224494,
+   "endMs": 224914
+  },
+  {
+   "word": "they",
+   "startMs": 224914,
+   "endMs": 225054
+  },
+  {
+   "word": "saw",
+   "startMs": 225054,
+   "endMs": 225374
+  },
+  {
+   "word": "palaces",
+   "startMs": 225374,
+   "endMs": 225954
+  },
+  {
+   "word": "of",
+   "startMs": 225954,
+   "endMs": 226214
+  },
+  {
+   "word": "real",
+   "startMs": 226214,
+   "endMs": 226534
+  },
+  {
+   "word": "gold",
+   "startMs": 226534,
+   "endMs": 226934
+  },
+  {
+   "word": "and",
+   "startMs": 226934,
+   "endMs": 227154
+  },
+  {
+   "word": "silver",
+   "startMs": 227154,
+   "endMs": 227614
+  },
+  {
+   "word": "rise",
+   "startMs": 227614,
+   "endMs": 228574
+  },
+  {
+   "word": "out",
+   "startMs": 228574,
+   "endMs": 228994
+  },
+  {
+   "word": "of",
+   "startMs": 228994,
+   "endMs": 229094
+  },
+  {
+   "word": "the",
+   "startMs": 229094,
+   "endMs": 229234
+  },
+  {
+   "word": "real",
+   "startMs": 229234,
+   "endMs": 229674
+  },
+  {
+   "word": "earth,",
+   "startMs": 229674,
+   "endMs": 230514
+  },
+  {
+   "word": "and",
+   "startMs": 230354,
+   "endMs": 231454
+  },
+  {
+   "word": "saw",
+   "startMs": 231454,
+   "endMs": 231694
+  },
+  {
+   "word": "all",
+   "startMs": 231694,
+   "endMs": 232054
+  },
+  {
+   "word": "the",
+   "startMs": 232054,
+   "endMs": 232214
+  },
+  {
+   "word": "wonders",
+   "startMs": 232214,
+   "endMs": 232554
+  },
+  {
+   "word": "of",
+   "startMs": 232554,
+   "endMs": 232834
+  },
+  {
+   "word": "the",
+   "startMs": 232834,
+   "endMs": 232954
+  },
+  {
+   "word": "world",
+   "startMs": 232954,
+   "endMs": 233214
+  },
+  {
+   "word": "at",
+   "startMs": 233214,
+   "endMs": 233434
+  },
+  {
+   "word": "once.",
+   "startMs": 233434,
+   "endMs": 233734
+  },
+  {
+   "word": "As",
+   "startMs": 233734,
+   "endMs": 235354
+  },
+  {
+   "word": "the",
+   "startMs": 235354,
+   "endMs": 235494
+  },
+  {
+   "word": "friends,",
+   "startMs": 235494,
+   "endMs": 236034
+  },
+  {
+   "word": "they",
+   "startMs": 236034,
+   "endMs": 236094
+  },
+  {
+   "word": "had",
+   "startMs": 236094,
+   "endMs": 236294
+  },
+  {
+   "word": "such",
+   "startMs": 236294,
+   "endMs": 236614
+  },
+  {
+   "word": "dear",
+   "startMs": 236614,
+   "endMs": 236994
+  },
+  {
+   "word": "friends,",
+   "startMs": 236994,
+   "endMs": 237614
+  },
+  {
+   "word": "and",
+   "startMs": 237474,
+   "endMs": 237714
+  },
+  {
+   "word": "so",
+   "startMs": 237714,
+   "endMs": 238234
+  },
+  {
+   "word": "many",
+   "startMs": 238234,
+   "endMs": 238654
+  },
+  {
+   "word": "of",
+   "startMs": 238654,
+   "endMs": 238934
+  },
+  {
+   "word": "them,",
+   "startMs": 238934,
+   "endMs": 239374
+  },
+  {
+   "word": "that",
+   "startMs": 239374,
+   "endMs": 239954
+  },
+  {
+   "word": "I",
+   "startMs": 239954,
+   "endMs": 240074
+  },
+  {
+   "word": "want",
+   "startMs": 240074,
+   "endMs": 240294
+  },
+  {
+   "word": "the",
+   "startMs": 240294,
+   "endMs": 240474
+  },
+  {
+   "word": "time",
+   "startMs": 240474,
+   "endMs": 240754
+  },
+  {
+   "word": "to",
+   "startMs": 240754,
+   "endMs": 240934
+  },
+  {
+   "word": "reckon",
+   "startMs": 240934,
+   "endMs": 241154
+  },
+  {
+   "word": "them",
+   "startMs": 241154,
+   "endMs": 241394
+  },
+  {
+   "word": "up.",
+   "startMs": 241394,
+   "endMs": 241674
+  },
+  {
+   "word": "They",
+   "startMs": 242754,
+   "endMs": 242994
+  },
+  {
+   "word": "were",
+   "startMs": 242994,
+   "endMs": 243174
+  },
+  {
+   "word": "all",
+   "startMs": 243174,
+   "endMs": 243394
+  },
+  {
+   "word": "young,",
+   "startMs": 243394,
+   "endMs": 243914
+  },
+  {
+   "word": "like",
+   "startMs": 243914,
+   "endMs": 244074
+  },
+  {
+   "word": "the",
+   "startMs": 244074,
+   "endMs": 244214
+  },
+  {
+   "word": "handsome",
+   "startMs": 244214,
+   "endMs": 244474
+  },
+  {
+   "word": "boy,",
+   "startMs": 244474,
+   "endMs": 245114
+  },
+  {
+   "word": "and",
+   "startMs": 245474,
+   "endMs": 245674
+  },
+  {
+   "word": "were",
+   "startMs": 245674,
+   "endMs": 245834
+  },
+  {
+   "word": "never",
+   "startMs": 245834,
+   "endMs": 245994
+  },
+  {
+   "word": "to",
+   "startMs": 245994,
+   "endMs": 246134
+  },
+  {
+   "word": "be",
+   "startMs": 246134,
+   "endMs": 246254
+  },
+  {
+   "word": "strange",
+   "startMs": 246254,
+   "endMs": 246654
+  },
+  {
+   "word": "to",
+   "startMs": 246654,
+   "endMs": 246974
+  },
+  {
+   "word": "one",
+   "startMs": 246974,
+   "endMs": 247134
+  },
+  {
+   "word": "another",
+   "startMs": 247134,
+   "endMs": 247434
+  },
+  {
+   "word": "all",
+   "startMs": 247434,
+   "endMs": 247854
+  },
+  {
+   "word": "their",
+   "startMs": 247854,
+   "endMs": 248094
+  },
+  {
+   "word": "lives",
+   "startMs": 248094,
+   "endMs": 248474
+  },
+  {
+   "word": "through.",
+   "startMs": 248474,
+   "endMs": 248814
+  },
+  {
+   "word": "Still,",
+   "startMs": 250434,
+   "endMs": 250914
+  },
+  {
+   "word": "one",
+   "startMs": 250914,
+   "endMs": 251814
+  },
+  {
+   "word": "day,",
+   "startMs": 251814,
+   "endMs": 252774
+  },
+  {
+   "word": "in",
+   "startMs": 252774,
+   "endMs": 252994
+  },
+  {
+   "word": "the",
+   "startMs": 252994,
+   "endMs": 253094
+  },
+  {
+   "word": "midst",
+   "startMs": 253094,
+   "endMs": 253354
+  },
+  {
+   "word": "of",
+   "startMs": 253354,
+   "endMs": 253574
+  },
+  {
+   "word": "all",
+   "startMs": 253574,
+   "endMs": 253854
+  },
+  {
+   "word": "these",
+   "startMs": 253854,
+   "endMs": 254134
+  },
+  {
+   "word": "pleasures,",
+   "startMs": 254134,
+   "endMs": 254594
+  },
+  {
+   "word": "the",
+   "startMs": 254814,
+   "endMs": 255014
+  },
+  {
+   "word": "traveller",
+   "startMs": 255014,
+   "endMs": 255514
+  },
+  {
+   "word": "lost",
+   "startMs": 255514,
+   "endMs": 255914
+  },
+  {
+   "word": "the",
+   "startMs": 255914,
+   "endMs": 256094
+  },
+  {
+   "word": "boy",
+   "startMs": 256094,
+   "endMs": 256414
+  },
+  {
+   "word": "as",
+   "startMs": 256414,
+   "endMs": 256614
+  },
+  {
+   "word": "he",
+   "startMs": 256614,
+   "endMs": 256774
+  },
+  {
+   "word": "had",
+   "startMs": 256774,
+   "endMs": 256894
+  },
+  {
+   "word": "lost",
+   "startMs": 256894,
+   "endMs": 257114
+  },
+  {
+   "word": "the",
+   "startMs": 257114,
+   "endMs": 257314
+  },
+  {
+   "word": "child,",
+   "startMs": 257314,
+   "endMs": 257674
+  },
+  {
+   "word": "and",
+   "startMs": 258754,
+   "endMs": 258934
+  },
+  {
+   "word": "after",
+   "startMs": 258934,
+   "endMs": 259194
+  },
+  {
+   "word": "calling",
+   "startMs": 259194,
+   "endMs": 259674
+  },
+  {
+   "word": "to",
+   "startMs": 259674,
+   "endMs": 259954
+  },
+  {
+   "word": "him",
+   "startMs": 259954,
+   "endMs": 260114
+  },
+  {
+   "word": "in",
+   "startMs": 260114,
+   "endMs": 260294
+  },
+  {
+   "word": "vain",
+   "startMs": 260294,
+   "endMs": 260574
+  },
+  {
+   "word": "went",
+   "startMs": 260574,
+   "endMs": 260934
+  },
+  {
+   "word": "upon",
+   "startMs": 260934,
+   "endMs": 261294
+  },
+  {
+   "word": "his",
+   "startMs": 261294,
+   "endMs": 261554
+  },
+  {
+   "word": "journey.",
+   "startMs": 261554,
+   "endMs": 261894
+  },
+  {
+   "word": "So",
+   "startMs": 263314,
+   "endMs": 263594
+  },
+  {
+   "word": "he",
+   "startMs": 263594,
+   "endMs": 263894
+  },
+  {
+   "word": "went",
+   "startMs": 263894,
+   "endMs": 264154
+  },
+  {
+   "word": "on",
+   "startMs": 264154,
+   "endMs": 264474
+  },
+  {
+   "word": "for",
+   "startMs": 264474,
+   "endMs": 264674
+  },
+  {
+   "word": "a",
+   "startMs": 264674,
+   "endMs": 264834
+  },
+  {
+   "word": "little",
+   "startMs": 264834,
+   "endMs": 264934
+  },
+  {
+   "word": "while",
+   "startMs": 264934,
+   "endMs": 265314
+  },
+  {
+   "word": "without",
+   "startMs": 265314,
+   "endMs": 265614
+  },
+  {
+   "word": "seeing",
+   "startMs": 265614,
+   "endMs": 266054
+  },
+  {
+   "word": "anything,",
+   "startMs": 266054,
+   "endMs": 266994
+  },
+  {
+   "word": "until",
+   "startMs": 267334,
+   "endMs": 267494
+  },
+  {
+   "word": "at",
+   "startMs": 267494,
+   "endMs": 267774
+  },
+  {
+   "word": "last",
+   "startMs": 267774,
+   "endMs": 267994
+  },
+  {
+   "word": "he",
+   "startMs": 267994,
+   "endMs": 268194
+  },
+  {
+   "word": "came",
+   "startMs": 268194,
+   "endMs": 268414
+  },
+  {
+   "word": "to",
+   "startMs": 268414,
+   "endMs": 268554
+  },
+  {
+   "word": "a",
+   "startMs": 268554,
+   "endMs": 268674
+  },
+  {
+   "word": "young",
+   "startMs": 268674,
+   "endMs": 268814
+  },
+  {
+   "word": "man.",
+   "startMs": 268814,
+   "endMs": 269194
+  },
+  {
+   "word": "So",
+   "startMs": 270534,
+   "endMs": 270674
+  },
+  {
+   "word": "he",
+   "startMs": 270674,
+   "endMs": 270794
+  },
+  {
+   "word": "said",
+   "startMs": 270794,
+   "endMs": 271054
+  },
+  {
+   "word": "to",
+   "startMs": 271054,
+   "endMs": 271214
+  },
+  {
+   "word": "the",
+   "startMs": 271214,
+   "endMs": 271334
+  },
+  {
+   "word": "young",
+   "startMs": 271334,
+   "endMs": 271554
+  },
+  {
+   "word": "man,",
+   "startMs": 271554,
+   "endMs": 272054
+  },
+  {
+   "word": "What",
+   "startMs": 272714,
+   "endMs": 272914
+  },
+  {
+   "word": "do",
+   "startMs": 272914,
+   "endMs": 273074
+  },
+  {
+   "word": "you",
+   "startMs": 273074,
+   "endMs": 273274
+  },
+  {
+   "word": "do",
+   "startMs": 273274,
+   "endMs": 273434
+  },
+  {
+   "word": "here?",
+   "startMs": 273434,
+   "endMs": 273754
+  },
+  {
+   "word": "And",
+   "startMs": 274474,
+   "endMs": 274694
+  },
+  {
+   "word": "the",
+   "startMs": 274694,
+   "endMs": 274794
+  },
+  {
+   "word": "young",
+   "startMs": 274794,
+   "endMs": 274974
+  },
+  {
+   "word": "man",
+   "startMs": 274974,
+   "endMs": 275274
+  },
+  {
+   "word": "said,",
+   "startMs": 275274,
+   "endMs": 275734
+  },
+  {
+   "word": "I",
+   "startMs": 276314,
+   "endMs": 276494
+  },
+  {
+   "word": "am",
+   "startMs": 276494,
+   "endMs": 276714
+  },
+  {
+   "word": "always",
+   "startMs": 276714,
+   "endMs": 277194
+  },
+  {
+   "word": "in",
+   "startMs": 277194,
+   "endMs": 277674
+  },
+  {
+   "word": "love.",
+   "startMs": 277674,
+   "endMs": 278154
+  },
+  {
+   "word": "Come",
+   "startMs": 279234,
+   "endMs": 279494
+  },
+  {
+   "word": "in",
+   "startMs": 279494,
+   "endMs": 279674
+  },
+  {
+   "word": "love",
+   "startMs": 279674,
+   "endMs": 279814
+  },
+  {
+   "word": "with",
+   "startMs": 279814,
+   "endMs": 280054
+  },
+  {
+   "word": "me.",
+   "startMs": 280054,
+   "endMs": 280294
+  },
+  {
+   "word": "So",
+   "startMs": 281754,
+   "endMs": 281974
+  },
+  {
+   "word": "he",
+   "startMs": 281974,
+   "endMs": 282694
+  },
+  {
+   "word": "went",
+   "startMs": 282694,
+   "endMs": 282894
+  },
+  {
+   "word": "away",
+   "startMs": 282894,
+   "endMs": 283194
+  },
+  {
+   "word": "with",
+   "startMs": 283194,
+   "endMs": 283454
+  },
+  {
+   "word": "that",
+   "startMs": 283454,
+   "endMs": 283654
+  },
+  {
+   "word": "young",
+   "startMs": 283654,
+   "endMs": 283894
+  },
+  {
+   "word": "man,",
+   "startMs": 283894,
+   "endMs": 284374
+  },
+  {
+   "word": "and",
+   "startMs": 284334,
+   "endMs": 284534
+  },
+  {
+   "word": "presently",
+   "startMs": 284534,
+   "endMs": 285054
+  },
+  {
+   "word": "they",
+   "startMs": 285054,
+   "endMs": 285234
+  },
+  {
+   "word": "came",
+   "startMs": 285234,
+   "endMs": 285534
+  },
+  {
+   "word": "to",
+   "startMs": 285534,
+   "endMs": 285734
+  },
+  {
+   "word": "one",
+   "startMs": 285734,
+   "endMs": 285894
+  },
+  {
+   "word": "of",
+   "startMs": 285894,
+   "endMs": 286014
+  },
+  {
+   "word": "the",
+   "startMs": 286014,
+   "endMs": 286154
+  },
+  {
+   "word": "prettiest",
+   "startMs": 286154,
+   "endMs": 286534
+  },
+  {
+   "word": "girls",
+   "startMs": 286534,
+   "endMs": 286894
+  },
+  {
+   "word": "that",
+   "startMs": 286894,
+   "endMs": 287174
+  },
+  {
+   "word": "ever",
+   "startMs": 287174,
+   "endMs": 287414
+  },
+  {
+   "word": "was",
+   "startMs": 287414,
+   "endMs": 287654
+  },
+  {
+   "word": "seen.",
+   "startMs": 287654,
+   "endMs": 287994
+  },
+  {
+   "word": "Just",
+   "startMs": 288954,
+   "endMs": 289154
+  },
+  {
+   "word": "like",
+   "startMs": 289154,
+   "endMs": 289374
+  },
+  {
+   "word": "Fanny",
+   "startMs": 289374,
+   "endMs": 289694
+  },
+  {
+   "word": "in",
+   "startMs": 289694,
+   "endMs": 289894
+  },
+  {
+   "word": "the",
+   "startMs": 289894,
+   "endMs": 289994
+  },
+  {
+   "word": "corner",
+   "startMs": 289994,
+   "endMs": 290334
+  },
+  {
+   "word": "there,",
+   "startMs": 290334,
+   "endMs": 290714
+  },
+  {
+   "word": "and",
+   "startMs": 291114,
+   "endMs": 291334
+  },
+  {
+   "word": "she",
+   "startMs": 291334,
+   "endMs": 291774
+  },
+  {
+   "word": "had",
+   "startMs": 291774,
+   "endMs": 291954
+  },
+  {
+   "word": "eyes",
+   "startMs": 291954,
+   "endMs": 292314
+  },
+  {
+   "word": "like",
+   "startMs": 292314,
+   "endMs": 292634
+  },
+  {
+   "word": "Fanny,",
+   "startMs": 292634,
+   "endMs": 293274
+  },
+  {
+   "word": "and",
+   "startMs": 293574,
+   "endMs": 293774
+  },
+  {
+   "word": "hair",
+   "startMs": 293774,
+   "endMs": 294154
+  },
+  {
+   "word": "like",
+   "startMs": 294154,
+   "endMs": 294574
+  },
+  {
+   "word": "Fanny,",
+   "startMs": 294574,
+   "endMs": 295134
+  },
+  {
+   "word": "and",
+   "startMs": 295374,
+   "endMs": 295514
+  },
+  {
+   "word": "dimples",
+   "startMs": 295514,
+   "endMs": 295954
+  },
+  {
+   "word": "like",
+   "startMs": 295954,
+   "endMs": 296294
+  },
+  {
+   "word": "Fanny's,",
+   "startMs": 296294,
+   "endMs": 296994
+  },
+  {
+   "word": "and",
+   "startMs": 297274,
+   "endMs": 297454
+  },
+  {
+   "word": "she",
+   "startMs": 297454,
+   "endMs": 297634
+  },
+  {
+   "word": "laughed",
+   "startMs": 297634,
+   "endMs": 298114
+  },
+  {
+   "word": "and",
+   "startMs": 298114,
+   "endMs": 298374
+  },
+  {
+   "word": "just",
+   "startMs": 298274,
+   "endMs": 299154
+  },
+  {
+   "word": "colored",
+   "startMs": 298374,
+   "endMs": 298694
+  },
+  {
+   "word": "as",
+   "startMs": 299154,
+   "endMs": 299394
+  },
+  {
+   "word": "Fanny",
+   "startMs": 299394,
+   "endMs": 299654
+  },
+  {
+   "word": "does",
+   "startMs": 299654,
+   "endMs": 299934
+  },
+  {
+   "word": "while",
+   "startMs": 299934,
+   "endMs": 300194
+  },
+  {
+   "word": "I'm",
+   "startMs": 300194,
+   "endMs": 300354
+  },
+  {
+   "word": "talking",
+   "startMs": 300354,
+   "endMs": 300694
+  },
+  {
+   "word": "about",
+   "startMs": 300694,
+   "endMs": 300954
+  },
+  {
+   "word": "her.",
+   "startMs": 300954,
+   "endMs": 301214
+  },
+  {
+   "word": "So",
+   "startMs": 302234,
+   "endMs": 302474
+  },
+  {
+   "word": "the",
+   "startMs": 302474,
+   "endMs": 303494
+  },
+  {
+   "word": "young",
+   "startMs": 303494,
+   "endMs": 303714
+  },
+  {
+   "word": "man",
+   "startMs": 303714,
+   "endMs": 303974
+  },
+  {
+   "word": "fell",
+   "startMs": 303974,
+   "endMs": 304294
+  },
+  {
+   "word": "in",
+   "startMs": 304294,
+   "endMs": 304514
+  },
+  {
+   "word": "love",
+   "startMs": 304514,
+   "endMs": 304754
+  },
+  {
+   "word": "directly,",
+   "startMs": 304754,
+   "endMs": 305574
+  },
+  {
+   "word": "just",
+   "startMs": 306754,
+   "endMs": 306994
+  },
+  {
+   "word": "as",
+   "startMs": 306994,
+   "endMs": 307254
+  },
+  {
+   "word": "somebody",
+   "startMs": 307254,
+   "endMs": 307874
+  },
+  {
+   "word": "I",
+   "startMs": 307874,
+   "endMs": 308154
+  },
+  {
+   "word": "won't",
+   "startMs": 308154,
+   "endMs": 308374
+  },
+  {
+   "word": "the",
+   "startMs": 308254,
+   "endMs": 309374
+  },
+  {
+   "word": "mention",
+   "startMs": 308374,
+   "endMs": 308694
+  },
+  {
+   "word": "first",
+   "startMs": 309374,
+   "endMs": 309634
+  },
+  {
+   "word": "time",
+   "startMs": 309634,
+   "endMs": 309874
+  },
+  {
+   "word": "he",
+   "startMs": 309874,
+   "endMs": 310134
+  },
+  {
+   "word": "came",
+   "startMs": 310134,
+   "endMs": 310574
+  },
+  {
+   "word": "here",
+   "startMs": 310574,
+   "endMs": 310934
+  },
+  {
+   "word": "did",
+   "startMs": 310934,
+   "endMs": 311554
+  },
+  {
+   "word": "with",
+   "startMs": 311554,
+   "endMs": 311774
+  },
+  {
+   "word": "Fanny.",
+   "startMs": 311774,
+   "endMs": 312134
+  },
+  {
+   "word": "Well,",
+   "startMs": 313434,
+   "endMs": 313694
+  },
+  {
+   "word": "he",
+   "startMs": 313694,
+   "endMs": 314654
+  },
+  {
+   "word": "was",
+   "startMs": 314654,
+   "endMs": 314854
+  },
+  {
+   "word": "teased",
+   "startMs": 314854,
+   "endMs": 315214
+  },
+  {
+   "word": "sometimes,",
+   "startMs": 315214,
+   "endMs": 316094
+  },
+  {
+   "word": "just",
+   "startMs": 316494,
+   "endMs": 316814
+  },
+  {
+   "word": "as",
+   "startMs": 316814,
+   "endMs": 317014
+  },
+  {
+   "word": "somebody",
+   "startMs": 317014,
+   "endMs": 317554
+  },
+  {
+   "word": "used",
+   "startMs": 317554,
+   "endMs": 317934
+  },
+  {
+   "word": "to",
+   "startMs": 317934,
+   "endMs": 318074
+  },
+  {
+   "word": "be",
+   "startMs": 318074,
+   "endMs": 318254
+  },
+  {
+   "word": "by",
+   "startMs": 318254,
+   "endMs": 318534
+  },
+  {
+   "word": "Fanny,",
+   "startMs": 318534,
+   "endMs": 319114
+  },
+  {
+   "word": "and",
+   "startMs": 319334,
+   "endMs": 319594
+  },
+  {
+   "word": "they",
+   "startMs": 319594,
+   "endMs": 319754
+  },
+  {
+   "word": "quarreled",
+   "startMs": 319754,
+   "endMs": 320214
+  },
+  {
+   "word": "sometimes,",
+   "startMs": 320214,
+   "endMs": 320914
+  },
+  {
+   "word": "just",
+   "startMs": 321534,
+   "endMs": 321754
+  },
+  {
+   "word": "as",
+   "startMs": 321754,
+   "endMs": 321914
+  },
+  {
+   "word": "somebody",
+   "startMs": 321914,
+   "endMs": 322354
+  },
+  {
+   "word": "and",
+   "startMs": 322354,
+   "endMs": 322614
+  },
+  {
+   "word": "Fanny",
+   "startMs": 322614,
+   "endMs": 322994
+  },
+  {
+   "word": "used",
+   "startMs": 322994,
+   "endMs": 323294
+  },
+  {
+   "word": "to",
+   "startMs": 323294,
+   "endMs": 323434
+  },
+  {
+   "word": "quarrel,",
+   "startMs": 323434,
+   "endMs": 323834
+  },
+  {
+   "word": "and",
+   "startMs": 324474,
+   "endMs": 324594
+  },
+  {
+   "word": "they",
+   "startMs": 324594,
+   "endMs": 324714
+  },
+  {
+   "word": "made",
+   "startMs": 324714,
+   "endMs": 324874
+  },
+  {
+   "word": "it",
+   "startMs": 324874,
+   "endMs": 325054
+  },
+  {
+   "word": "up",
+   "startMs": 325054,
+   "endMs": 325234
+  },
+  {
+   "word": "and",
+   "startMs": 325234,
+   "endMs": 325734
+  },
+  {
+   "word": "sat",
+   "startMs": 325734,
+   "endMs": 326014
+  },
+  {
+   "word": "in",
+   "startMs": 326014,
+   "endMs": 326174
+  },
+  {
+   "word": "the",
+   "startMs": 326174,
+   "endMs": 326274
+  },
+  {
+   "word": "dark",
+   "startMs": 326274,
+   "endMs": 326754
+  },
+  {
+   "word": "and",
+   "startMs": 326754,
+   "endMs": 326994
+  },
+  {
+   "word": "wrote",
+   "startMs": 326994,
+   "endMs": 327194
+  },
+  {
+   "word": "letters",
+   "startMs": 327194,
+   "endMs": 327554
+  },
+  {
+   "word": "every",
+   "startMs": 327554,
+   "endMs": 327834
+  },
+  {
+   "word": "day",
+   "startMs": 327834,
+   "endMs": 328174
+  },
+  {
+   "word": "and",
+   "startMs": 328174,
+   "endMs": 328774
+  },
+  {
+   "word": "never",
+   "startMs": 328774,
+   "endMs": 329114
+  },
+  {
+   "word": "were",
+   "startMs": 329114,
+   "endMs": 329334
+  },
+  {
+   "word": "happy",
+   "startMs": 329334,
+   "endMs": 329694
+  },
+  {
+   "word": "asunder",
+   "startMs": 329694,
+   "endMs": 330174
+  },
+  {
+   "word": "and",
+   "startMs": 329714,
+   "endMs": 330814
+  },
+  {
+   "word": "were",
+   "startMs": 330814,
+   "endMs": 330934
+  },
+  {
+   "word": "always",
+   "startMs": 330934,
+   "endMs": 331294
+  },
+  {
+   "word": "looking",
+   "startMs": 331294,
+   "endMs": 331594
+  },
+  {
+   "word": "out",
+   "startMs": 331594,
+   "endMs": 331874
+  },
+  {
+   "word": "for",
+   "startMs": 331874,
+   "endMs": 332074
+  },
+  {
+   "word": "one",
+   "startMs": 332074,
+   "endMs": 332214
+  },
+  {
+   "word": "another",
+   "startMs": 332214,
+   "endMs": 332514
+  },
+  {
+   "word": "and",
+   "startMs": 332514,
+   "endMs": 333254
+  },
+  {
+   "word": "pretending",
+   "startMs": 333254,
+   "endMs": 333694
+  },
+  {
+   "word": "not",
+   "startMs": 333694,
+   "endMs": 334014
+  },
+  {
+   "word": "to",
+   "startMs": 334014,
+   "endMs": 334234
+  },
+  {
+   "word": "and",
+   "startMs": 334874,
+   "endMs": 335134
+  },
+  {
+   "word": "were",
+   "startMs": 335134,
+   "endMs": 335274
+  },
+  {
+   "word": "engaged",
+   "startMs": 335274,
+   "endMs": 335714
+  },
+  {
+   "word": "at",
+   "startMs": 335714,
+   "endMs": 336174
+  },
+  {
+   "word": "Christmas",
+   "startMs": 336174,
+   "endMs": 336574
+  },
+  {
+   "word": "time",
+   "startMs": 336574,
+   "endMs": 336994
+  },
+  {
+   "word": "and",
+   "startMs": 336994,
+   "endMs": 337414
+  },
+  {
+   "word": "sat",
+   "startMs": 337414,
+   "endMs": 337694
+  },
+  {
+   "word": "close",
+   "startMs": 337694,
+   "endMs": 338074
+  },
+  {
+   "word": "to",
+   "startMs": 338074,
+   "endMs": 338334
+  },
+  {
+   "word": "one",
+   "startMs": 338334,
+   "endMs": 338474
+  },
+  {
+   "word": "another",
+   "startMs": 338474,
+   "endMs": 338754
+  },
+  {
+   "word": "by",
+   "startMs": 338754,
+   "endMs": 338954
+  },
+  {
+   "word": "the",
+   "startMs": 338954,
+   "endMs": 339114
+  },
+  {
+   "word": "and",
+   "startMs": 339034,
+   "endMs": 340814
+  },
+  {
+   "word": "fire",
+   "startMs": 339114,
+   "endMs": 339474
+  },
+  {
+   "word": "were",
+   "startMs": 340814,
+   "endMs": 340954
+  },
+  {
+   "word": "going",
+   "startMs": 340954,
+   "endMs": 341254
+  },
+  {
+   "word": "to",
+   "startMs": 341254,
+   "endMs": 341474
+  },
+  {
+   "word": "be",
+   "startMs": 341474,
+   "endMs": 341614
+  },
+  {
+   "word": "married",
+   "startMs": 341614,
+   "endMs": 342034
+  },
+  {
+   "word": "very",
+   "startMs": 342034,
+   "endMs": 342394
+  },
+  {
+   "word": "soon.",
+   "startMs": 342394,
+   "endMs": 343094
+  },
+  {
+   "word": "All",
+   "startMs": 344054,
+   "endMs": 344454
+  },
+  {
+   "word": "exactly",
+   "startMs": 344454,
+   "endMs": 345014
+  },
+  {
+   "word": "like",
+   "startMs": 345014,
+   "endMs": 345494
+  },
+  {
+   "word": "somebody",
+   "startMs": 345494,
+   "endMs": 345914
+  },
+  {
+   "word": "I",
+   "startMs": 345914,
+   "endMs": 346134
+  },
+  {
+   "word": "won't",
+   "startMs": 346134,
+   "endMs": 346374
+  },
+  {
+   "word": "mention",
+   "startMs": 346374,
+   "endMs": 346734
+  },
+  {
+   "word": "and",
+   "startMs": 346734,
+   "endMs": 347794
+  },
+  {
+   "word": "Fanny.",
+   "startMs": 347794,
+   "endMs": 348314
+  },
+  {
+   "word": "But",
+   "startMs": 349634,
+   "endMs": 349874
+  },
+  {
+   "word": "the",
+   "startMs": 349874,
+   "endMs": 350754
+  },
+  {
+   "word": "traveller",
+   "startMs": 350754,
+   "endMs": 351194
+  },
+  {
+   "word": "lost",
+   "startMs": 351194,
+   "endMs": 351534
+  },
+  {
+   "word": "them",
+   "startMs": 351534,
+   "endMs": 351714
+  },
+  {
+   "word": "one",
+   "startMs": 351714,
+   "endMs": 351954
+  },
+  {
+   "word": "day.",
+   "startMs": 351954,
+   "endMs": 352414
+  },
+  {
+   "word": "as",
+   "startMs": 353254,
+   "endMs": 353414
+  },
+  {
+   "word": "he",
+   "startMs": 353414,
+   "endMs": 353534
+  },
+  {
+   "word": "had",
+   "startMs": 353534,
+   "endMs": 353654
+  },
+  {
+   "word": "lost",
+   "startMs": 353654,
+   "endMs": 353854
+  },
+  {
+   "word": "the",
+   "startMs": 353854,
+   "endMs": 354034
+  },
+  {
+   "word": "rest",
+   "startMs": 354034,
+   "endMs": 354234
+  },
+  {
+   "word": "of",
+   "startMs": 354234,
+   "endMs": 354374
+  },
+  {
+   "word": "his",
+   "startMs": 354374,
+   "endMs": 354494
+  },
+  {
+   "word": "friends,",
+   "startMs": 354494,
+   "endMs": 355174
+  },
+  {
+   "word": "and",
+   "startMs": 355174,
+   "endMs": 355294
+  },
+  {
+   "word": "after",
+   "startMs": 355294,
+   "endMs": 356274
+  },
+  {
+   "word": "calling",
+   "startMs": 356274,
+   "endMs": 356794
+  },
+  {
+   "word": "to",
+   "startMs": 356794,
+   "endMs": 357074
+  },
+  {
+   "word": "them",
+   "startMs": 357074,
+   "endMs": 357314
+  },
+  {
+   "word": "to",
+   "startMs": 357314,
+   "endMs": 357534
+  },
+  {
+   "word": "come",
+   "startMs": 357534,
+   "endMs": 357814
+  },
+  {
+   "word": "back,",
+   "startMs": 357814,
+   "endMs": 358414
+  },
+  {
+   "word": "which",
+   "startMs": 358414,
+   "endMs": 358774
+  },
+  {
+   "word": "they",
+   "startMs": 358774,
+   "endMs": 359154
+  },
+  {
+   "word": "never",
+   "startMs": 359154,
+   "endMs": 359374
+  },
+  {
+   "word": "did,",
+   "startMs": 359374,
+   "endMs": 360294
+  },
+  {
+   "word": "went",
+   "startMs": 360674,
+   "endMs": 360954
+  },
+  {
+   "word": "on",
+   "startMs": 360954,
+   "endMs": 361274
+  },
+  {
+   "word": "upon",
+   "startMs": 361274,
+   "endMs": 361494
+  },
+  {
+   "word": "his",
+   "startMs": 361494,
+   "endMs": 361694
+  },
+  {
+   "word": "journey.",
+   "startMs": 361694,
+   "endMs": 361974
+  },
+  {
+   "word": "So",
+   "startMs": 361974,
+   "endMs": 363674
+  },
+  {
+   "word": "he",
+   "startMs": 363674,
+   "endMs": 364014
+  },
+  {
+   "word": "went",
+   "startMs": 364014,
+   "endMs": 364374
+  },
+  {
+   "word": "on",
+   "startMs": 364374,
+   "endMs": 364694
+  },
+  {
+   "word": "for",
+   "startMs": 364694,
+   "endMs": 364914
+  },
+  {
+   "word": "a",
+   "startMs": 364914,
+   "endMs": 365074
+  },
+  {
+   "word": "little",
+   "startMs": 365074,
+   "endMs": 365234
+  },
+  {
+   "word": "while",
+   "startMs": 365234,
+   "endMs": 365614
+  },
+  {
+   "word": "without",
+   "startMs": 365614,
+   "endMs": 365894
+  },
+  {
+   "word": "seeing",
+   "startMs": 365894,
+   "endMs": 366294
+  },
+  {
+   "word": "anything,",
+   "startMs": 366294,
+   "endMs": 366834
+  },
+  {
+   "word": "until",
+   "startMs": 367714,
+   "endMs": 368014
+  },
+  {
+   "word": "at",
+   "startMs": 368014,
+   "endMs": 368194
+  },
+  {
+   "word": "last",
+   "startMs": 368194,
+   "endMs": 368474
+  },
+  {
+   "word": "he",
+   "startMs": 368474,
+   "endMs": 368674
+  },
+  {
+   "word": "came",
+   "startMs": 368674,
+   "endMs": 368934
+  },
+  {
+   "word": "to",
+   "startMs": 368934,
+   "endMs": 369074
+  },
+  {
+   "word": "a",
+   "startMs": 369074,
+   "endMs": 369274
+  },
+  {
+   "word": "middle-aged",
+   "startMs": 369274,
+   "endMs": 370014
+  },
+  {
+   "word": "gentleman.",
+   "startMs": 370014,
+   "endMs": 370534
+  },
+  {
+   "word": "So",
+   "startMs": 370534,
+   "endMs": 372034
+  },
+  {
+   "word": "he",
+   "startMs": 372034,
+   "endMs": 372154
+  },
+  {
+   "word": "said",
+   "startMs": 372154,
+   "endMs": 372474
+  },
+  {
+   "word": "to",
+   "startMs": 372474,
+   "endMs": 372654
+  },
+  {
+   "word": "the",
+   "startMs": 372654,
+   "endMs": 372794
+  },
+  {
+   "word": "What",
+   "startMs": 372714,
+   "endMs": 374454
+  },
+  {
+   "word": "gentleman,",
+   "startMs": 372794,
+   "endMs": 373694
+  },
+  {
+   "word": "are",
+   "startMs": 374454,
+   "endMs": 374614
+  },
+  {
+   "word": "you",
+   "startMs": 374614,
+   "endMs": 374794
+  },
+  {
+   "word": "doing",
+   "startMs": 374794,
+   "endMs": 375074
+  },
+  {
+   "word": "here?",
+   "startMs": 375074,
+   "endMs": 375414
+  },
+  {
+   "word": "And",
+   "startMs": 375414,
+   "endMs": 376754
+  },
+  {
+   "word": "his",
+   "startMs": 376754,
+   "endMs": 376874
+  },
+  {
+   "word": "answer",
+   "startMs": 376874,
+   "endMs": 377174
+  },
+  {
+   "word": "was,",
+   "startMs": 377174,
+   "endMs": 377554
+  },
+  {
+   "word": "I",
+   "startMs": 377568,
+   "endMs": 378728
+  },
+  {
+   "word": "am",
+   "startMs": 378728,
+   "endMs": 378928
+  },
+  {
+   "word": "always",
+   "startMs": 378928,
+   "endMs": 379208
+  },
+  {
+   "word": "busy.",
+   "startMs": 379208,
+   "endMs": 380228
+  },
+  {
+   "word": "Come",
+   "startMs": 380228,
+   "endMs": 380528
+  },
+  {
+   "word": "and",
+   "startMs": 380528,
+   "endMs": 380708
+  },
+  {
+   "word": "be",
+   "startMs": 380708,
+   "endMs": 380848
+  },
+  {
+   "word": "busy",
+   "startMs": 380848,
+   "endMs": 381228
+  },
+  {
+   "word": "me.",
+   "startMs": 380988,
+   "endMs": 381728
+  },
+  {
+   "word": "with",
+   "startMs": 381228,
+   "endMs": 381448
+  },
+  {
+   "word": "So",
+   "startMs": 381728,
+   "endMs": 383208
+  },
+  {
+   "word": "he",
+   "startMs": 383208,
+   "endMs": 384008
+  },
+  {
+   "word": "began",
+   "startMs": 384008,
+   "endMs": 384308
+  },
+  {
+   "word": "to",
+   "startMs": 384308,
+   "endMs": 384508
+  },
+  {
+   "word": "be",
+   "startMs": 384508,
+   "endMs": 384608
+  },
+  {
+   "word": "very",
+   "startMs": 384608,
+   "endMs": 384868
+  },
+  {
+   "word": "busy",
+   "startMs": 384868,
+   "endMs": 385248
+  },
+  {
+   "word": "with",
+   "startMs": 385248,
+   "endMs": 385488
+  },
+  {
+   "word": "that",
+   "startMs": 385488,
+   "endMs": 385688
+  },
+  {
+   "word": "gentleman,",
+   "startMs": 385688,
+   "endMs": 386368
+  },
+  {
+   "word": "and",
+   "startMs": 386368,
+   "endMs": 386788
+  },
+  {
+   "word": "they",
+   "startMs": 386788,
+   "endMs": 386908
+  },
+  {
+   "word": "went",
+   "startMs": 386908,
+   "endMs": 387068
+  },
+  {
+   "word": "on",
+   "startMs": 387068,
+   "endMs": 387368
+  },
+  {
+   "word": "through",
+   "startMs": 387368,
+   "endMs": 387528
+  },
+  {
+   "word": "the",
+   "startMs": 387528,
+   "endMs": 387668
+  },
+  {
+   "word": "wood",
+   "startMs": 387668,
+   "endMs": 387888
+  },
+  {
+   "word": "together.",
+   "startMs": 387888,
+   "endMs": 388328
+  },
+  {
+   "word": "The",
+   "startMs": 388948,
+   "endMs": 389168
+  },
+  {
+   "word": "whole",
+   "startMs": 389168,
+   "endMs": 389368
+  },
+  {
+   "word": "journey",
+   "startMs": 389368,
+   "endMs": 389728
+  },
+  {
+   "word": "was",
+   "startMs": 389728,
+   "endMs": 390028
+  },
+  {
+   "word": "through",
+   "startMs": 390028,
+   "endMs": 390228
+  },
+  {
+   "word": "a",
+   "startMs": 390228,
+   "endMs": 390408
+  },
+  {
+   "word": "wood,",
+   "startMs": 390408,
+   "endMs": 391208
+  },
+  {
+   "word": "only",
+   "startMs": 391208,
+   "endMs": 391588
+  },
+  {
+   "word": "it",
+   "startMs": 391588,
+   "endMs": 391768
+  },
+  {
+   "word": "had",
+   "startMs": 391768,
+   "endMs": 391928
+  },
+  {
+   "word": "been",
+   "startMs": 391928,
+   "endMs": 392088
+  },
+  {
+   "word": "open",
+   "startMs": 392088,
+   "endMs": 392468
+  },
+  {
+   "word": "and",
+   "startMs": 392468,
+   "endMs": 392728
+  },
+  {
+   "word": "green",
+   "startMs": 392728,
+   "endMs": 392968
+  },
+  {
+   "word": "at",
+   "startMs": 392968,
+   "endMs": 393188
+  },
+  {
+   "word": "first,",
+   "startMs": 393188,
+   "endMs": 393968
+  },
+  {
+   "word": "like",
+   "startMs": 393968,
+   "endMs": 394508
+  },
+  {
+   "word": "a",
+   "startMs": 394508,
+   "endMs": 394628
+  },
+  {
+   "word": "wooden",
+   "startMs": 394628,
+   "endMs": 394808
+  },
+  {
+   "word": "spring,",
+   "startMs": 394808,
+   "endMs": 395268
+  },
+  {
+   "word": "and",
+   "startMs": 396628,
+   "endMs": 396728
+  },
+  {
+   "word": "now",
+   "startMs": 396728,
+   "endMs": 397048
+  },
+  {
+   "word": "began",
+   "startMs": 397048,
+   "endMs": 397408
+  },
+  {
+   "word": "to",
+   "startMs": 397408,
+   "endMs": 397708
+  },
+  {
+   "word": "be",
+   "startMs": 397708,
+   "endMs": 397848
+  },
+  {
+   "word": "thick",
+   "startMs": 397848,
+   "endMs": 398228
+  },
+  {
+   "word": "and",
+   "startMs": 398228,
+   "endMs": 398688
+  },
+  {
+   "word": "dark",
+   "startMs": 398688,
+   "endMs": 399088
+  },
+  {
+   "word": "like",
+   "startMs": 399088,
+   "endMs": 399468
+  },
+  {
+   "word": "a",
+   "startMs": 399468,
+   "endMs": 399608
+  },
+  {
+   "word": "wood",
+   "startMs": 399608,
+   "endMs": 399788
+  },
+  {
+   "word": "in",
+   "startMs": 399788,
+   "endMs": 399928
+  },
+  {
+   "word": "summer",
+   "startMs": 399928,
+   "endMs": 400268
+  },
+  {
+   "word": "some",
+   "startMs": 400268,
+   "endMs": 401408
+  },
+  {
+   "word": "of",
+   "startMs": 401408,
+   "endMs": 401568
+  },
+  {
+   "word": "the",
+   "startMs": 401568,
+   "endMs": 401688
+  },
+  {
+   "word": "little",
+   "startMs": 401688,
+   "endMs": 401848
+  },
+  {
+   "word": "trees",
+   "startMs": 401848,
+   "endMs": 402228
+  },
+  {
+   "word": "that",
+   "startMs": 402228,
+   "endMs": 402568
+  },
+  {
+   "word": "had",
+   "startMs": 402568,
+   "endMs": 402688
+  },
+  {
+   "word": "come",
+   "startMs": 402688,
+   "endMs": 402848
+  },
+  {
+   "word": "out",
+   "startMs": 402848,
+   "endMs": 403048
+  },
+  {
+   "word": "earliest",
+   "startMs": 403048,
+   "endMs": 403528
+  },
+  {
+   "word": "were",
+   "startMs": 403528,
+   "endMs": 404108
+  },
+  {
+   "word": "even",
+   "startMs": 404108,
+   "endMs": 404508
+  },
+  {
+   "word": "turning",
+   "startMs": 404508,
+   "endMs": 404868
+  },
+  {
+   "word": "brown",
+   "startMs": 404868,
+   "endMs": 405328
+  },
+  {
+   "word": "the",
+   "startMs": 406048,
+   "endMs": 406608
+  },
+  {
+   "word": "gentleman",
+   "startMs": 406608,
+   "endMs": 406908
+  },
+  {
+   "word": "was",
+   "startMs": 406908,
+   "endMs": 407188
+  },
+  {
+   "word": "not",
+   "startMs": 407188,
+   "endMs": 407388
+  },
+  {
+   "word": "alone",
+   "startMs": 407388,
+   "endMs": 407868
+  },
+  {
+   "word": "but",
+   "startMs": 407868,
+   "endMs": 408168
+  },
+  {
+   "word": "had",
+   "startMs": 408168,
+   "endMs": 408328
+  },
+  {
+   "word": "a",
+   "startMs": 408328,
+   "endMs": 408468
+  },
+  {
+   "word": "lady",
+   "startMs": 408468,
+   "endMs": 408788
+  },
+  {
+   "word": "of",
+   "startMs": 408788,
+   "endMs": 409008
+  },
+  {
+   "word": "about",
+   "startMs": 409008,
+   "endMs": 409168
+  },
+  {
+   "word": "the",
+   "startMs": 409168,
+   "endMs": 409388
+  },
+  {
+   "word": "same",
+   "startMs": 409388,
+   "endMs": 409628
+  },
+  {
+   "word": "age",
+   "startMs": 409628,
+   "endMs": 409908
+  },
+  {
+   "word": "with",
+   "startMs": 409908,
+   "endMs": 410108
+  },
+  {
+   "word": "him",
+   "startMs": 410108,
+   "endMs": 410268
+  },
+  {
+   "word": "who",
+   "startMs": 410268,
+   "endMs": 410928
+  },
+  {
+   "word": "was",
+   "startMs": 410928,
+   "endMs": 411188
+  },
+  {
+   "word": "his",
+   "startMs": 411188,
+   "endMs": 411348
+  },
+  {
+   "word": "wife",
+   "startMs": 411348,
+   "endMs": 411808
+  },
+  {
+   "word": "and",
+   "startMs": 411808,
+   "endMs": 412728
+  },
+  {
+   "word": "they",
+   "startMs": 412728,
+   "endMs": 412868
+  },
+  {
+   "word": "had",
+   "startMs": 412868,
+   "endMs": 413028
+  },
+  {
+   "word": "children",
+   "startMs": 413028,
+   "endMs": 413508
+  },
+  {
+   "word": "who",
+   "startMs": 413508,
+   "endMs": 414028
+  },
+  {
+   "word": "were",
+   "startMs": 414028,
+   "endMs": 414288
+  },
+  {
+   "word": "with",
+   "startMs": 414288,
+   "endMs": 414488
+  },
+  {
+   "word": "them",
+   "startMs": 414488,
+   "endMs": 414688
+  },
+  {
+   "word": "too",
+   "startMs": 414688,
+   "endMs": 415008
+  },
+  {
+   "word": "so",
+   "startMs": 416148,
+   "endMs": 416328
+  },
+  {
+   "word": "they",
+   "startMs": 416328,
+   "endMs": 416788
+  },
+  {
+   "word": "all",
+   "startMs": 416788,
+   "endMs": 417148
+  },
+  {
+   "word": "went",
+   "startMs": 417148,
+   "endMs": 417348
+  },
+  {
+   "word": "on",
+   "startMs": 417348,
+   "endMs": 417508
+  },
+  {
+   "word": "together",
+   "startMs": 417508,
+   "endMs": 417888
+  },
+  {
+   "word": "through",
+   "startMs": 417888,
+   "endMs": 418088
+  },
+  {
+   "word": "the",
+   "startMs": 418088,
+   "endMs": 418248
+  },
+  {
+   "word": "wood",
+   "startMs": 418248,
+   "endMs": 418488
+  },
+  {
+   "word": "cutting",
+   "startMs": 418488,
+   "endMs": 419048
+  },
+  {
+   "word": "down",
+   "startMs": 419048,
+   "endMs": 419328
+  },
+  {
+   "word": "the",
+   "startMs": 419328,
+   "endMs": 419448
+  },
+  {
+   "word": "trees",
+   "startMs": 419448,
+   "endMs": 419948
+  },
+  {
+   "word": "and",
+   "startMs": 419948,
+   "endMs": 420208
+  },
+  {
+   "word": "making",
+   "startMs": 420208,
+   "endMs": 420488
+  },
+  {
+   "word": "a",
+   "startMs": 420488,
+   "endMs": 420728
+  },
+  {
+   "word": "path",
+   "startMs": 420728,
+   "endMs": 421008
+  },
+  {
+   "word": "through",
+   "startMs": 421008,
+   "endMs": 421228
+  },
+  {
+   "word": "the",
+   "startMs": 421228,
+   "endMs": 421388
+  },
+  {
+   "word": "branches",
+   "startMs": 421388,
+   "endMs": 421928
+  },
+  {
+   "word": "and",
+   "startMs": 421928,
+   "endMs": 422588
+  },
+  {
+   "word": "the",
+   "startMs": 422588,
+   "endMs": 422668
+  },
+  {
+   "word": "fallen",
+   "startMs": 422668,
+   "endMs": 423048
+  },
+  {
+   "word": "leaves",
+   "startMs": 423048,
+   "endMs": 423548
+  },
+  {
+   "word": "and",
+   "startMs": 423548,
+   "endMs": 423988
+  },
+  {
+   "word": "carrying",
+   "startMs": 423988,
+   "endMs": 424508
+  },
+  {
+   "word": "burdens",
+   "startMs": 424508,
+   "endMs": 425168
+  },
+  {
+   "word": "and",
+   "startMs": 425168,
+   "endMs": 425808
+  },
+  {
+   "word": "working",
+   "startMs": 425808,
+   "endMs": 426628
+  },
+  {
+   "word": "hard",
+   "startMs": 426628,
+   "endMs": 427088
+  },
+  {
+   "word": "sometimes",
+   "startMs": 427728,
+   "endMs": 428808
+  },
+  {
+   "word": "they",
+   "startMs": 428808,
+   "endMs": 429528
+  },
+  {
+   "word": "came",
+   "startMs": 429528,
+   "endMs": 429768
+  },
+  {
+   "word": "to",
+   "startMs": 429768,
+   "endMs": 429908
+  },
+  {
+   "word": "a",
+   "startMs": 429908,
+   "endMs": 430148
+  },
+  {
+   "word": "long",
+   "startMs": 430148,
+   "endMs": 430388
+  },
+  {
+   "word": "green",
+   "startMs": 430388,
+   "endMs": 430728
+  },
+  {
+   "word": "avenue",
+   "startMs": 430728,
+   "endMs": 431188
+  },
+  {
+   "word": "that",
+   "startMs": 431188,
+   "endMs": 431548
+  },
+  {
+   "word": "opened",
+   "startMs": 431548,
+   "endMs": 431928
+  },
+  {
+   "word": "into",
+   "startMs": 431928,
+   "endMs": 432268
+  },
+  {
+   "word": "deeper",
+   "startMs": 432268,
+   "endMs": 432568
+  },
+  {
+   "word": "woods",
+   "startMs": 432568,
+   "endMs": 432928
+  },
+  {
+   "word": "then",
+   "startMs": 432928,
+   "endMs": 434268
+  },
+  {
+   "word": "they",
+   "startMs": 434268,
+   "endMs": 434468
+  },
+  {
+   "word": "would",
+   "startMs": 434468,
+   "endMs": 434628
+  },
+  {
+   "word": "hear",
+   "startMs": 434628,
+   "endMs": 435008
+  },
+  {
+   "word": "a",
+   "startMs": 435008,
+   "endMs": 435228
+  },
+  {
+   "word": "very",
+   "startMs": 435228,
+   "endMs": 435628
+  },
+  {
+   "word": "little",
+   "startMs": 435628,
+   "endMs": 436188
+  },
+  {
+   "word": "distant",
+   "startMs": 436188,
+   "endMs": 436728
+  },
+  {
+   "word": "voice",
+   "startMs": 436728,
+   "endMs": 437048
+  },
+  {
+   "word": "crying",
+   "startMs": 437048,
+   "endMs": 437488
+  },
+  {
+   "word": "father",
+   "startMs": 437488,
+   "endMs": 438988
+  },
+  {
+   "word": "father",
+   "startMs": 438988,
+   "endMs": 439988
+  },
+  {
+   "word": "i",
+   "startMs": 439988,
+   "endMs": 440988
+  },
+  {
+   "word": "am",
+   "startMs": 440988,
+   "endMs": 441128
+  },
+  {
+   "word": "another",
+   "startMs": 441128,
+   "endMs": 441428
+  },
+  {
+   "word": "child",
+   "startMs": 441428,
+   "endMs": 441908
+  },
+  {
+   "word": "stop",
+   "startMs": 441908,
+   "endMs": 442948
+  },
+  {
+   "word": "for",
+   "startMs": 442948,
+   "endMs": 443208
+  },
+  {
+   "word": "me",
+   "startMs": 443208,
+   "endMs": 443568
+  },
+  {
+   "word": "and",
+   "startMs": 444648,
+   "endMs": 444908
+  },
+  {
+   "word": "presently",
+   "startMs": 444908,
+   "endMs": 445588
+  },
+  {
+   "word": "they",
+   "startMs": 445588,
+   "endMs": 445828
+  },
+  {
+   "word": "would",
+   "startMs": 445828,
+   "endMs": 445968
+  },
+  {
+   "word": "see",
+   "startMs": 445968,
+   "endMs": 446188
+  },
+  {
+   "word": "a",
+   "startMs": 446188,
+   "endMs": 446328
+  },
+  {
+   "word": "very",
+   "startMs": 446328,
+   "endMs": 446548
+  },
+  {
+   "word": "little",
+   "startMs": 446548,
+   "endMs": 446808
+  },
+  {
+   "word": "figure",
+   "startMs": 446808,
+   "endMs": 447208
+  },
+  {
+   "word": "growing",
+   "startMs": 447208,
+   "endMs": 448148
+  },
+  {
+   "word": "larger",
+   "startMs": 448148,
+   "endMs": 448588
+  },
+  {
+   "word": "as",
+   "startMs": 448588,
+   "endMs": 448808
+  },
+  {
+   "word": "it",
+   "startMs": 448808,
+   "endMs": 448948
+  },
+  {
+   "word": "came",
+   "startMs": 448948,
+   "endMs": 449188
+  },
+  {
+   "word": "along",
+   "startMs": 449188,
+   "endMs": 449628
+  },
+  {
+   "word": "running",
+   "startMs": 449628,
+   "endMs": 450128
+  },
+  {
+   "word": "to",
+   "startMs": 450128,
+   "endMs": 450368
+  },
+  {
+   "word": "join",
+   "startMs": 450368,
+   "endMs": 450608
+  },
+  {
+   "word": "them",
+   "startMs": 450608,
+   "endMs": 450868
+  },
+  {
+   "word": "when",
+   "startMs": 450868,
+   "endMs": 452028
+  },
+  {
+   "word": "it",
+   "startMs": 452028,
+   "endMs": 452148
+  },
+  {
+   "word": "came",
+   "startMs": 452148,
+   "endMs": 452368
+  },
+  {
+   "word": "up",
+   "startMs": 452368,
+   "endMs": 452548
+  },
+  {
+   "word": "they",
+   "startMs": 452548,
+   "endMs": 453208
+  },
+  {
+   "word": "all",
+   "startMs": 453208,
+   "endMs": 453408
+  },
+  {
+   "word": "crowded",
+   "startMs": 453408,
+   "endMs": 453828
+  },
+  {
+   "word": "round",
+   "startMs": 453828,
+   "endMs": 454088
+  },
+  {
+   "word": "it",
+   "startMs": 454088,
+   "endMs": 454348
+  },
+  {
+   "word": "and",
+   "startMs": 454348,
+   "endMs": 454968
+  },
+  {
+   "word": "kissed",
+   "startMs": 454968,
+   "endMs": 455268
+  },
+  {
+   "word": "and",
+   "startMs": 455268,
+   "endMs": 455608
+  },
+  {
+   "word": "welcomed",
+   "startMs": 455608,
+   "endMs": 456068
+  },
+  {
+   "word": "it",
+   "startMs": 456068,
+   "endMs": 456508
+  },
+  {
+   "word": "and",
+   "startMs": 456508,
+   "endMs": 457308
+  },
+  {
+   "word": "then",
+   "startMs": 457308,
+   "endMs": 457508
+  },
+  {
+   "word": "they",
+   "startMs": 457508,
+   "endMs": 457648
+  },
+  {
+   "word": "all",
+   "startMs": 457648,
+   "endMs": 457968
+  },
+  {
+   "word": "went",
+   "startMs": 457968,
+   "endMs": 458208
+  },
+  {
+   "word": "on",
+   "startMs": 458208,
+   "endMs": 458568
+  },
+  {
+   "word": "together",
+   "startMs": 458568,
+   "endMs": 459008
+  },
+  {
+   "word": "sometimes",
+   "startMs": 460568,
+   "endMs": 460768
+  },
+  {
+   "word": "they",
+   "startMs": 460768,
+   "endMs": 461248
+  },
+  {
+   "word": "came",
+   "startMs": 461248,
+   "endMs": 461548
+  },
+  {
+   "word": "to",
+   "startMs": 461548,
+   "endMs": 461708
+  },
+  {
+   "word": "several",
+   "startMs": 461708,
+   "endMs": 462148
+  },
+  {
+   "word": "avenues",
+   "startMs": 462148,
+   "endMs": 462568
+  },
+  {
+   "word": "at",
+   "startMs": 462568,
+   "endMs": 462828
+  },
+  {
+   "word": "once",
+   "startMs": 462828,
+   "endMs": 463128
+  },
+  {
+   "word": "and",
+   "startMs": 463128,
+   "endMs": 463948
+  },
+  {
+   "word": "then",
+   "startMs": 463948,
+   "endMs": 464068
+  },
+  {
+   "word": "they",
+   "startMs": 464068,
+   "endMs": 464208
+  },
+  {
+   "word": "all",
+   "startMs": 464208,
+   "endMs": 464388
+  },
+  {
+   "word": "stood",
+   "startMs": 464388,
+   "endMs": 464728
+  },
+  {
+   "word": "still",
+   "startMs": 464728,
+   "endMs": 465208
+  },
+  {
+   "word": "and",
+   "startMs": 465208,
+   "endMs": 465588
+  },
+  {
+   "word": "one",
+   "startMs": 465588,
+   "endMs": 465728
+  },
+  {
+   "word": "of",
+   "startMs": 465728,
+   "endMs": 465808
+  },
+  {
+   "word": "the",
+   "startMs": 465808,
+   "endMs": 465948
+  },
+  {
+   "word": "children",
+   "startMs": 465948,
+   "endMs": 466328
+  },
+  {
+   "word": "said",
+   "startMs": 466328,
+   "endMs": 466988
+  },
+  {
+   "word": "father",
+   "startMs": 466988,
+   "endMs": 468548
+  },
+  {
+   "word": "i",
+   "startMs": 468548,
+   "endMs": 469628
+  },
+  {
+   "word": "am",
+   "startMs": 469628,
+   "endMs": 469788
+  },
+  {
+   "word": "going",
+   "startMs": 469788,
+   "endMs": 470028
+  },
+  {
+   "word": "to",
+   "startMs": 470028,
+   "endMs": 470208
+  },
+  {
+   "word": "sea",
+   "startMs": 470208,
+   "endMs": 470508
+  },
+  {
+   "word": "and",
+   "startMs": 470508,
+   "endMs": 472568
+  },
+  {
+   "word": "another",
+   "startMs": 472568,
+   "endMs": 472948
+  },
+  {
+   "word": "said",
+   "startMs": 472948,
+   "endMs": 473328
+  },
+  {
+   "word": "father",
+   "startMs": 473328,
+   "endMs": 474908
+  },
+  {
+   "word": "i",
+   "startMs": 474908,
+   "endMs": 476028
+  },
+  {
+   "word": "am",
+   "startMs": 476028,
+   "endMs": 476228
+  },
+  {
+   "word": "going",
+   "startMs": 476228,
+   "endMs": 476468
+  },
+  {
+   "word": "to",
+   "startMs": 476468,
+   "endMs": 476628
+  },
+  {
+   "word": "india",
+   "startMs": 476628,
+   "endMs": 477008
+  },
+  {
+   "word": "and",
+   "startMs": 478588,
+   "endMs": 478728
+  },
+  {
+   "word": "another",
+   "startMs": 478728,
+   "endMs": 478988
+  },
+  {
+   "word": "father",
+   "startMs": 478988,
+   "endMs": 480568
+  },
+  {
+   "word": "i",
+   "startMs": 480568,
+   "endMs": 481548
+  },
+  {
+   "word": "am",
+   "startMs": 481548,
+   "endMs": 481688
+  },
+  {
+   "word": "going",
+   "startMs": 481688,
+   "endMs": 481888
+  },
+  {
+   "word": "to",
+   "startMs": 481888,
+   "endMs": 482028
+  },
+  {
+   "word": "seek",
+   "startMs": 482028,
+   "endMs": 482188
+  },
+  {
+   "word": "my",
+   "startMs": 482188,
+   "endMs": 482388
+  },
+  {
+   "word": "fortune",
+   "startMs": 482388,
+   "endMs": 482768
+  },
+  {
+   "word": "where",
+   "startMs": 482768,
+   "endMs": 482988
+  },
+  {
+   "word": "i",
+   "startMs": 482988,
+   "endMs": 483168
+  },
+  {
+   "word": "can",
+   "startMs": 483168,
+   "endMs": 483428
+  },
+  {
+   "word": "and",
+   "startMs": 483428,
+   "endMs": 485228
+  },
+  {
+   "word": "another",
+   "startMs": 485228,
+   "endMs": 485548
+  },
+  {
+   "word": "father",
+   "startMs": 485548,
+   "endMs": 487468
+  },
+  {
+   "word": "i",
+   "startMs": 487468,
+   "endMs": 488788
+  },
+  {
+   "word": "am",
+   "startMs": 488788,
+   "endMs": 488928
+  },
+  {
+   "word": "going",
+   "startMs": 488928,
+   "endMs": 489128
+  },
+  {
+   "word": "to",
+   "startMs": 489128,
+   "endMs": 489268
+  },
+  {
+   "word": "heaven",
+   "startMs": 489268,
+   "endMs": 489528
+  },
+  {
+   "word": "so",
+   "startMs": 490968,
+   "endMs": 492008
+  },
+  {
+   "word": "with",
+   "startMs": 492008,
+   "endMs": 492548
+  },
+  {
+   "word": "many",
+   "startMs": 492548,
+   "endMs": 492888
+  },
+  {
+   "word": "tears",
+   "startMs": 492888,
+   "endMs": 493248
+  },
+  {
+   "word": "at",
+   "startMs": 493248,
+   "endMs": 493468
+  },
+  {
+   "word": "parting",
+   "startMs": 493468,
+   "endMs": 493808
+  },
+  {
+   "word": "they",
+   "startMs": 493808,
+   "endMs": 494028
+  },
+  {
+   "word": "went",
+   "startMs": 494028,
+   "endMs": 494408
+  },
+  {
+   "word": "solitary",
+   "startMs": 494408,
+   "endMs": 495868
+  },
+  {
+   "word": "down",
+   "startMs": 495868,
+   "endMs": 497448
+  },
+  {
+   "word": "those",
+   "startMs": 497448,
+   "endMs": 497688
+  },
+  {
+   "word": "avenues",
+   "startMs": 497688,
+   "endMs": 498168
+  },
+  {
+   "word": "each",
+   "startMs": 498168,
+   "endMs": 498808
+  },
+  {
+   "word": "child",
+   "startMs": 498808,
+   "endMs": 499268
+  },
+  {
+   "word": "upon",
+   "startMs": 499268,
+   "endMs": 499548
+  },
+  {
+   "word": "its",
+   "startMs": 499548,
+   "endMs": 499768
+  },
+  {
+   "word": "way",
+   "startMs": 499768,
+   "endMs": 500048
+  },
+  {
+   "word": "and",
+   "startMs": 500048,
+   "endMs": 501328
+  },
+  {
+   "word": "the",
+   "startMs": 501328,
+   "endMs": 501448
+  },
+  {
+   "word": "child",
+   "startMs": 501448,
+   "endMs": 501728
+  },
+  {
+   "word": "who",
+   "startMs": 501728,
+   "endMs": 501868
+  },
+  {
+   "word": "went",
+   "startMs": 501868,
+   "endMs": 502028
+  },
+  {
+   "word": "to",
+   "startMs": 502028,
+   "endMs": 502188
+  },
+  {
+   "word": "heaven",
+   "startMs": 502188,
+   "endMs": 502468
+  },
+  {
+   "word": "rose",
+   "startMs": 502468,
+   "endMs": 503028
+  },
+  {
+   "word": "into",
+   "startMs": 503028,
+   "endMs": 503328
+  },
+  {
+   "word": "the",
+   "startMs": 503328,
+   "endMs": 503488
+  },
+  {
+   "word": "golden",
+   "startMs": 503488,
+   "endMs": 503908
+  },
+  {
+   "word": "air",
+   "startMs": 503908,
+   "endMs": 504328
+  },
+  {
+   "word": "and",
+   "startMs": 504328,
+   "endMs": 504688
+  },
+  {
+   "word": "vanished",
+   "startMs": 504688,
+   "endMs": 505188
+  },
+  {
+   "word": "whenever",
+   "startMs": 507268,
+   "endMs": 507528
+  },
+  {
+   "word": "these",
+   "startMs": 507528,
+   "endMs": 507848
+  },
+  {
+   "word": "partings",
+   "startMs": 507848,
+   "endMs": 508288
+  },
+  {
+   "word": "happened",
+   "startMs": 508288,
+   "endMs": 508628
+  },
+  {
+   "word": "the",
+   "startMs": 508628,
+   "endMs": 509688
+  },
+  {
+   "word": "traveller",
+   "startMs": 509688,
+   "endMs": 510068
+  },
+  {
+   "word": "looked",
+   "startMs": 510068,
+   "endMs": 510268
+  },
+  {
+   "word": "at",
+   "startMs": 510268,
+   "endMs": 510428
+  },
+  {
+   "word": "the",
+   "startMs": 510428,
+   "endMs": 510548
+  },
+  {
+   "word": "gentleman",
+   "startMs": 510548,
+   "endMs": 510908
+  },
+  {
+   "word": "and",
+   "startMs": 510908,
+   "endMs": 511248
+  },
+  {
+   "word": "saw",
+   "startMs": 511248,
+   "endMs": 511488
+  },
+  {
+   "word": "him",
+   "startMs": 511488,
+   "endMs": 511728
+  },
+  {
+   "word": "glance",
+   "startMs": 511728,
+   "endMs": 512128
+  },
+  {
+   "word": "up",
+   "startMs": 512128,
+   "endMs": 512488
+  },
+  {
+   "word": "at",
+   "startMs": 512488,
+   "endMs": 512628
+  },
+  {
+   "word": "the",
+   "startMs": 512628,
+   "endMs": 512748
+  },
+  {
+   "word": "sky",
+   "startMs": 512748,
+   "endMs": 513128
+  },
+  {
+   "word": "above",
+   "startMs": 513128,
+   "endMs": 513408
+  },
+  {
+   "word": "the",
+   "startMs": 513408,
+   "endMs": 513588
+  },
+  {
+   "word": "trees",
+   "startMs": 513588,
+   "endMs": 514088
+  },
+  {
+   "word": "where",
+   "startMs": 514088,
+   "endMs": 515008
+  },
+  {
+   "word": "the",
+   "startMs": 515008,
+   "endMs": 515188
+  },
+  {
+   "word": "day",
+   "startMs": 515188,
+   "endMs": 515468
+  },
+  {
+   "word": "was",
+   "startMs": 515468,
+   "endMs": 515788
+  },
+  {
+   "word": "beginning",
+   "startMs": 515788,
+   "endMs": 516228
+  },
+  {
+   "word": "to",
+   "startMs": 516228,
+   "endMs": 516588
+  },
+  {
+   "word": "decline",
+   "startMs": 516588,
+   "endMs": 517128
+  },
+  {
+   "word": "and",
+   "startMs": 517128,
+   "endMs": 518448
+  },
+  {
+   "word": "the",
+   "startMs": 518448,
+   "endMs": 518588
+  },
+  {
+   "word": "sunset",
+   "startMs": 518588,
+   "endMs": 518988
+  },
+  {
+   "word": "to",
+   "startMs": 518988,
+   "endMs": 519348
+  },
+  {
+   "word": "come",
+   "startMs": 519348,
+   "endMs": 519588
+  },
+  {
+   "word": "on",
+   "startMs": 519588,
+   "endMs": 519908
+  },
+  {
+   "word": "he",
+   "startMs": 520908,
+   "endMs": 521628
+  },
+  {
+   "word": "saw",
+   "startMs": 521628,
+   "endMs": 521888
+  },
+  {
+   "word": "too",
+   "startMs": 521888,
+   "endMs": 522228
+  },
+  {
+   "word": "that",
+   "startMs": 522228,
+   "endMs": 523028
+  },
+  {
+   "word": "his",
+   "startMs": 523028,
+   "endMs": 523228
+  },
+  {
+   "word": "hair",
+   "startMs": 523228,
+   "endMs": 523568
+  },
+  {
+   "word": "was",
+   "startMs": 523568,
+   "endMs": 523748
+  },
+  {
+   "word": "turning",
+   "startMs": 523748,
+   "endMs": 524108
+  },
+  {
+   "word": "grey",
+   "startMs": 524108,
+   "endMs": 524408
+  },
+  {
+   "word": "but",
+   "startMs": 524408,
+   "endMs": 525828
+  },
+  {
+   "word": "they",
+   "startMs": 525828,
+   "endMs": 526508
+  },
+  {
+   "word": "never",
+   "startMs": 526508,
+   "endMs": 526788
+  },
+  {
+   "word": "could",
+   "startMs": 526788,
+   "endMs": 527088
+  },
+  {
+   "word": "rest",
+   "startMs": 527088,
+   "endMs": 527408
+  },
+  {
+   "word": "long",
+   "startMs": 527408,
+   "endMs": 527828
+  },
+  {
+   "word": "for",
+   "startMs": 527828,
+   "endMs": 528648
+  },
+  {
+   "word": "they",
+   "startMs": 528648,
+   "endMs": 528808
+  },
+  {
+   "word": "had",
+   "startMs": 528808,
+   "endMs": 528968
+  },
+  {
+   "word": "their",
+   "startMs": 528968,
+   "endMs": 529168
+  },
+  {
+   "word": "journey",
+   "startMs": 529168,
+   "endMs": 529488
+  },
+  {
+   "word": "to",
+   "startMs": 529488,
+   "endMs": 529688
+  },
+  {
+   "word": "perform",
+   "startMs": 529688,
+   "endMs": 530108
+  },
+  {
+   "word": "and",
+   "startMs": 530108,
+   "endMs": 530728
+  },
+  {
+   "word": "it",
+   "startMs": 530728,
+   "endMs": 530848
+  },
+  {
+   "word": "was",
+   "startMs": 530848,
+   "endMs": 531008
+  },
+  {
+   "word": "necessary",
+   "startMs": 531008,
+   "endMs": 531548
+  },
+  {
+   "word": "for",
+   "startMs": 531548,
+   "endMs": 531988
+  },
+  {
+   "word": "them",
+   "startMs": 531988,
+   "endMs": 532168
+  },
+  {
+   "word": "to",
+   "startMs": 532168,
+   "endMs": 532368
+  },
+  {
+   "word": "be",
+   "startMs": 532368,
+   "endMs": 532488
+  },
+  {
+   "word": "always",
+   "startMs": 532488,
+   "endMs": 533128
+  },
+  {
+   "word": "busy",
+   "startMs": 533128,
+   "endMs": 533668
+  },
+  {
+   "word": "at",
+   "startMs": 535308,
+   "endMs": 535508
+  },
+  {
+   "word": "last",
+   "startMs": 535508,
+   "endMs": 535888
+  },
+  {
+   "word": "there",
+   "startMs": 535888,
+   "endMs": 536968
+  },
+  {
+   "word": "had",
+   "startMs": 536968,
+   "endMs": 537108
+  },
+  {
+   "word": "been",
+   "startMs": 537108,
+   "endMs": 537248
+  },
+  {
+   "word": "so",
+   "startMs": 537248,
+   "endMs": 537508
+  },
+  {
+   "word": "many",
+   "startMs": 537508,
+   "endMs": 537728
+  },
+  {
+   "word": "partings",
+   "startMs": 537728,
+   "endMs": 538368
+  },
+  {
+   "word": "that",
+   "startMs": 538368,
+   "endMs": 538648
+  },
+  {
+   "word": "there",
+   "startMs": 538648,
+   "endMs": 538848
+  },
+  {
+   "word": "were",
+   "startMs": 538848,
+   "endMs": 539028
+  },
+  {
+   "word": "no",
+   "startMs": 539028,
+   "endMs": 539228
+  },
+  {
+   "word": "children",
+   "startMs": 539228,
+   "endMs": 539748
+  },
+  {
+   "word": "left",
+   "startMs": 539748,
+   "endMs": 540208
+  },
+  {
+   "word": "and",
+   "startMs": 540208,
+   "endMs": 541128
+  },
+  {
+   "word": "only",
+   "startMs": 541128,
+   "endMs": 541348
+  },
+  {
+   "word": "the",
+   "startMs": 541348,
+   "endMs": 541528
+  },
+  {
+   "word": "traveller",
+   "startMs": 541528,
+   "endMs": 542168
+  },
+  {
+   "word": "the",
+   "startMs": 542168,
+   "endMs": 542508
+  },
+  {
+   "word": "gentleman",
+   "startMs": 542508,
+   "endMs": 542888
+  },
+  {
+   "word": "and",
+   "startMs": 542888,
+   "endMs": 543148
+  },
+  {
+   "word": "the",
+   "startMs": 543148,
+   "endMs": 543268
+  },
+  {
+   "word": "lady",
+   "startMs": 543268,
+   "endMs": 543548
+  },
+  {
+   "word": "went",
+   "startMs": 543548,
+   "endMs": 544288
+  },
+  {
+   "word": "upon",
+   "startMs": 544288,
+   "endMs": 544588
+  },
+  {
+   "word": "their",
+   "startMs": 544588,
+   "endMs": 544768
+  },
+  {
+   "word": "way",
+   "startMs": 544768,
+   "endMs": 545028
+  },
+  {
+   "word": "in",
+   "startMs": 545028,
+   "endMs": 545268
+  },
+  {
+   "word": "company",
+   "startMs": 545268,
+   "endMs": 545588
+  },
+  {
+   "word": "and",
+   "startMs": 545588,
+   "endMs": 547148
+  },
+  {
+   "word": "now",
+   "startMs": 547148,
+   "endMs": 547408
+  },
+  {
+   "word": "the",
+   "startMs": 547408,
+   "endMs": 547628
+  },
+  {
+   "word": "wood",
+   "startMs": 547628,
+   "endMs": 547848
+  },
+  {
+   "word": "was",
+   "startMs": 547848,
+   "endMs": 548128
+  },
+  {
+   "word": "yellow",
+   "startMs": 548128,
+   "endMs": 548468
+  },
+  {
+   "word": "and",
+   "startMs": 548468,
+   "endMs": 549668
+  },
+  {
+   "word": "now",
+   "startMs": 549668,
+   "endMs": 549888
+  },
+  {
+   "word": "brown",
+   "startMs": 549888,
+   "endMs": 550308
+  },
+  {
+   "word": "and",
+   "startMs": 551448,
+   "endMs": 551588
+  },
+  {
+   "word": "the",
+   "startMs": 551588,
+   "endMs": 551728
+  },
+  {
+   "word": "leaves",
+   "startMs": 551728,
+   "endMs": 552248
+  },
+  {
+   "word": "even",
+   "startMs": 552248,
+   "endMs": 552808
+  },
+  {
+   "word": "of",
+   "startMs": 552808,
+   "endMs": 553028
+  },
+  {
+   "word": "the",
+   "startMs": 553028,
+   "endMs": 553148
+  },
+  {
+   "word": "forest",
+   "startMs": 553148,
+   "endMs": 553648
+  },
+  {
+   "word": "trees",
+   "startMs": 553648,
+   "endMs": 554328
+  },
+  {
+   "word": "began",
+   "startMs": 554328,
+   "endMs": 554768
+  },
+  {
+   "word": "to",
+   "startMs": 554768,
+   "endMs": 554988
+  },
+  {
+   "word": "fall",
+   "startMs": 554988,
+   "endMs": 555288
+  },
+  {
+   "word": "so",
+   "startMs": 555288,
+   "endMs": 557468
+  },
+  {
+   "word": "they",
+   "startMs": 557468,
+   "endMs": 557648
+  },
+  {
+   "word": "came",
+   "startMs": 557648,
+   "endMs": 557868
+  },
+  {
+   "word": "to",
+   "startMs": 557868,
+   "endMs": 558008
+  },
+  {
+   "word": "an",
+   "startMs": 558008,
+   "endMs": 558128
+  },
+  {
+   "word": "avenue",
+   "startMs": 558128,
+   "endMs": 558428
+  },
+  {
+   "word": "that",
+   "startMs": 558428,
+   "endMs": 558648
+  },
+  {
+   "word": "was",
+   "startMs": 558648,
+   "endMs": 558808
+  },
+  {
+   "word": "darker",
+   "startMs": 558808,
+   "endMs": 559108
+  },
+  {
+   "word": "than",
+   "startMs": 559108,
+   "endMs": 559328
+  },
+  {
+   "word": "the",
+   "startMs": 559328,
+   "endMs": 559448
+  },
+  {
+   "word": "rest",
+   "startMs": 559448,
+   "endMs": 559888
+  },
+  {
+   "word": "and",
+   "startMs": 559888,
+   "endMs": 561008
+  },
+  {
+   "word": "were",
+   "startMs": 561008,
+   "endMs": 561148
+  },
+  {
+   "word": "pressing",
+   "startMs": 561148,
+   "endMs": 561528
+  },
+  {
+   "word": "forward",
+   "startMs": 561528,
+   "endMs": 561968
+  },
+  {
+   "word": "on",
+   "startMs": 561968,
+   "endMs": 562188
+  },
+  {
+   "word": "their",
+   "startMs": 562188,
+   "endMs": 562328
+  },
+  {
+   "word": "journey",
+   "startMs": 562328,
+   "endMs": 562768
+  },
+  {
+   "word": "without",
+   "startMs": 562768,
+   "endMs": 563068
+  },
+  {
+   "word": "looking",
+   "startMs": 563068,
+   "endMs": 563428
+  },
+  {
+   "word": "down",
+   "startMs": 563428,
+   "endMs": 563848
+  },
+  {
+   "word": "it",
+   "startMs": 563848,
+   "endMs": 564088
+  },
+  {
+   "word": "when",
+   "startMs": 564088,
+   "endMs": 564268
+  },
+  {
+   "word": "the",
+   "startMs": 564262,
+   "endMs": 564402
+  },
+  {
+   "word": "lady",
+   "startMs": 564402,
+   "endMs": 564642
+  },
+  {
+   "word": "stopped.",
+   "startMs": 564642,
+   "endMs": 565162
+  },
+  {
+   "word": "\"'My",
+   "startMs": 566682,
+   "endMs": 566882
+  },
+  {
+   "word": "husband,'",
+   "startMs": 566882,
+   "endMs": 567662
+  },
+  {
+   "word": "said",
+   "startMs": 567662,
+   "endMs": 568642
+  },
+  {
+   "word": "the",
+   "startMs": 568642,
+   "endMs": 568782
+  },
+  {
+   "word": "lady,",
+   "startMs": 568782,
+   "endMs": 569042
+  },
+  {
+   "word": "\"'I",
+   "startMs": 570342,
+   "endMs": 570622
+  },
+  {
+   "word": "am",
+   "startMs": 570622,
+   "endMs": 570782
+  },
+  {
+   "word": "called.'",
+   "startMs": 570782,
+   "endMs": 571622
+  },
+  {
+   "word": "They",
+   "startMs": 573162,
+   "endMs": 573422
+  },
+  {
+   "word": "listened,",
+   "startMs": 573422,
+   "endMs": 573722
+  },
+  {
+   "word": "and",
+   "startMs": 573722,
+   "endMs": 574862
+  },
+  {
+   "word": "they",
+   "startMs": 574862,
+   "endMs": 575002
+  },
+  {
+   "word": "heard",
+   "startMs": 575002,
+   "endMs": 575142
+  },
+  {
+   "word": "a",
+   "startMs": 575142,
+   "endMs": 575242
+  },
+  {
+   "word": "voice",
+   "startMs": 575242,
+   "endMs": 575502
+  },
+  {
+   "word": "a",
+   "startMs": 575502,
+   "endMs": 575722
+  },
+  {
+   "word": "long",
+   "startMs": 575722,
+   "endMs": 575862
+  },
+  {
+   "word": "way",
+   "startMs": 575862,
+   "endMs": 576122
+  },
+  {
+   "word": "down",
+   "startMs": 576122,
+   "endMs": 576402
+  },
+  {
+   "word": "the",
+   "startMs": 576402,
+   "endMs": 576602
+  },
+  {
+   "word": "avenue",
+   "startMs": 576602,
+   "endMs": 576922
+  },
+  {
+   "word": "say,",
+   "startMs": 576922,
+   "endMs": 577442
+  },
+  {
+   "word": "\"'Mother,",
+   "startMs": 578922,
+   "endMs": 579182
+  },
+  {
+   "word": "mother!'",
+   "startMs": 579182,
+   "endMs": 580842
+  },
+  {
+   "word": "It",
+   "startMs": 582382,
+   "endMs": 582562
+  },
+  {
+   "word": "was",
+   "startMs": 582562,
+   "endMs": 582722
+  },
+  {
+   "word": "the",
+   "startMs": 582722,
+   "endMs": 582842
+  },
+  {
+   "word": "voice",
+   "startMs": 582842,
+   "endMs": 583102
+  },
+  {
+   "word": "of",
+   "startMs": 583102,
+   "endMs": 583282
+  },
+  {
+   "word": "the",
+   "startMs": 583282,
+   "endMs": 583382
+  },
+  {
+   "word": "first",
+   "startMs": 583382,
+   "endMs": 583642
+  },
+  {
+   "word": "child",
+   "startMs": 583642,
+   "endMs": 583982
+  },
+  {
+   "word": "who",
+   "startMs": 583982,
+   "endMs": 584182
+  },
+  {
+   "word": "had",
+   "startMs": 584182,
+   "endMs": 584322
+  },
+  {
+   "word": "said,",
+   "startMs": 584322,
+   "endMs": 584762
+  },
+  {
+   "word": "\"'I",
+   "startMs": 584342,
+   "endMs": 585582
+  },
+  {
+   "word": "am",
+   "startMs": 585582,
+   "endMs": 585722
+  },
+  {
+   "word": "going",
+   "startMs": 585722,
+   "endMs": 586022
+  },
+  {
+   "word": "to",
+   "startMs": 586022,
+   "endMs": 586242
+  },
+  {
+   "word": "heaven.'",
+   "startMs": 586242,
+   "endMs": 586642
+  },
+  {
+   "word": "And",
+   "startMs": 587982,
+   "endMs": 588242
+  },
+  {
+   "word": "the",
+   "startMs": 588242,
+   "endMs": 588362
+  },
+  {
+   "word": "father",
+   "startMs": 588362,
+   "endMs": 588642
+  },
+  {
+   "word": "said,",
+   "startMs": 588642,
+   "endMs": 589002
+  },
+  {
+   "word": "i",
+   "startMs": 590222,
+   "endMs": 590342
+  },
+  {
+   "word": "pray",
+   "startMs": 590342,
+   "endMs": 590842
+  },
+  {
+   "word": "not",
+   "startMs": 590842,
+   "endMs": 592042
+  },
+  {
+   "word": "yet",
+   "startMs": 592042,
+   "endMs": 592382
+  },
+  {
+   "word": "the",
+   "startMs": 592382,
+   "endMs": 593402
+  },
+  {
+   "word": "sunset",
+   "startMs": 593402,
+   "endMs": 593742
+  },
+  {
+   "word": "is",
+   "startMs": 593742,
+   "endMs": 594122
+  },
+  {
+   "word": "very",
+   "startMs": 594122,
+   "endMs": 594362
+  },
+  {
+   "word": "near",
+   "startMs": 594362,
+   "endMs": 594722
+  },
+  {
+   "word": "i",
+   "startMs": 594722,
+   "endMs": 595842
+  },
+  {
+   "word": "pray",
+   "startMs": 595842,
+   "endMs": 596282
+  },
+  {
+   "word": "not",
+   "startMs": 596282,
+   "endMs": 597382
+  },
+  {
+   "word": "yet",
+   "startMs": 597382,
+   "endMs": 597742
+  },
+  {
+   "word": "but",
+   "startMs": 597742,
+   "endMs": 599222
+  },
+  {
+   "word": "the",
+   "startMs": 599222,
+   "endMs": 599342
+  },
+  {
+   "word": "voice",
+   "startMs": 599342,
+   "endMs": 599582
+  },
+  {
+   "word": "cried",
+   "startMs": 599582,
+   "endMs": 600002
+  },
+  {
+   "word": "mother",
+   "startMs": 600002,
+   "endMs": 601302
+  },
+  {
+   "word": "mother",
+   "startMs": 601302,
+   "endMs": 602642
+  },
+  {
+   "word": "without",
+   "startMs": 602642,
+   "endMs": 604162
+  },
+  {
+   "word": "minding",
+   "startMs": 604162,
+   "endMs": 604682
+  },
+  {
+   "word": "him",
+   "startMs": 604682,
+   "endMs": 604942
+  },
+  {
+   "word": "though",
+   "startMs": 604942,
+   "endMs": 606042
+  },
+  {
+   "word": "his",
+   "startMs": 606042,
+   "endMs": 606222
+  },
+  {
+   "word": "hair",
+   "startMs": 606222,
+   "endMs": 606402
+  },
+  {
+   "word": "was",
+   "startMs": 606402,
+   "endMs": 606682
+  },
+  {
+   "word": "now",
+   "startMs": 606682,
+   "endMs": 606842
+  },
+  {
+   "word": "quite",
+   "startMs": 606842,
+   "endMs": 607122
+  },
+  {
+   "word": "white",
+   "startMs": 607122,
+   "endMs": 607542
+  },
+  {
+   "word": "and",
+   "startMs": 607542,
+   "endMs": 608722
+  },
+  {
+   "word": "tears",
+   "startMs": 608722,
+   "endMs": 609082
+  },
+  {
+   "word": "were",
+   "startMs": 609082,
+   "endMs": 609362
+  },
+  {
+   "word": "on",
+   "startMs": 609362,
+   "endMs": 609542
+  },
+  {
+   "word": "his",
+   "startMs": 609542,
+   "endMs": 609722
+  },
+  {
+   "word": "face",
+   "startMs": 609722,
+   "endMs": 610082
+  },
+  {
+   "word": "then",
+   "startMs": 611802,
+   "endMs": 612022
+  },
+  {
+   "word": "the",
+   "startMs": 612022,
+   "endMs": 612262
+  },
+  {
+   "word": "mother",
+   "startMs": 612262,
+   "endMs": 612562
+  },
+  {
+   "word": "who",
+   "startMs": 612562,
+   "endMs": 612782
+  },
+  {
+   "word": "was",
+   "startMs": 612782,
+   "endMs": 612942
+  },
+  {
+   "word": "already",
+   "startMs": 612942,
+   "endMs": 613322
+  },
+  {
+   "word": "drawn",
+   "startMs": 613322,
+   "endMs": 613742
+  },
+  {
+   "word": "into",
+   "startMs": 613742,
+   "endMs": 614022
+  },
+  {
+   "word": "the",
+   "startMs": 614022,
+   "endMs": 614182
+  },
+  {
+   "word": "shade",
+   "startMs": 614182,
+   "endMs": 614502
+  },
+  {
+   "word": "of",
+   "startMs": 614502,
+   "endMs": 614702
+  },
+  {
+   "word": "the",
+   "startMs": 614702,
+   "endMs": 614822
+  },
+  {
+   "word": "dark",
+   "startMs": 614822,
+   "endMs": 615102
+  },
+  {
+   "word": "avenue",
+   "startMs": 615102,
+   "endMs": 615522
+  },
+  {
+   "word": "and",
+   "startMs": 615522,
+   "endMs": 616582
+  },
+  {
+   "word": "moving",
+   "startMs": 616582,
+   "endMs": 616882
+  },
+  {
+   "word": "away",
+   "startMs": 616882,
+   "endMs": 617282
+  },
+  {
+   "word": "with",
+   "startMs": 617282,
+   "endMs": 617622
+  },
+  {
+   "word": "her",
+   "startMs": 617622,
+   "endMs": 617742
+  },
+  {
+   "word": "arms",
+   "startMs": 617742,
+   "endMs": 618202
+  },
+  {
+   "word": "still",
+   "startMs": 618202,
+   "endMs": 618642
+  },
+  {
+   "word": "round",
+   "startMs": 618642,
+   "endMs": 618902
+  },
+  {
+   "word": "his",
+   "startMs": 618902,
+   "endMs": 619142
+  },
+  {
+   "word": "neck",
+   "startMs": 619142,
+   "endMs": 619482
+  },
+  {
+   "word": "kissed",
+   "startMs": 619482,
+   "endMs": 620522
+  },
+  {
+   "word": "him",
+   "startMs": 620522,
+   "endMs": 620862
+  },
+  {
+   "word": "and",
+   "startMs": 620862,
+   "endMs": 621702
+  },
+  {
+   "word": "said",
+   "startMs": 621702,
+   "endMs": 622062
+  },
+  {
+   "word": "my",
+   "startMs": 622062,
+   "endMs": 623722
+  },
+  {
+   "word": "dearest",
+   "startMs": 623722,
+   "endMs": 624282
+  },
+  {
+   "word": "i",
+   "startMs": 624282,
+   "endMs": 625282
+  },
+  {
+   "word": "am",
+   "startMs": 625282,
+   "endMs": 625442
+  },
+  {
+   "word": "summoned",
+   "startMs": 625442,
+   "endMs": 625882
+  },
+  {
+   "word": "and",
+   "startMs": 625882,
+   "endMs": 626922
+  },
+  {
+   "word": "i",
+   "startMs": 626922,
+   "endMs": 627122
+  },
+  {
+   "word": "go",
+   "startMs": 627122,
+   "endMs": 627422
+  },
+  {
+   "word": "and",
+   "startMs": 629282,
+   "endMs": 629542
+  },
+  {
+   "word": "she",
+   "startMs": 629542,
+   "endMs": 630562
+  },
+  {
+   "word": "was",
+   "startMs": 630562,
+   "endMs": 630762
+  },
+  {
+   "word": "gone",
+   "startMs": 630762,
+   "endMs": 631102
+  },
+  {
+   "word": "and",
+   "startMs": 631102,
+   "endMs": 633782
+  },
+  {
+   "word": "the",
+   "startMs": 633782,
+   "endMs": 633922
+  },
+  {
+   "word": "traveller",
+   "startMs": 633922,
+   "endMs": 634402
+  },
+  {
+   "word": "and",
+   "startMs": 634402,
+   "endMs": 634662
+  },
+  {
+   "word": "he",
+   "startMs": 634662,
+   "endMs": 634922
+  },
+  {
+   "word": "were",
+   "startMs": 634922,
+   "endMs": 635182
+  },
+  {
+   "word": "left",
+   "startMs": 635182,
+   "endMs": 635542
+  },
+  {
+   "word": "alone",
+   "startMs": 635542,
+   "endMs": 636002
+  },
+  {
+   "word": "together",
+   "startMs": 636002,
+   "endMs": 636582
+  },
+  {
+   "word": "and",
+   "startMs": 636582,
+   "endMs": 638682
+  },
+  {
+   "word": "they",
+   "startMs": 638682,
+   "endMs": 638822
+  },
+  {
+   "word": "went",
+   "startMs": 638822,
+   "endMs": 639002
+  },
+  {
+   "word": "on",
+   "startMs": 639002,
+   "endMs": 639442
+  },
+  {
+   "word": "and",
+   "startMs": 639442,
+   "endMs": 639582
+  },
+  {
+   "word": "on",
+   "startMs": 639582,
+   "endMs": 639822
+  },
+  {
+   "word": "together",
+   "startMs": 639822,
+   "endMs": 640202
+  },
+  {
+   "word": "until",
+   "startMs": 640202,
+   "endMs": 641642
+  },
+  {
+   "word": "they",
+   "startMs": 641642,
+   "endMs": 641882
+  },
+  {
+   "word": "came",
+   "startMs": 641882,
+   "endMs": 642282
+  },
+  {
+   "word": "to",
+   "startMs": 642282,
+   "endMs": 642562
+  },
+  {
+   "word": "very",
+   "startMs": 642562,
+   "endMs": 642962
+  },
+  {
+   "word": "near",
+   "startMs": 642962,
+   "endMs": 643302
+  },
+  {
+   "word": "the",
+   "startMs": 643302,
+   "endMs": 643502
+  },
+  {
+   "word": "end",
+   "startMs": 643502,
+   "endMs": 643702
+  },
+  {
+   "word": "of",
+   "startMs": 643702,
+   "endMs": 643862
+  },
+  {
+   "word": "the",
+   "startMs": 643862,
+   "endMs": 644002
+  },
+  {
+   "word": "wood",
+   "startMs": 644002,
+   "endMs": 644342
+  },
+  {
+   "word": "so",
+   "startMs": 644382,
+   "endMs": 645462
+  },
+  {
+   "word": "near",
+   "startMs": 645462,
+   "endMs": 645822
+  },
+  {
+   "word": "that",
+   "startMs": 645822,
+   "endMs": 646402
+  },
+  {
+   "word": "they",
+   "startMs": 646402,
+   "endMs": 646562
+  },
+  {
+   "word": "could",
+   "startMs": 646562,
+   "endMs": 646682
+  },
+  {
+   "word": "see",
+   "startMs": 646682,
+   "endMs": 646902
+  },
+  {
+   "word": "the",
+   "startMs": 646902,
+   "endMs": 647082
+  },
+  {
+   "word": "sunset",
+   "startMs": 647082,
+   "endMs": 647462
+  },
+  {
+   "word": "shining",
+   "startMs": 647462,
+   "endMs": 648062
+  },
+  {
+   "word": "red",
+   "startMs": 648062,
+   "endMs": 648362
+  },
+  {
+   "word": "before",
+   "startMs": 648362,
+   "endMs": 648702
+  },
+  {
+   "word": "them",
+   "startMs": 648702,
+   "endMs": 649062
+  },
+  {
+   "word": "through",
+   "startMs": 649062,
+   "endMs": 649522
+  },
+  {
+   "word": "the",
+   "startMs": 649522,
+   "endMs": 649682
+  },
+  {
+   "word": "trees",
+   "startMs": 649682,
+   "endMs": 650162
+  },
+  {
+   "word": "yet",
+   "startMs": 650162,
+   "endMs": 651862
+  },
+  {
+   "word": "once",
+   "startMs": 651862,
+   "endMs": 652222
+  },
+  {
+   "word": "more",
+   "startMs": 652222,
+   "endMs": 652562
+  },
+  {
+   "word": "while",
+   "startMs": 652562,
+   "endMs": 653402
+  },
+  {
+   "word": "he",
+   "startMs": 653402,
+   "endMs": 653542
+  },
+  {
+   "word": "broke",
+   "startMs": 653542,
+   "endMs": 653782
+  },
+  {
+   "word": "his",
+   "startMs": 653782,
+   "endMs": 654002
+  },
+  {
+   "word": "way",
+   "startMs": 654002,
+   "endMs": 654262
+  },
+  {
+   "word": "among",
+   "startMs": 654262,
+   "endMs": 654562
+  },
+  {
+   "word": "the",
+   "startMs": 654562,
+   "endMs": 654802
+  },
+  {
+   "word": "branches",
+   "startMs": 654802,
+   "endMs": 655262
+  },
+  {
+   "word": "the",
+   "startMs": 655262,
+   "endMs": 655642
+  },
+  {
+   "word": "traveller",
+   "startMs": 655642,
+   "endMs": 656182
+  },
+  {
+   "word": "lost",
+   "startMs": 656182,
+   "endMs": 656582
+  },
+  {
+   "word": "his",
+   "startMs": 656582,
+   "endMs": 656842
+  },
+  {
+   "word": "friend",
+   "startMs": 656842,
+   "endMs": 657242
+  },
+  {
+   "word": "he",
+   "startMs": 658262,
+   "endMs": 658422
+  },
+  {
+   "word": "called",
+   "startMs": 658422,
+   "endMs": 658942
+  },
+  {
+   "word": "and",
+   "startMs": 658942,
+   "endMs": 659242
+  },
+  {
+   "word": "called",
+   "startMs": 659242,
+   "endMs": 659762
+  },
+  {
+   "word": "but",
+   "startMs": 659762,
+   "endMs": 660222
+  },
+  {
+   "word": "there",
+   "startMs": 660222,
+   "endMs": 661242
+  },
+  {
+   "word": "was",
+   "startMs": 661242,
+   "endMs": 661382
+  },
+  {
+   "word": "no",
+   "startMs": 661382,
+   "endMs": 661522
+  },
+  {
+   "word": "reply",
+   "startMs": 661522,
+   "endMs": 661922
+  },
+  {
+   "word": "and",
+   "startMs": 661922,
+   "endMs": 663062
+  },
+  {
+   "word": "when",
+   "startMs": 663062,
+   "endMs": 663162
+  },
+  {
+   "word": "he",
+   "startMs": 663162,
+   "endMs": 663282
+  },
+  {
+   "word": "passed",
+   "startMs": 663282,
+   "endMs": 663602
+  },
+  {
+   "word": "out",
+   "startMs": 663602,
+   "endMs": 663922
+  },
+  {
+   "word": "of",
+   "startMs": 663922,
+   "endMs": 664102
+  },
+  {
+   "word": "the",
+   "startMs": 664102,
+   "endMs": 664222
+  },
+  {
+   "word": "wood",
+   "startMs": 664222,
+   "endMs": 664442
+  },
+  {
+   "word": "and",
+   "startMs": 664442,
+   "endMs": 664682
+  },
+  {
+   "word": "saw",
+   "startMs": 664682,
+   "endMs": 664902
+  },
+  {
+   "word": "the",
+   "startMs": 664902,
+   "endMs": 665102
+  },
+  {
+   "word": "peaceful",
+   "startMs": 665102,
+   "endMs": 665522
+  },
+  {
+   "word": "sun",
+   "startMs": 665522,
+   "endMs": 666002
+  },
+  {
+   "word": "going",
+   "startMs": 666002,
+   "endMs": 666342
+  },
+  {
+   "word": "down",
+   "startMs": 666342,
+   "endMs": 666902
+  },
+  {
+   "word": "upon",
+   "startMs": 666902,
+   "endMs": 667222
+  },
+  {
+   "word": "a",
+   "startMs": 667222,
+   "endMs": 667402
+  },
+  {
+   "word": "wide",
+   "startMs": 667402,
+   "endMs": 667862
+  },
+  {
+   "word": "purple",
+   "startMs": 667862,
+   "endMs": 668182
+  },
+  {
+   "word": "prospect",
+   "startMs": 668182,
+   "endMs": 668782
+  },
+  {
+   "word": "he",
+   "startMs": 668782,
+   "endMs": 670222
+  },
+  {
+   "word": "came",
+   "startMs": 670222,
+   "endMs": 670522
+  },
+  {
+   "word": "to",
+   "startMs": 670522,
+   "endMs": 670682
+  },
+  {
+   "word": "an",
+   "startMs": 670682,
+   "endMs": 670822
+  },
+  {
+   "word": "old",
+   "startMs": 670822,
+   "endMs": 671242
+  },
+  {
+   "word": "man",
+   "startMs": 671242,
+   "endMs": 671582
+  },
+  {
+   "word": "sitting",
+   "startMs": 671582,
+   "endMs": 672082
+  },
+  {
+   "word": "on",
+   "startMs": 672082,
+   "endMs": 672422
+  },
+  {
+   "word": "a",
+   "startMs": 672422,
+   "endMs": 672562
+  },
+  {
+   "word": "fallen",
+   "startMs": 672562,
+   "endMs": 672862
+  },
+  {
+   "word": "tree",
+   "startMs": 672862,
+   "endMs": 673222
+  },
+  {
+   "word": "so",
+   "startMs": 673922,
+   "endMs": 675082
+  },
+  {
+   "word": "he",
+   "startMs": 675082,
+   "endMs": 675242
+  },
+  {
+   "word": "said",
+   "startMs": 675242,
+   "endMs": 675542
+  },
+  {
+   "word": "to",
+   "startMs": 675542,
+   "endMs": 675702
+  },
+  {
+   "word": "the",
+   "startMs": 675702,
+   "endMs": 675802
+  },
+  {
+   "word": "old",
+   "startMs": 675802,
+   "endMs": 676022
+  },
+  {
+   "word": "man",
+   "startMs": 676022,
+   "endMs": 676422
+  },
+  {
+   "word": "what",
+   "startMs": 676422,
+   "endMs": 677502
+  },
+  {
+   "word": "do",
+   "startMs": 677502,
+   "endMs": 677722
+  },
+  {
+   "word": "you",
+   "startMs": 677722,
+   "endMs": 677902
+  },
+  {
+   "word": "do",
+   "startMs": 677902,
+   "endMs": 678062
+  },
+  {
+   "word": "here",
+   "startMs": 678062,
+   "endMs": 678462
+  },
+  {
+   "word": "and",
+   "startMs": 678462,
+   "endMs": 680182
+  },
+  {
+   "word": "the",
+   "startMs": 680182,
+   "endMs": 680262
+  },
+  {
+   "word": "old",
+   "startMs": 680262,
+   "endMs": 680482
+  },
+  {
+   "word": "man",
+   "startMs": 680482,
+   "endMs": 680882
+  },
+  {
+   "word": "said",
+   "startMs": 680882,
+   "endMs": 681242
+  },
+  {
+   "word": "with",
+   "startMs": 681242,
+   "endMs": 681402
+  },
+  {
+   "word": "a",
+   "startMs": 681402,
+   "endMs": 681502
+  },
+  {
+   "word": "calm",
+   "startMs": 681502,
+   "endMs": 681942
+  },
+  {
+   "word": "smile",
+   "startMs": 681942,
+   "endMs": 682582
+  },
+  {
+   "word": "i",
+   "startMs": 684362,
+   "endMs": 684642
+  },
+  {
+   "word": "am",
+   "startMs": 684642,
+   "endMs": 685022
+  },
+  {
+   "word": "always",
+   "startMs": 685022,
+   "endMs": 685642
+  },
+  {
+   "word": "remembering",
+   "startMs": 685642,
+   "endMs": 686642
+  },
+  {
+   "word": "come",
+   "startMs": 686642,
+   "endMs": 688902
+  },
+  {
+   "word": "and",
+   "startMs": 688902,
+   "endMs": 689202
+  },
+  {
+   "word": "remember",
+   "startMs": 689202,
+   "endMs": 689742
+  },
+  {
+   "word": "with",
+   "startMs": 689742,
+   "endMs": 690142
+  },
+  {
+   "word": "me",
+   "startMs": 690142,
+   "endMs": 690482
+  },
+  {
+   "word": "so",
+   "startMs": 690482,
+   "endMs": 692922
+  },
+  {
+   "word": "the",
+   "startMs": 692922,
+   "endMs": 693142
+  },
+  {
+   "word": "traveller",
+   "startMs": 693142,
+   "endMs": 693542
+  },
+  {
+   "word": "sat",
+   "startMs": 693542,
+   "endMs": 693762
+  },
+  {
+   "word": "down",
+   "startMs": 693762,
+   "endMs": 694102
+  },
+  {
+   "word": "by",
+   "startMs": 694102,
+   "endMs": 694322
+  },
+  {
+   "word": "the",
+   "startMs": 694322,
+   "endMs": 694462
+  },
+  {
+   "word": "side",
+   "startMs": 694462,
+   "endMs": 694762
+  },
+  {
+   "word": "of",
+   "startMs": 694762,
+   "endMs": 694942
+  },
+  {
+   "word": "that",
+   "startMs": 694942,
+   "endMs": 695102
+  },
+  {
+   "word": "old",
+   "startMs": 695102,
+   "endMs": 695282
+  },
+  {
+   "word": "man",
+   "startMs": 695282,
+   "endMs": 695602
+  },
+  {
+   "word": "face",
+   "startMs": 695602,
+   "endMs": 696942
+  },
+  {
+   "word": "to",
+   "startMs": 696942,
+   "endMs": 697162
+  },
+  {
+   "word": "face",
+   "startMs": 697162,
+   "endMs": 697622
+  },
+  {
+   "word": "with",
+   "startMs": 697622,
+   "endMs": 697862
+  },
+  {
+   "word": "the",
+   "startMs": 697862,
+   "endMs": 698002
+  },
+  {
+   "word": "serene",
+   "startMs": 698002,
+   "endMs": 698582
+  },
+  {
+   "word": "sunset",
+   "startMs": 698582,
+   "endMs": 699182
+  },
+  {
+   "word": "and",
+   "startMs": 700802,
+   "endMs": 700942
+  },
+  {
+   "word": "all",
+   "startMs": 700942,
+   "endMs": 701222
+  },
+  {
+   "word": "his",
+   "startMs": 701222,
+   "endMs": 701402
+  },
+  {
+   "word": "friends",
+   "startMs": 701402,
+   "endMs": 701862
+  },
+  {
+   "word": "came",
+   "startMs": 701862,
+   "endMs": 702202
+  },
+  {
+   "word": "softly",
+   "startMs": 702202,
+   "endMs": 702662
+  },
+  {
+   "word": "back",
+   "startMs": 702662,
+   "endMs": 703122
+  },
+  {
+   "word": "and",
+   "startMs": 703122,
+   "endMs": 703402
+  },
+  {
+   "word": "stood",
+   "startMs": 703402,
+   "endMs": 703702
+  },
+  {
+   "word": "around",
+   "startMs": 703702,
+   "endMs": 704022
+  },
+  {
+   "word": "him",
+   "startMs": 704022,
+   "endMs": 704362
+  },
+  {
+   "word": "the",
+   "startMs": 704362,
+   "endMs": 705742
+  },
+  {
+   "word": "beautiful",
+   "startMs": 705742,
+   "endMs": 706022
+  },
+  {
+   "word": "child",
+   "startMs": 706022,
+   "endMs": 706502
+  },
+  {
+   "word": "the",
+   "startMs": 706502,
+   "endMs": 707622
+  },
+  {
+   "word": "handsome",
+   "startMs": 707622,
+   "endMs": 707962
+  },
+  {
+   "word": "boy",
+   "startMs": 707962,
+   "endMs": 708342
+  },
+  {
+   "word": "the",
+   "startMs": 708342,
+   "endMs": 709662
+  },
+  {
+   "word": "young",
+   "startMs": 709662,
+   "endMs": 709882
+  },
+  {
+   "word": "man",
+   "startMs": 709882,
+   "endMs": 710122
+  },
+  {
+   "word": "in",
+   "startMs": 710122,
+   "endMs": 710322
+  },
+  {
+   "word": "love",
+   "startMs": 710322,
+   "endMs": 710682
+  },
+  {
+   "word": "the",
+   "startMs": 710682,
+   "endMs": 711782
+  },
+  {
+   "word": "father",
+   "startMs": 711782,
+   "endMs": 712262
+  },
+  {
+   "word": "mother",
+   "startMs": 712262,
+   "endMs": 713122
+  },
+  {
+   "word": "and",
+   "startMs": 713122,
+   "endMs": 713342
+  },
+  {
+   "word": "children",
+   "startMs": 713342,
+   "endMs": 713742
+  },
+  {
+   "word": "every",
+   "startMs": 713742,
+   "endMs": 715642
+  },
+  {
+   "word": "one",
+   "startMs": 715642,
+   "endMs": 715862
+  },
+  {
+   "word": "of",
+   "startMs": 715862,
+   "endMs": 716022
+  },
+  {
+   "word": "them",
+   "startMs": 716022,
+   "endMs": 716142
+  },
+  {
+   "word": "was",
+   "startMs": 716142,
+   "endMs": 716362
+  },
+  {
+   "word": "there",
+   "startMs": 716362,
+   "endMs": 716742
+  },
+  {
+   "word": "and",
+   "startMs": 716742,
+   "endMs": 717402
+  },
+  {
+   "word": "he",
+   "startMs": 717402,
+   "endMs": 717522
+  },
+  {
+   "word": "had",
+   "startMs": 717522,
+   "endMs": 717702
+  },
+  {
+   "word": "lost",
+   "startMs": 717702,
+   "endMs": 717982
+  },
+  {
+   "word": "nothing",
+   "startMs": 717982,
+   "endMs": 718662
+  },
+  {
+   "word": "so",
+   "startMs": 720502,
+   "endMs": 720702
+  },
+  {
+   "word": "he",
+   "startMs": 720702,
+   "endMs": 721042
+  },
+  {
+   "word": "loved",
+   "startMs": 721042,
+   "endMs": 721402
+  },
+  {
+   "word": "them",
+   "startMs": 721402,
+   "endMs": 721682
+  },
+  {
+   "word": "all",
+   "startMs": 721682,
+   "endMs": 722162
+  },
+  {
+   "word": "and",
+   "startMs": 722162,
+   "endMs": 722362
+  },
+  {
+   "word": "was",
+   "startMs": 722362,
+   "endMs": 722502
+  },
+  {
+   "word": "kind",
+   "startMs": 722502,
+   "endMs": 723002
+  },
+  {
+   "word": "and",
+   "startMs": 723002,
+   "endMs": 723262
+  },
+  {
+   "word": "forbearing",
+   "startMs": 723262,
+   "endMs": 723902
+  },
+  {
+   "word": "with",
+   "startMs": 723902,
+   "endMs": 724182
+  },
+  {
+   "word": "them",
+   "startMs": 724182,
+   "endMs": 724402
+  },
+  {
+   "word": "all",
+   "startMs": 724402,
+   "endMs": 724862
+  },
+  {
+   "word": "and",
+   "startMs": 724862,
+   "endMs": 725902
+  },
+  {
+   "word": "was",
+   "startMs": 725902,
+   "endMs": 726042
+  },
+  {
+   "word": "always",
+   "startMs": 726042,
+   "endMs": 726542
+  },
+  {
+   "word": "pleased",
+   "startMs": 726542,
+   "endMs": 727102
+  },
+  {
+   "word": "to",
+   "startMs": 727102,
+   "endMs": 727302
+  },
+  {
+   "word": "watch",
+   "startMs": 727302,
+   "endMs": 727602
+  },
+  {
+   "word": "them",
+   "startMs": 727602,
+   "endMs": 727882
+  },
+  {
+   "word": "all",
+   "startMs": 727882,
+   "endMs": 728222
+  },
+  {
+   "word": "and",
+   "startMs": 728222,
+   "endMs": 729162
+  },
+  {
+   "word": "they",
+   "startMs": 729162,
+   "endMs": 729302
+  },
+  {
+   "word": "all",
+   "startMs": 729302,
+   "endMs": 729522
+  },
+  {
+   "word": "honoured",
+   "startMs": 729522,
+   "endMs": 729982
+  },
+  {
+   "word": "and",
+   "startMs": 729982,
+   "endMs": 730262
+  },
+  {
+   "word": "loved",
+   "startMs": 730262,
+   "endMs": 730562
+  },
+  {
+   "word": "him",
+   "startMs": 730562,
+   "endMs": 730922
+  },
+  {
+   "word": "and",
+   "startMs": 733262,
+   "endMs": 733522
+  },
+  {
+   "word": "i",
+   "startMs": 733522,
+   "endMs": 734342
+  },
+  {
+   "word": "think",
+   "startMs": 734342,
+   "endMs": 734622
+  },
+  {
+   "word": "the",
+   "startMs": 734622,
+   "endMs": 734842
+  },
+  {
+   "word": "traveller",
+   "startMs": 734842,
+   "endMs": 735262
+  },
+  {
+   "word": "must",
+   "startMs": 735262,
+   "endMs": 735642
+  },
+  {
+   "word": "be",
+   "startMs": 735642,
+   "endMs": 735922
+  },
+  {
+   "word": "yourself",
+   "startMs": 735922,
+   "endMs": 736362
+  },
+  {
+   "word": "dear",
+   "startMs": 736362,
+   "endMs": 736662
+  },
+  {
+   "word": "grandfather",
+   "startMs": 736662,
+   "endMs": 737122
+  },
+  {
+   "word": "because",
+   "startMs": 737122,
+   "endMs": 738882
+  },
+  {
+   "word": "this",
+   "startMs": 738882,
+   "endMs": 739222
+  },
+  {
+   "word": "is",
+   "startMs": 739222,
+   "endMs": 739602
+  },
+  {
+   "word": "what",
+   "startMs": 739602,
+   "endMs": 739782
+  },
+  {
+   "word": "you",
+   "startMs": 739782,
+   "endMs": 739982
+  },
+  {
+   "word": "do",
+   "startMs": 739982,
+   "endMs": 740122
+  },
+  {
+   "word": "to",
+   "startMs": 740122,
+   "endMs": 740262
+  },
+  {
+   "word": "us",
+   "startMs": 740262,
+   "endMs": 740622
+  },
+  {
+   "word": "and",
+   "startMs": 740622,
+   "endMs": 741902
+  },
+  {
+   "word": "what",
+   "startMs": 741902,
+   "endMs": 742042
+  },
+  {
+   "word": "we",
+   "startMs": 742042,
+   "endMs": 742182
+  },
+  {
+   "word": "do",
+   "startMs": 742182,
+   "endMs": 742362
+  },
+  {
+   "word": "to",
+   "startMs": 742362,
+   "endMs": 742562
+  },
+  {
+   "word": "you",
+   "startMs": 742562,
+   "endMs": 742842
+  },
+  {
+   "word": "end",
+   "startMs": 743902,
+   "endMs": 745082
+  },
+  {
+   "word": "of",
+   "startMs": 745082,
+   "endMs": 745302
+  },
+  {
+   "word": "the",
+   "startMs": 745302,
+   "endMs": 745422
+  },
+  {
+   "word": "child's",
+   "startMs": 745422,
+   "endMs": 746082
+  },
+  {
+   "word": "story",
+   "startMs": 746082,
+   "endMs": 746362
+  },
+  {
+   "word": "recording",
+   "startMs": 746362,
+   "endMs": 747282
+  },
+  {
+   "word": "by",
+   "startMs": 747282,
+   "endMs": 747502
+  },
+  {
+   "word": "john",
+   "startMs": 747502,
+   "endMs": 747782
+  },
+  {
+   "word": "van",
+   "startMs": 747782,
+   "endMs": 748042
+  },
+  {
+   "word": "stan",
+   "startMs": 748042,
+   "endMs": 748402
+  },
+  {
+   "word": "savannah",
+   "startMs": 748402,
+   "endMs": 749282
+  },
+  {
+   "word": "georgia",
+   "startMs": 749282,
+   "endMs": 749882
+  }
+ ],
+ "provider": "groq",
+ "audio_bytes": 6048699,
+ "transcribed_at": "2026-10-31T09:45:40"
+}

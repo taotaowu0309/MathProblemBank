@@ -9,12 +9,14 @@ The installed marker keeps it from returning after a learner removes it.
 from __future__ import annotations
 
 import json
+import shutil
 from pathlib import Path
 from typing import Any
 
 from shared.scripts.application_paths import APP_PATHS
 
 STARTER_PACK_FILE = APP_PATHS.application_root / "shared" / "templates" / "english_starter" / "starter_pack.json"
+STARTER_AUDIOBOOKS = STARTER_PACK_FILE.parent / "audiobook"
 MARKER_NAME = "starter_pack_installed.json"
 
 
@@ -55,6 +57,12 @@ def install_starter_pack(service: Any, *, pack_file: Path = STARTER_PACK_FILE) -
     )
     paper = service.import_exam_paper(pack["paper"])
     words = VocabularyManager(workspace="english", root_dir=APP_PATHS.vocabulary_root).import_entries(pack["vocabulary"])
+    from shared.scripts.audiobook_service import DEFAULT_AUDIOBOOK_ROOT
+
+    for book in sorted(STARTER_AUDIOBOOKS.iterdir()) if STARTER_AUDIOBOOKS.is_dir() else []:
+        target = DEFAULT_AUDIOBOOK_ROOT / book.name
+        if book.is_dir() and not target.exists():
+            shutil.copytree(book, target)
     result = {
         "version": pack["version"],
         "material_id": material.get("id") or material.get("material_id"),

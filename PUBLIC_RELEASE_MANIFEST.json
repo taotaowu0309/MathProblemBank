@@ -1,9 +1,9 @@
 {
   "format_version": 1,
   "profile": "public-math-english-v0.2",
-  "release_version": "0.2.0rc5",
+  "release_version": "0.2.0rc6",
   "python_requires": ">=3.12,<3.13",
-  "file_count": 256,
+  "file_count": 259,
   "files": [
     {
       "path": ".gitattributes",
@@ -28,7 +28,7 @@
     {
       "path": "pyproject.toml",
       "bytes": 1148,
-      "sha256": "9c1ba368a62d82d1bd39978135220f2050666bced9b74dc2d3ee2057e8b0d6fd"
+      "sha256": "737d182af6d93dcf35e6219d92e0578b09c37b9ab739b1050c7e623a05a7e05e"
     },
     {
       "path": "requirements-public.txt",
@@ -192,8 +192,8 @@
     },
     {
       "path": "shared/scripts/audiobook_service.py",
-      "bytes": 29653,
-      "sha256": "b8a1693c4aeb857cec6f4881686f0a1520c62ba2448dba5c00a810329bdb0fcd"
+      "bytes": 30133,
+      "sha256": "158e5e559792138bb5c50bddf3cca806defa473e1f2c30f2904e5898b1dbd379"
     },
     {
       "path": "shared/scripts/backup_databases.py",
@@ -282,8 +282,8 @@
     },
     {
       "path": "shared/scripts/english_starter_pack.py",
-      "bytes": 2744,
-      "sha256": "695eeab9be897cf56c0388b8660dfcca4f02e76c2992ea16ad416db8d233e5b8"
+      "bytes": 3128,
+      "sha256": "1de1a798cf2b917ac2d7ea09cdfc68559c49fc313004ffdb9a02e87ebd1f531e"
     },
     {
       "path": "shared/scripts/extensive_reading_qt.py",
@@ -886,6 +886,21 @@
       "sha256": "24e48491a39cb54c9b41ba3f14af3b4395c8ae9172130df49768be93d465beae"
     },
     {
+      "path": "shared/templates/english_starter/audiobook/childs-story/source/pg1467.txt",
+      "bytes": 138748,
+      "sha256": "07aa52e643a11c45ba8e229bddc948e679f9d1bb5d626fea8c69703431f28413"
+    },
+    {
+      "path": "shared/templates/english_starter/audiobook/childs-story/transcript/01.json",
+      "bytes": 118988,
+      "sha256": "da88800e4af6645b919f0c67422afe8fcefd5c60cd395e0aa6548e0c79bcf0be"
+    },
+    {
+      "path": "shared/templates/english_starter/audiobook/childs-story/translations/01.json",
+      "bytes": 8904,
+      "sha256": "42f850bfca9a037120aabe746841565200f09e10477fe032e9e4c3516758dc8f"
+    },
+    {
       "path": "shared/templates/english_starter/starter_pack.json",
       "bytes": 8572,
       "sha256": "806067547029ab4ccb833ddffd0e224b450428ccdbf4367a6200af5143acd89f"
@@ -1128,32 +1143,32 @@
     {
       "path": "README.md",
       "bytes": 3789,
-      "sha256": "c7fb4dda46d24488184a31fd92485d9ce2b86c7586b85129ea3472b5da93b187"
+      "sha256": "8558f55655184c0c5bdfd15546ddf3a31b2c0d5cd9cec144aa1c0def6da23408"
     },
     {
       "path": "README.zh-CN.md",
       "bytes": 3789,
-      "sha256": "c7fb4dda46d24488184a31fd92485d9ce2b86c7586b85129ea3472b5da93b187"
+      "sha256": "8558f55655184c0c5bdfd15546ddf3a31b2c0d5cd9cec144aa1c0def6da23408"
     },
     {
       "path": "GETTING_STARTED.md",
       "bytes": 4024,
-      "sha256": "4174efa832764b97f5267b7b9b4e33209f4fe2e91ee49da1afea36b65fdeb799"
+      "sha256": "898f4cde1a39a4afac6f64f4b6fcc88682112b6d4c0b3304b8a340e79e84d99f"
     },
     {
       "path": "GETTING_STARTED.zh-CN.md",
       "bytes": 4024,
-      "sha256": "4174efa832764b97f5267b7b9b4e33209f4fe2e91ee49da1afea36b65fdeb799"
+      "sha256": "898f4cde1a39a4afac6f64f4b6fcc88682112b6d4c0b3304b8a340e79e84d99f"
     },
     {
       "path": "USER_GUIDE.md",
-      "bytes": 4536,
-      "sha256": "0ee93b86023d524feffeb97396272b0df37c2904341eaca53d0777eacc6df3ff"
+      "bytes": 4571,
+      "sha256": "153ed7f6867c7533ee25eefde0cf141b590fa2087b16b9992c81dc1b643058df"
     },
     {
       "path": "USER_GUIDE.zh-CN.md",
-      "bytes": 4536,
-      "sha256": "0ee93b86023d524feffeb97396272b0df37c2904341eaca53d0777eacc6df3ff"
+      "bytes": 4571,
+      "sha256": "153ed7f6867c7533ee25eefde0cf141b590fa2087b16b9992c81dc1b643058df"
     },
     {
       "path": "OPEN_SOURCE_RELEASE.md",

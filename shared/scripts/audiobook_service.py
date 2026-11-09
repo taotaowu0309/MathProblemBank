@@ -34,6 +34,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Callable, Iterable
 
+from shared.scripts.application_paths import APP_PATHS
 from shared.scripts.english_learning_service import DEFAULT_ENGLISH_ROOT
 
 DEFAULT_AUDIOBOOK_ROOT = DEFAULT_ENGLISH_ROOT / "audiobooks"
@@ -105,6 +106,16 @@ CATALOG: dict[str, dict[str, Any]] = {
         ],
     },
 }
+
+if APP_PATHS.public_release:
+    # The public release ships this one prepared public-domain book as its sample.
+    CATALOG = {
+        "childs-story": {
+            **CATALOG["childs-story"],
+            "note": "狄更斯的短篇寓言，句子短、用词浅。公版朗读与原文，附逐句中文译文；点“准备这本书”下载约 6 MB 录音后即可收听。",
+            "episode": None,
+        }
+    }
 
 
 # ---------------------------------------------------------------------------
