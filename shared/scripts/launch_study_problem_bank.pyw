@@ -101,7 +101,9 @@ WORKSPACE_OPTIONS = (
 
 if APP_PATHS.public_release:
     WORKSPACE_OPTIONS = tuple(
-        option for option in WORKSPACE_OPTIONS if option["key"] in {"math", "english"}
+        {**option, "description": "题库、广读、有声书、词汇与背单词"}
+        if option["key"] == "english" else option
+        for option in WORKSPACE_OPTIONS if option["key"] in {"math", "english"}
     )
 
 configure_app_identity(APP_ID)

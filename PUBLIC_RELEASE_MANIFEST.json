@@ -1,9 +1,9 @@
 {
   "format_version": 1,
   "profile": "public-math-english-v0.2",
-  "release_version": "0.2.0rc3",
+  "release_version": "0.2.0rc4",
   "python_requires": ">=3.12,<3.13",
-  "file_count": 254,
+  "file_count": 256,
   "files": [
     {
       "path": ".gitattributes",
@@ -28,7 +28,7 @@
     {
       "path": "pyproject.toml",
       "bytes": 1148,
-      "sha256": "2ea8ff30a64869287af60a903edb393d13a1d3cf0249ab3931b48abc5d4c01ab"
+      "sha256": "18996ab6376182faab73fa622cc7a29ec3b3560fcc76efcc6dc3d0dee2db6aeb"
     },
     {
       "path": "requirements-public.txt",
@@ -187,8 +187,8 @@
     },
     {
       "path": "shared/scripts/audiobook_qt.py",
-      "bytes": 40517,
-      "sha256": "a3d1e067ae20c5640bda092db025c5cfe5080f6bc1130ad66ad1b52f1f5ddcbc"
+      "bytes": 40740,
+      "sha256": "7d0fd4f62ba6609ad9f548e132fb192dc6a8bb7fa54f87ae704eaa57fb1e49ee"
     },
     {
       "path": "shared/scripts/audiobook_service.py",
@@ -272,18 +272,23 @@
     },
     {
       "path": "shared/scripts/english_learning_service.py",
-      "bytes": 350268,
-      "sha256": "14ca9610a59b3f2bf9fcf0d5186cfa323a8a49eb1b708af68de770d6ec9d5675"
+      "bytes": 350374,
+      "sha256": "75734ca0439ccda6a3fa56c6611bb1abeb983b9be1a427dc3957f80d658c6e83"
     },
     {
       "path": "shared/scripts/english_overview_qt.py",
-      "bytes": 15876,
-      "sha256": "96829c766c5984ebc82fdd46e967e6dc719153c95fcece508224ddcacecd7216"
+      "bytes": 17598,
+      "sha256": "6f2871f991519046172a153a3bcded32d1bbdca24fbd4810369fbe85792d2d1d"
+    },
+    {
+      "path": "shared/scripts/english_starter_pack.py",
+      "bytes": 2744,
+      "sha256": "695eeab9be897cf56c0388b8660dfcca4f02e76c2992ea16ad416db8d233e5b8"
     },
     {
       "path": "shared/scripts/extensive_reading_qt.py",
-      "bytes": 46394,
-      "sha256": "c25180a9598436108499b28e5b1a63af7a9dc9afe2581f24dd0378374b4fc8c1"
+      "bytes": 46900,
+      "sha256": "6336c0be90c07b9c62422ab39673eaa6596c04f3cc17bbc545748559071e261f"
     },
     {
       "path": "shared/scripts/extensive_study_qt.py",
@@ -332,8 +337,8 @@
     },
     {
       "path": "shared/scripts/launch_study_problem_bank.pyw",
-      "bytes": 15543,
-      "sha256": "8a3924d60eeef9498715107c40ac05b0f9af068c9fa14027a8d3941fc27832a3"
+      "bytes": 15672,
+      "sha256": "206b894b1a5a8fd5cae7c066234e3dcf12c07f28b2f2288772573415de1a427c"
     },
     {
       "path": "shared/scripts/lazy_module.py",
@@ -497,8 +502,8 @@
     },
     {
       "path": "shared/scripts/problem_bank_center_qt.py",
-      "bytes": 1288463,
-      "sha256": "717695eec1dedf376d300ee16bb44d5ea4421c413c351bfded8ef8edc64cc5b9"
+      "bytes": 1290069,
+      "sha256": "65b4d22f585a5d6de6ddf67d5fe37e1c5eb1a4d959867778b5b3aa61014932d8"
     },
     {
       "path": "shared/scripts/public_regression_core.py",
@@ -652,8 +657,8 @@
     },
     {
       "path": "shared/scripts/vocabulary_review_qt.py",
-      "bytes": 119142,
-      "sha256": "49e5ff5eb4db57420926f508aa11add9d8d2148cf8cffef05aca94e232c2702e"
+      "bytes": 119289,
+      "sha256": "509fa0ee41c072cfab538ffe305afd15f60d4ed7ab9c380886162cfa175e6df0"
     },
     {
       "path": "shared/scripts/vocabulary_review_service.py",
@@ -879,6 +884,11 @@
       "path": "shared/templates/document_layout.tex",
       "bytes": 1331,
       "sha256": "24e48491a39cb54c9b41ba3f14af3b4395c8ae9172130df49768be93d465beae"
+    },
+    {
+      "path": "shared/templates/english_starter/starter_pack.json",
+      "bytes": 8572,
+      "sha256": "806067547029ab4ccb833ddffd0e224b450428ccdbf4367a6200af5143acd89f"
     },
     {
       "path": "shared/templates/exam_paper_import_prompt.txt",
@@ -1117,33 +1127,33 @@
     },
     {
       "path": "README.md",
-      "bytes": 3786,
-      "sha256": "8b7d71325099f6f781ddd2d5c0bd8e79062c10b5abcc4783683c5860f9c2a72e"
+      "bytes": 3789,
+      "sha256": "ca4027ae571c29266b8df071dc29ab764583e8ce200390827a0186499e91b8b6"
     },
     {
       "path": "README.zh-CN.md",
-      "bytes": 3786,
-      "sha256": "8b7d71325099f6f781ddd2d5c0bd8e79062c10b5abcc4783683c5860f9c2a72e"
+      "bytes": 3789,
+      "sha256": "ca4027ae571c29266b8df071dc29ab764583e8ce200390827a0186499e91b8b6"
     },
     {
       "path": "GETTING_STARTED.md",
       "bytes": 4024,
-      "sha256": "6841b696bf63a7a6f8f5627582f55f286dca8291a23451ca3d202e32cc36876a"
+      "sha256": "860d8d4921ab1ea34fe97b7a3f7c980db6c44b45364204254ef759dd5c194178"
     },
     {
       "path": "GETTING_STARTED.zh-CN.md",
       "bytes": 4024,
-      "sha256": "6841b696bf63a7a6f8f5627582f55f286dca8291a23451ca3d202e32cc36876a"
+      "sha256": "860d8d4921ab1ea34fe97b7a3f7c980db6c44b45364204254ef759dd5c194178"
     },
     {
       "path": "USER_GUIDE.md",
-      "bytes": 4531,
-      "sha256": "d923f05b7592468ad2c3f34cf4b54f7c2b5f4fbcf6e5f9b1fa9b98d98de161e3"
+      "bytes": 4536,
+      "sha256": "0ee93b86023d524feffeb97396272b0df37c2904341eaca53d0777eacc6df3ff"
     },
     {
       "path": "USER_GUIDE.zh-CN.md",
-      "bytes": 4531,
-      "sha256": "d923f05b7592468ad2c3f34cf4b54f7c2b5f4fbcf6e5f9b1fa9b98d98de161e3"
+      "bytes": 4536,
+      "sha256": "0ee93b86023d524feffeb97396272b0df37c2904341eaca53d0777eacc6df3ff"
     },
     {
       "path": "OPEN_SOURCE_RELEASE.md",

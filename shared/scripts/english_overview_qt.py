@@ -13,6 +13,8 @@ from __future__ import annotations
 
 from typing import Any, Callable
 
+from shared.scripts.application_paths import APP_PATHS
+
 from PySide6.QtCore import QObject, QRunnable, QThreadPool, Qt, Signal
 from PySide6.QtGui import QFont
 from shiboken6 import isValid
@@ -210,6 +212,9 @@ def build_english_overview_page(owner: Any) -> QVBoxLayout:
     heading_row = QHBoxLayout()
     heading_row.addLayout(owner._english_page_heading(
         "英语学习",
+        "用自己的材料学英语：阅读并查词，把生词收进词汇库，按记忆曲线背单词，再用题库练习。"
+        "下面是今天要做的事和各部分的进度，点卡片直接进入。"
+        if APP_PATHS.public_release else
         "以旋元佑系列为主线：背字汇、学文法并做《文法解题》，再学阅读和写作方法，最后进入广读。"
         "下面是今天要做的事和各部分的进度，点卡片直接进入。",
     ), 1)
@@ -245,7 +250,11 @@ def build_english_overview_page(owner: Any) -> QVBoxLayout:
         words = center.MetricCard("今日背单词", str(due + new),
                                   f"待复习 {due} · 新词 {new}" + (f" · 今天已复习 {reviewed}" if reviewed else ""),
                                   "warm" if due else "normal")
-    pages = center.MetricCard("学习页已读", *_pages_figure(overview["methods"]))
+    pages = (
+        center.MetricCard("书架材料", str(materials["extensive"]), "在“广读材料”中导入和阅读")
+        if APP_PATHS.public_release
+        else center.MetricCard("学习页已读", *_pages_figure(overview["methods"]))
+    )
     answered = center.MetricCard("题库已做", str(bank["answered"]),
                                  f"共 {bank_total} 题 · 正确率 {_percent(bank['correct'], bank['attempts'])}",
                                  "success" if bank["answered"] else "normal")
@@ -259,7 +268,9 @@ def build_english_overview_page(owner: Any) -> QVBoxLayout:
     layout.addWidget(grid_host)
 
     # The route, in the order of the series.
-    route, route_layout = _panel("学习路线", "按旋元佑系列的顺序，点卡片进入")
+    route, route_layout = _panel(
+        "学习路线", "点卡片进入" if APP_PATHS.public_release else "按旋元佑系列的顺序，点卡片进入"
+    )
     route.setStyleSheet(ROUTE_STYLE)
     route_grid = QGridLayout()
     route_grid.setHorizontalSpacing(12)
@@ -296,6 +307,20 @@ def build_english_overview_page(owner: Any) -> QVBoxLayout:
                    f"待查词 {overview['deferred_lookups']}" if overview["deferred_lookups"] else "",
                    "阅读和做题时收藏的单词：查词、熟悉度和导出。"), "词汇库"),
     ]
+    if APP_PATHS.public_release:
+        cards = [
+            (RouteCard(1, "广读材料", "overview", f"书架 {materials['extensive']} 本",
+                       "导入自己有权使用的书和文章，在 PDF 阅读器中阅读、查词、记笔记。"), "广读材料"),
+            (RouteCard(2, "词汇库", "glossary",
+                       f"待查词 {overview['deferred_lookups']}" if overview["deferred_lookups"] else "",
+                       "阅读和做题时收藏的单词：查词、熟悉度和导出。"), "词汇库"),
+            (RouteCard(3, "背单词", "family", words_status,
+                       "背词汇库里的单词；到期复习与新词按记忆曲线安排。"), "背单词"),
+            (RouteCard(4, "题库", "source", f"已做 {bank['answered']} / {bank_total}",
+                       f"阅读 {bank['counts'].get('reading', 0)} · 写作 {bank['counts'].get('writing', 0)} 题；"
+                       f"错题 {bank['mistakes']}，收藏 {bank['favorites']}。",
+                       (int(bank["answered"]), bank_total) if bank_total else None), "题库"),
+        ]
     for index, (card, page) in enumerate(cards):
         card.clicked.connect(lambda destination=page: owner.show_page(destination))
         route_grid.addWidget(card, index // 2, index % 2)
@@ -330,7 +355,8 @@ def build_english_overview_page(owner: Any) -> QVBoxLayout:
             recent_layout.addWidget(sync)
         layout.addWidget(recent_panel)
     layout.addStretch(1)
-    _read_books_later(owner, pages, method_cards)
+    if not APP_PATHS.public_release:
+        _read_books_later(owner, pages, method_cards)
     return layout
 
 

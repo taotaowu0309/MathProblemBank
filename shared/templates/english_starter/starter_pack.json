@@ -1,0 +1,135 @@
+{
+  "version": 1,
+  "notice": "All material in this starter pack was written for this project and is not taken from any textbook.",
+  "reading": {
+    "material_code": "STARTER-READING",
+    "title": "A Small Reading Plan",
+    "author": "MathProblemBank",
+    "text": "A Small Reading Plan\n\nMaya wanted to read more regularly, but she often chose books that were too difficult. After a long day, she would open a book, look up several words, and stop before finishing the first page.\n\nOne evening, she made a smaller plan. She chose a short article and set a timer for ten minutes. Instead of looking up every unfamiliar word immediately, she first tried to understand the main idea. She marked only the expressions that prevented her from following the story.\n\nAlthough the article was short, the routine helped her notice how much she could understand without a dictionary. At the end of the session, she wrote a two-sentence summary and saved three useful expressions. The next morning, she read the same article again and checked whether her summary still matched the text.\n\nA week later, Maya did not claim that ten minutes could solve every reading problem. Her new plan simply made it easier to begin, return to an unfinished text, and observe her progress.\n\nThis story is fictional and was written for this software."
+  },
+  "paper": {
+    "exam": "示例练习",
+    "year": 2026,
+    "paper_code": "STARTER-2026",
+    "title": "示例练习：阅读与表达",
+    "answer_source": "本项目自编示例，答案由编写者给出",
+    "groups": [
+      {
+        "key": "R1",
+        "section": "阅读理解",
+        "title": "The Community Garden",
+        "directions": "Read the passage and choose the best answer to each question.",
+        "passage": "When the old parking lot behind the library closed, nobody on Elm Street knew what to do with the empty space. A retired teacher suggested a community garden, and at first only six neighbors came to the meeting. They had little money, so they asked a local shop for used wooden boxes and collected rainwater in barrels.\n\nBy the second summer, the garden had changed the street in ways nobody had planned. Children who had never spoken to their elderly neighbors learned from them how to grow beans. Families who picked more vegetables than they could eat left the extra food on a table near the gate, and anyone could take what they needed.\n\nThe garden has not solved every problem on Elm Street. Water is still expensive in dry months, and a few plots are ignored after the excitement of spring. Yet people now know one another by name, and that, the teacher says, was the harvest she had hoped for."
+      },
+      {
+        "key": "T1",
+        "section": "翻译",
+        "title": "Translation",
+        "directions": "Translate the sentence into Chinese.",
+        "passage": "Instead of looking up every unfamiliar word immediately, she first tried to understand the main idea."
+      }
+    ],
+    "questions": [
+      {
+        "number": 1,
+        "group": "R1",
+        "type": "reading_choice",
+        "stem": "How did the neighbors deal with their lack of money at the beginning?",
+        "options": [
+          {"label": "A", "text": "They sold vegetables to the library."},
+          {"label": "B", "text": "They reused boxes and saved rainwater."},
+          {"label": "C", "text": "They borrowed money from a teacher."},
+          {"label": "D", "text": "They rented a smaller parking lot."}
+        ],
+        "answer": "B",
+        "explanation": "第一段说他们钱很少，于是向商店要旧木箱，并用桶收集雨水。",
+        "explanation_source": "author"
+      },
+      {
+        "number": 2,
+        "group": "R1",
+        "type": "reading_choice",
+        "stem": "What was an unplanned result of the garden?",
+        "options": [
+          {"label": "A", "text": "The library moved to Elm Street."},
+          {"label": "B", "text": "Water became cheaper in summer."},
+          {"label": "C", "text": "Different generations began to talk and learn together."},
+          {"label": "D", "text": "Every family grew enough food to sell."}
+        ],
+        "answer": "C",
+        "explanation": "第二段开头说花园带来了没有计划到的变化，随后举例：孩子向年长邻居学种豆子。",
+        "explanation_source": "author"
+      },
+      {
+        "number": 3,
+        "group": "R1",
+        "type": "reading_choice",
+        "stem": "Which problem does the passage say still remains?",
+        "options": [
+          {"label": "A", "text": "Some plots are neglected after spring."},
+          {"label": "B", "text": "Children are not allowed in the garden."},
+          {"label": "C", "text": "The extra food is often stolen."},
+          {"label": "D", "text": "Neighbors refuse to attend meetings."}
+        ],
+        "answer": "A",
+        "explanation": "第三段指出，春天的热情过后，有些地块无人照料。",
+        "explanation_source": "author"
+      },
+      {
+        "number": 4,
+        "group": "R1",
+        "type": "reading_choice",
+        "stem": "What does the word \"harvest\" most probably refer to in the last sentence?",
+        "options": [
+          {"label": "A", "text": "The beans picked in summer"},
+          {"label": "B", "text": "The money saved on water"},
+          {"label": "C", "text": "The new wooden boxes"},
+          {"label": "D", "text": "The closer relationships among neighbors"}
+        ],
+        "answer": "D",
+        "explanation": "前半句说人们现在彼此叫得出名字，harvest 在这里是比喻，指邻里关系这一收获。",
+        "explanation_source": "author"
+      },
+      {
+        "number": 5,
+        "group": "T1",
+        "type": "translation",
+        "section": "翻译",
+        "stem": "Instead of looking up every unfamiliar word immediately, she first tried to understand the main idea.",
+        "reference": "她没有一遇到生词就马上去查，而是先试着理解文章的大意。",
+        "explanation": "Instead of doing 表示“没有做……，而是……”，翻译时可以把对比关系说出来。",
+        "explanation_source": "author"
+      },
+      {
+        "number": 6,
+        "type": "writing",
+        "section": "写作",
+        "stem": "Write about 100 words describing one small habit that has helped you learn something. Explain what you do and why it works.",
+        "reference": "Every evening I spend ten minutes writing down one idea I learned that day. The habit is small, so I rarely skip it. Writing forces me to check whether I really understood the idea, and reading my old notes shows me how much I have improved. Because it takes so little time, it feels easy to begin, even after a tiring day.",
+        "explanation_source": "author"
+      }
+    ]
+  },
+  "vocabulary": [
+    {"term": "routine", "part_of_speech": "n.", "definition": "惯例；日常的固定做法"},
+    {"term": "unfamiliar", "part_of_speech": "adj.", "definition": "不熟悉的；陌生的"},
+    {"term": "immediately", "part_of_speech": "adv.", "definition": "立刻；马上"},
+    {"term": "prevent", "part_of_speech": "v.", "definition": "阻止；妨碍"},
+    {"term": "expression", "part_of_speech": "n.", "definition": "表达方式；词组"},
+    {"term": "summary", "part_of_speech": "n.", "definition": "摘要；概括"},
+    {"term": "claim", "part_of_speech": "v.", "definition": "声称；断言"},
+    {"term": "observe", "part_of_speech": "v.", "definition": "观察；注意到"},
+    {"term": "progress", "part_of_speech": "n.", "definition": "进步；进展"},
+    {"term": "regularly", "part_of_speech": "adv.", "definition": "定期地；经常地"},
+    {"term": "retired", "part_of_speech": "adj.", "definition": "退休的"},
+    {"term": "neighbor", "part_of_speech": "n.", "definition": "邻居"},
+    {"term": "barrel", "part_of_speech": "n.", "definition": "桶"},
+    {"term": "elderly", "part_of_speech": "adj.", "definition": "年长的；上了年纪的"},
+    {"term": "plot", "part_of_speech": "n.", "definition": "小块土地"},
+    {"term": "ignore", "part_of_speech": "v.", "definition": "忽视；不理会"},
+    {"term": "excitement", "part_of_speech": "n.", "definition": "兴奋；激动"},
+    {"term": "harvest", "part_of_speech": "n.", "definition": "收获；收成"},
+    {"term": "suggest", "part_of_speech": "v.", "definition": "建议；提出"},
+    {"term": "expensive", "part_of_speech": "adj.", "definition": "昂贵的"}
+  ]
+}

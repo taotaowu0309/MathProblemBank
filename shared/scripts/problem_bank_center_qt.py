@@ -11698,6 +11698,13 @@ class BackgroundWindow(QWidget):
         self.workspace = WORKSPACE
         self.service = DashboardService(SUBJECTS)
         self.english_service = EnglishLearningService() if self.workspace == "english" else None
+        if self.english_service is not None and APP_PATHS.public_release:
+            try:
+                from shared.scripts.english_starter_pack import install_starter_pack
+
+                install_starter_pack(self.english_service)
+            except Exception as error:
+                print(f"示例内容安装失败：{error}", file=sys.stderr)
         self.english_dictionary_service = (
             EnglishDictionaryService() if self.workspace == "english" else None
         )
@@ -12085,9 +12092,9 @@ class BackgroundWindow(QWidget):
             # Pages outside the English sidebar (网课讲义, Markdown 阅读器 and the
             # math bank pages) are never restored into the English workspace.
             allowed_pages -= {"网课讲义", "Markdown 阅读器", "标准题库", "数据表", "学习项目"}
-            allowed_pages.update({
-                "基础课程", "文法", "阅读方法", "写作方法", "题库", "广读材料", "有声书", "背单词",
-            })
+            allowed_pages.update({"题库", "广读材料", "有声书", "背单词"})
+            if not APP_PATHS.public_release:
+                allowed_pages.update({"基础课程", "文法", "阅读方法", "写作方法"})
         if page_name not in allowed_pages or not restore_page:
             page_name = "总览"
         self.refresh_project_pill()
@@ -12722,6 +12729,9 @@ class BackgroundWindow(QWidget):
                 ("背单词", "family", False),
                 ("全部操作", "table", False),
             ]
+            if APP_PATHS.public_release:
+                book_pages = {"基础课程", "文法", "阅读方法", "写作方法"}
+                nav_specs = [spec for spec in nav_specs if spec[0] not in book_pages]
         else:
             nav_specs = [
                 ("总览", "overview", True),
@@ -12787,7 +12797,8 @@ class BackgroundWindow(QWidget):
         switch_button.setMinimumWidth(92)
         set_font(switch_button, 9, QFont.Weight.DemiBold)
         if self.workspace == "english":
-            switch_button.clicked.connect(lambda: self.show_page("基础课程"))
+            materials_page = "广读材料" if APP_PATHS.public_release else "基础课程"
+            switch_button.clicked.connect(lambda: self.show_page(materials_page))
         else:
             switch_button.clicked.connect(self.open_subject_project_dialog)
         layout.addWidget(switch_button)
@@ -13338,7 +13349,7 @@ class BackgroundWindow(QWidget):
                 preview = self.pdf_preview_for_path(Path(cfg["pdf"]))
                 preview.show_pdf_location(Path(cfg["pdf"]), page_index=0, title="English Learning")
                 return
-            self.show_page("基础课程")
+            self.show_page("广读材料" if APP_PATHS.public_release else "基础课程")
             QMessageBox.information(self, "请选择材料", "请先在基础课程或广读材料中打开一份材料。")
             return
         if key == "db_parent":
@@ -15055,6 +15066,9 @@ class BackgroundWindow(QWidget):
         heading_row = QHBoxLayout()
         heading_row.addLayout(self._english_page_heading(
             "英语题库",
+            "阅读与写作练习。首次打开时附带一套自编示例；可按来源和题型筛选，在卡片上直接作答，做错的题进入错题本。"
+            "双击英文单词（或拖选短语）即可查词。自己的试卷交给 ChatGPT Work 整理：点“ChatGPT Work 导入试卷”。"
+            if APP_PATHS.public_release else
             "文法、阅读、写作三类。文法类收录《旋元佑文法解题》的全部题目，阅读类收录《旋元佑英文阅读》的实战题和导入的试卷，"
             "写作类收录《旋元佑英文写作》各章的写作练习和试卷的翻译、作文题，"
             "可按来源、章节、测验类别（写作类为部分）和题型筛选；在卡片上直接作答，做错的题进入错题本，收藏和笔记也在卡片上；"
@@ -15554,7 +15568,10 @@ class BackgroundWindow(QWidget):
             set_font(empty_title, 13, QFont.Weight.DemiBold)
             empty_layout.addWidget(empty_title)
             hint_text = ""
-            if category == "grammar" and view == "all" and not self.english_service.question_bank_counts()["grammar"]:
+            if APP_PATHS.public_release:
+                if view == "all":
+                    hint_text = "这一类还没有题目。可以点上方“ChatGPT Work 导入试卷”，导入你自己有权使用的试卷。"
+            elif category == "grammar" and view == "all" and not self.english_service.question_bank_counts()["grammar"]:
                 hint_text = "文法题还没有导入。Windows 上的控制中心启动时会自动从《旋元佑文法解题》原书导入全部题目（Mac 上的数据库来自 Windows 同步）。"
             elif category == "reading" and view == "all" and not self.english_service.question_bank_counts()["reading"]:
                 hint_text = "阅读题还没有导入。Windows 上的控制中心启动时会自动从《旋元佑英文阅读》原书导入全部实战题（Mac 上的数据库来自 Windows 同步）。"
@@ -25802,21 +25819,23 @@ class BackgroundWindow(QWidget):
         registration, inbox.tex and the chapter/PDF export chain work on the
         math tables, which stay empty in the English database, and are left out.
         """
+        public = APP_PATHS.public_release
         return [
             (
-                "题库与原书",
+                "题库" if public else "题库与原书",
                 [
-                    ("检查并同步题库", "补齐原书题目和收件箱试卷中缺少或有变化的部分；没有变化就不写入",
+                    ("检查并同步题库", "补齐收件箱试卷中缺少或有变化的部分；没有变化就不写入" if public else "补齐原书题目和收件箱试卷中缺少或有变化的部分；没有变化就不写入",
                      lambda: self._start_english_content_sync(manual=True)),
                     ("查看导入收件箱", "列出收件箱里的试卷包，以及哪些还没入库", self._log_english_import_inbox),
+                ] + ([] if public else [
                     ("检查三本书的学习页", "文法、阅读方法、写作方法：原书工程、小节数、已读和解析问题",
                      self._log_english_method_books),
-                ],
+                ]),
             ),
             (
                 "词汇",
                 [
-                    ("重建单词卡索引", "按字汇原书重新整理卡片、字根单元、页码和音频", self._rebuild_english_card_index),
+                    ("重建单词卡索引", "重新整理词汇库的单词卡" if public else "按字汇原书重新整理卡片、字根单元、页码和音频", self._rebuild_english_card_index),
                     ("准备例句库", "下载并索引 Tatoeba 中英例句，词汇库里的书外单词用它配例句",
                      self._prepare_english_example_library),
                     ("列出待查词", "阅读时标记“稍后再查”的单词", self._log_english_deferred_lookups),

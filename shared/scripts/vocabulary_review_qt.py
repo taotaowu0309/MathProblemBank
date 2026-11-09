@@ -51,7 +51,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from shared.scripts.application_paths import resolve_stored_path
+from shared.scripts.application_paths import APP_PATHS, resolve_stored_path
 from shared.scripts.vocabulary_manager import REVIEW_GRADES, schedule_review
 from shared.scripts.vocabulary_review_service import (
     VOCABULARY_UNIT_KEY,
@@ -2034,7 +2034,9 @@ def build_vocabulary_review_page(owner: Any) -> QVBoxLayout:
         unified = False  # reported below, where the units are read
     note_text = ("按字汇书的章节逐节背词（同一字首字根的词在同一节，每个词只出现一次）；收藏到词汇库的词在“词汇库”单元里背。"
                  if unified else f"按《{RAYDU_BOOK_TITLE}》的章节逐节背词；收藏到词汇库的词在“词汇库”单元里背。")
-    if sys.platform == "darwin":
+    if APP_PATHS.public_release:
+        note_text = "背词汇库里收藏的单词；到期复习与新词按记忆曲线安排。"
+    elif sys.platform == "darwin":
         note_text += " Mac 上的复习记录不会同步到 Windows，日常背词请在 Windows 上进行。"
     note = QLabel(note_text)
     note.setObjectName("pageNote")

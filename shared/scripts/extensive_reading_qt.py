@@ -45,6 +45,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from shared.scripts.application_paths import APP_PATHS
 from shared.scripts.method_book_qt import ACCENT, VIEW_STYLE, _button, _scroll
 from shared.scripts.xuan_video_guides import SERIES_TITLE, video_link
 
@@ -364,7 +365,11 @@ class BookCard(QFrame):
 class ExtensiveReadingView(QWidget):
     """书单 | 我的书架 | 广读方法, plus one book's guide (stack page 3)."""
 
-    TABS = (("books", "旋老师书单"), ("shelf", "我的书架"), ("method", "广读方法"))
+    TABS = (
+        (("shelf", "我的书架"),)
+        if APP_PATHS.public_release
+        else (("books", "旋老师书单"), ("shelf", "我的书架"), ("method", "广读方法"))
+    )
 
     def __init__(self, owner: Any) -> None:
         super().__init__()
@@ -405,7 +410,11 @@ class ExtensiveReadingView(QWidget):
             self.tab_buttons[key] = button
             tab_row.addWidget(button)
         tab_row.addStretch(1)
-        source = QLabel(f"讲解依据：{SERIES_TITLE}（旋元佑老师的广读书单与讲解）")
+        source = QLabel(
+            "在这里导入你自己有权使用的书和文章，统一在 PDF 阅读器中阅读。"
+            if APP_PATHS.public_release
+            else f"讲解依据：{SERIES_TITLE}（旋元佑老师的广读书单与讲解）"
+        )
         source.setObjectName("pageNote")
         self.center.set_font(source, 9.5)
         tab_row.addWidget(source)
@@ -444,7 +453,7 @@ class ExtensiveReadingView(QWidget):
         elif tab == "lecture" and self.state.get("lecture"):
             self.open_lecture(str(self.state["lecture"]))
         else:
-            self.show_tab(tab if tab in dict(self.TABS) else "books")
+            self.show_tab(tab if tab in dict(self.TABS) else self.TABS[0][0])
         attach_extensive_word_lookup(self, self.owner, note_reader=self.study_view.reader)
 
     def show_tab(self, key: str) -> None:
@@ -983,6 +992,8 @@ def build_extensive_reading_page(owner: Any) -> QVBoxLayout:
     layout.setSpacing(12)
     layout.addLayout(owner._english_page_heading(
         PAGE_NAME,
+        "导入自己的书和文章，在阅读器里双击查词、选中文字记笔记。首次打开时附带一篇自编短文。"
+        if APP_PATHS.public_release else
         "旋元佑老师推荐的广读书单：左边读原文，右边是老师的讲解；双击查词，选中文字记笔记。"
         "广读的作法：大量、快速、持续、不求甚解。",
     ))

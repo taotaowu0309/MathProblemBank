@@ -41,6 +41,7 @@ from PySide6.QtWidgets import (
 )
 from shiboken6 import isValid
 
+from shared.scripts.application_paths import APP_PATHS
 from shared.scripts.audiobook_service import AudiobookService
 from shared.scripts.method_book_qt import ACCENT, VIEW_STYLE
 from shared.scripts.vocabulary_review_qt import _Task, _font
@@ -863,8 +864,10 @@ def build_audiobook_page(owner: Any) -> QVBoxLayout:
     layout = QVBoxLayout()
     layout.setContentsMargins(24, 22, 24, 22)
     layout.setSpacing(12)
-    note = ("旋元佑的方法：先用广读打好阅读基础，再听读得懂的书的有声书，把能力延伸到听力。"
-            "这里的书配的是 LibriVox 公版真人朗读和古腾堡原文，播放时高亮正在读的句子；每一句都有中文译文，按“译文”打开。")
+    note = (("先读懂，再用听力巩固：选读得懂的书的有声书，把阅读能力延伸到听力。"
+             if APP_PATHS.public_release else
+             "旋元佑的方法：先用广读打好阅读基础，再听读得懂的书的有声书，把能力延伸到听力。") + (
+            "这里的书配的是 LibriVox 公版真人朗读和古腾堡原文，播放时高亮正在读的句子；每一句都有中文译文，按“译文”打开。"))
     heading = getattr(owner, "_english_page_heading", None)
     if callable(heading):
         layout.addLayout(heading(PAGE_NAME, note))

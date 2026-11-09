@@ -1429,6 +1429,8 @@ class EnglishLearningService:
         return int(row[0])
 
     def _seed_foundation(self, connection: sqlite3.Connection) -> None:
+        if APP_PATHS.public_release:
+            return  # The public release ships no textbooks to list.
         program_id = self._seed_row(
             connection,
             "english_programs",
