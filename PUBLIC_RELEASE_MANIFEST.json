@@ -1,7 +1,7 @@
 {
   "format_version": 1,
   "profile": "public-math-english-v0.2",
-  "release_version": "0.2.0rc2",
+  "release_version": "0.2.0rc3",
   "python_requires": ">=3.12,<3.13",
   "file_count": 254,
   "files": [
@@ -28,7 +28,7 @@
     {
       "path": "pyproject.toml",
       "bytes": 1148,
-      "sha256": "ed339444f08a40170d13ed1aff0b57a37601f167ed2294169ec23089a93360b9"
+      "sha256": "2ea8ff30a64869287af60a903edb393d13a1d3cf0249ab3931b48abc5d4c01ab"
     },
     {
       "path": "requirements-public.txt",
@@ -332,8 +332,8 @@
     },
     {
       "path": "shared/scripts/launch_study_problem_bank.pyw",
-      "bytes": 15549,
-      "sha256": "988e082e2de34d42d39854e1ba75298337c4f1f9bb31432e1d2d4eede686605e"
+      "bytes": 15543,
+      "sha256": "8a3924d60eeef9498715107c40ac05b0f9af068c9fa14027a8d3941fc27832a3"
     },
     {
       "path": "shared/scripts/lazy_module.py",
@@ -1118,22 +1118,22 @@
     {
       "path": "README.md",
       "bytes": 3786,
-      "sha256": "982f18af58cfde295bff6f1b3f2daaf679bff5d4841499b7108d8e5e3b4a0f7f"
+      "sha256": "8b7d71325099f6f781ddd2d5c0bd8e79062c10b5abcc4783683c5860f9c2a72e"
     },
     {
       "path": "README.zh-CN.md",
       "bytes": 3786,
-      "sha256": "982f18af58cfde295bff6f1b3f2daaf679bff5d4841499b7108d8e5e3b4a0f7f"
+      "sha256": "8b7d71325099f6f781ddd2d5c0bd8e79062c10b5abcc4783683c5860f9c2a72e"
     },
     {
       "path": "GETTING_STARTED.md",
       "bytes": 4024,
-      "sha256": "e14180c2c50c7fc7be8b740d44f552c367d5f70c0841ae8ab251290ff70139ca"
+      "sha256": "6841b696bf63a7a6f8f5627582f55f286dca8291a23451ca3d202e32cc36876a"
     },
     {
       "path": "GETTING_STARTED.zh-CN.md",
       "bytes": 4024,
-      "sha256": "e14180c2c50c7fc7be8b740d44f552c367d5f70c0841ae8ab251290ff70139ca"
+      "sha256": "6841b696bf63a7a6f8f5627582f55f286dca8291a23451ca3d202e32cc36876a"
     },
     {
       "path": "USER_GUIDE.md",
