@@ -326,7 +326,7 @@ class TranslationProjectPage(QWidget):
         self.refresh_projects()
         self.append_process_log(
             "已就绪。新建译本后，日志会从原教材复制、内置 MinerU 运行、章级 PDF/节级 Markdown "
-            "生成，一直记录到第二层校正版和最小单位材料包。"
+            "生成，一直记录到校正稿和翻译任务文件夹。"
         )
 
     def showEvent(self, event: Any) -> None:  # type: ignore[override]
@@ -346,7 +346,7 @@ class TranslationProjectPage(QWidget):
         title.setObjectName("pageTitle")
         _font(title, 24, QFont.Weight.DemiBold)
         note = QLabel(
-            "原书 / MinerU 证据 → 节级轻量校正 Agent → 节或小节任务文件夹 → ChatGPT Work 中文 LaTeX。"
+            "原书 / MinerU 文本 → 外部 Agent 逐节校正 → 任务文件夹 → 外部 Agent 翻译成中文 LaTeX。"
             "原书 PDF 始终是最高事实源。"
         )
         note.setObjectName("pageNote")
@@ -717,7 +717,7 @@ class TranslationProjectPage(QWidget):
             return
         if not self._confirm(
             "创建译本项目",
-            "程序会把原书 PDF 复制到新的正式译本项目目录，并锁定当前第二层 Skill revision。继续吗？",
+            "程序会把原书 PDF 复制到新的正式译本项目目录，并锁定当前校正规则版本。继续吗？",
         ):
             return
         try:
@@ -1688,11 +1688,11 @@ class TranslationProjectPage(QWidget):
                 ),
             )
         except (OSError, RuntimeError, ValueError, json.JSONDecodeError) as error:
-            self.append_process_log(f"[失败] 准备第二层 Agent：{error}")
-            QMessageBox.warning(self, "准备第二层 Agent 失败", str(error))
+            self.append_process_log(f"[失败] 准备校正任务：{error}")
+            QMessageBox.warning(self, "准备校正任务失败", str(error))
             return
         self.append_process_log(
-            f"[第二层 Agent] 已生成完整 section 提示词：{row['number']} {row['title']}；"
+            f"[校正] 已生成完整一节的提示词：{row['number']} {row['title']}；"
             f"稳定前缀 revision={bundle.upstream_revision}，sha256={bundle.stable_prefix_sha256}"
         )
         self.append_process_log(
@@ -1700,7 +1700,7 @@ class TranslationProjectPage(QWidget):
             "推荐让 Agent 运行 translation repair-task，也可用“导入 Agent 校正版”写回。"
         )
         dialog = QDialog(self)
-        dialog.setWindowTitle(f"第二层 Agent 提示词 - {row['number']} {row['title']}")
+        dialog.setWindowTitle(f"校正任务提示词 - {row['number']} {row['title']}")
         dialog.resize(1100, 760)
         layout = QVBoxLayout(dialog)
         note = QLabel(
@@ -1843,7 +1843,7 @@ class TranslationProjectPage(QWidget):
                 emit=self.append_process_log,
             )
         except (OSError, RuntimeError, ValueError) as error:
-            self.append_process_log(f"[失败] 导入第二层 Agent 校正版：{error}")
+            self.append_process_log(f"[失败] 导入 Agent 校正稿：{error}")
             QMessageBox.warning(self, "导入 Agent 结果失败", str(error))
             return
         self.refresh_outline()
@@ -1871,7 +1871,7 @@ class TranslationProjectPage(QWidget):
         if preflight.get("requires_second_layer"):
             QMessageBox.information(
                 self, "需要先让 Work 校正",
-                f"{preflight.get('reason') or '第二层产物需要刷新'}。\n\n请让 Work 完成这一节的校正后再生成材料包。",
+                f"{preflight.get('reason') or '校正产物需要刷新'}。\n\n请让 Work 完成这一节的校正后再生成材料包。",
             )
             return
         project = self.project_rows.get(project_code) or self.service.project(project_code)
@@ -1921,7 +1921,7 @@ class TranslationProjectPage(QWidget):
             release()
             self.append_process_log(f"[材料包完成] 已写后回读：{package}")
             self.status_requested.emit(f"ChatGPT Work 任务文件夹已生成：{package.name}")
-            run_logger.finish("第二层标签审计（如需）与材料包生成均已完成。")
+            run_logger.finish("任务文件夹已生成。")
 
         def failed(failure: object) -> None:
             data = failure if isinstance(failure, dict) else {"message": str(failure)}

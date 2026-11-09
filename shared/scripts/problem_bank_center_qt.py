@@ -17977,7 +17977,7 @@ class BackgroundWindow(QWidget):
         clear_button.clicked.connect(self.clear_online_course_agent_chat)
         agent_header.addWidget(clear_button)
         agent_layout.addLayout(agent_header)
-        explanation = QLabel("这里显示可审计的提示词、阶段进度、模型返回和校验结果；不展示或伪造模型的隐式思维链。")
+        explanation = QLabel("这里显示程序的处理进度和校验结果。程序不调用模型，写作由外部 Agent 完成。")
         self.online_course_agent_explanation = explanation
         explanation.setObjectName("pageNote")
         explanation.setWordWrap(True)
@@ -18083,8 +18083,8 @@ class BackgroundWindow(QWidget):
         self._create_online_course_progress_dialog()
         if not self.online_course_agent_history:
             self.append_online_course_agent_message(
-                "Agent",
-                "已就绪。先在“课程管理”和“分集与材料”窗口选择目标；点击重新生成后，本窗口会实时显示实际提示词、处理阶段和结果。",
+                "程序",
+                "已就绪。先在“课程管理”和“分集与材料”窗口选择目标；处理阶段和结果会显示在这里。",
             )
         if getattr(self, "_startup_runtime_status_ready", False):
             self.refresh_online_course_media_status()
@@ -20175,12 +20175,12 @@ class BackgroundWindow(QWidget):
                 else "主页面只显示网课资料；课程、分集和媒体设置在独立窗口中管理"
             ),
             "online_course_agent_title": (
-                "习题课讲义处理日志" if fixed_companion else "网课资料整理 Agent"
+                "习题课讲义处理日志" if fixed_companion else "网课处理日志"
             ),
             "online_course_agent_explanation": (
                 "这里显示小节 LaTeX 导入、预览和正式 PDF 编译结果。"
                 if fixed_companion
-                else "这里显示可审计的提示词、阶段进度、模型返回和校验结果；不展示或伪造模型的隐式思维链。"
+                else "这里显示程序的处理进度和校验结果。程序不调用模型，写作由外部 Agent 完成。"
             ),
         }
         for name, text in page_labels.items():

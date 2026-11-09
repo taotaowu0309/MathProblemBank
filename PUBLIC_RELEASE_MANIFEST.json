@@ -1,7 +1,7 @@
 {
   "format_version": 1,
   "profile": "public-math-english-v0.2",
-  "release_version": "0.2.0rc9",
+  "release_version": "0.2.0rc10",
   "python_requires": ">=3.12,<3.13",
   "file_count": 259,
   "files": [
@@ -27,8 +27,8 @@
     },
     {
       "path": "pyproject.toml",
-      "bytes": 1148,
-      "sha256": "c1efef764307fb06e44569e0964d1a696ac0320558a08d136781ac7142f034e3"
+      "bytes": 1149,
+      "sha256": "c8ab7cd0a21677161af7bc4c6c3e8db3e92b0212e051655407228996d8a55e02"
     },
     {
       "path": "requirements-public.txt",
@@ -502,8 +502,8 @@
     },
     {
       "path": "shared/scripts/problem_bank_center_qt.py",
-      "bytes": 1290423,
-      "sha256": "b1bdbf8e7d725fab80756a06fede740f2553f0eafbe9315e27293b7e4e76264d"
+      "bytes": 1290330,
+      "sha256": "83da0496d9756f3e2b1fd306c3be637df7323411341a29bcf962c6419c1a75a9"
     },
     {
       "path": "shared/scripts/public_regression_core.py",
@@ -627,8 +627,8 @@
     },
     {
       "path": "shared/scripts/translation_project_qt.py",
-      "bytes": 93407,
-      "sha256": "bb0f0c26d91be384855b28ad9f5cab04fd4e969f82e262a1c70903a9e1f9cfe9"
+      "bytes": 93319,
+      "sha256": "802d1bf2be6da3f48cdc73ad9f2c698329ecaab2083bf5694a8c6ede30295a99"
     },
     {
       "path": "shared/scripts/translation_project_service.py",
@@ -1142,23 +1142,23 @@
     },
     {
       "path": "README.md",
-      "bytes": 4448,
-      "sha256": "0516b30fb2ed53c34faed4888f9c52d3da0e2de4614835114dc5de368a6bab91"
+      "bytes": 4449,
+      "sha256": "e7e0d7855c5a58f98e0d709c350d056cf8214d533d9d180f210ad6be83f44848"
     },
     {
       "path": "README.zh-CN.md",
-      "bytes": 4448,
-      "sha256": "0516b30fb2ed53c34faed4888f9c52d3da0e2de4614835114dc5de368a6bab91"
+      "bytes": 4449,
+      "sha256": "e7e0d7855c5a58f98e0d709c350d056cf8214d533d9d180f210ad6be83f44848"
     },
     {
       "path": "GETTING_STARTED.md",
-      "bytes": 4262,
-      "sha256": "84d524ddf7af7aff8d2eecdfd0f69f9633fcefa21847b5434df28eb06c1d3b50"
+      "bytes": 4263,
+      "sha256": "fbef9410bc9ccc8cef652cdfebb8cf4549f26b8f935cf12e594ec9879ab9e7a4"
     },
     {
       "path": "GETTING_STARTED.zh-CN.md",
-      "bytes": 4262,
-      "sha256": "84d524ddf7af7aff8d2eecdfd0f69f9633fcefa21847b5434df28eb06c1d3b50"
+      "bytes": 4263,
+      "sha256": "fbef9410bc9ccc8cef652cdfebb8cf4549f26b8f935cf12e594ec9879ab9e7a4"
     },
     {
       "path": "USER_GUIDE.md",
