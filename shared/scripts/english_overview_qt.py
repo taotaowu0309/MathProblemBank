@@ -329,7 +329,7 @@ def build_english_overview_page(owner: Any) -> QVBoxLayout:
 
     # Recently opened materials and the last question-bank sync.
     recent = materials["recent"]
-    sync_summary = getattr(owner, "english_content_sync_summary", None)
+    sync_summary = None if APP_PATHS.public_release else getattr(owner, "english_content_sync_summary", None)
     if recent or sync_summary:
         recent_panel, recent_layout = _panel("最近打开")
         recent_panel.setStyleSheet(ROUTE_STYLE)

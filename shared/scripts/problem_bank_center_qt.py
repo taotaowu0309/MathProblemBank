@@ -12491,7 +12491,12 @@ class BackgroundWindow(QWidget):
         # Keep the topbar widgets alive for internal compatibility, but make
         # the whole strip a silent implementation detail for English users.
         self.topbar.setVisible(self.workspace != "english")
-        self.content_scroll = self._make_content_scroll(self._build_content())
+        first_page = (
+            self._build_english_overview
+            if APP_PATHS.public_release and self.workspace == "english" and self.english_service is not None
+            else self._build_content
+        )
+        self.content_scroll = self._make_content_scroll(first_page())
         self.main_layout.addWidget(self.content_scroll, 1)
         shell.addLayout(self.main_layout, 1)
 

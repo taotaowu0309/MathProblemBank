@@ -78,9 +78,16 @@ def sans_serif_font() -> str:
     return "arial.ttf"
 
 
+def uses_portable_latex_fonts() -> bool:
+    """macOS lacks the Windows font aliases; the public release cannot assume Chinese Windows fonts."""
+    from shared.scripts.application_paths import APP_PATHS
+
+    return sys.platform == "darwin" or APP_PATHS.public_release
+
+
 def portable_latex_source(source: str) -> str:
-    """Use TeX-distributed font files when macOS has no font-family alias."""
-    if sys.platform != "darwin":
+    """Use TeX-distributed font files when the system fonts cannot be relied on."""
+    if not uses_portable_latex_fonts():
         return source
     source = source.replace("UTF8,scheme=plain", "UTF8,scheme=plain,fontset=fandol")
     source = source.replace(r"\documentclass[UTF8,12pt]{ctexart}", r"\documentclass[UTF8,fontset=fandol,12pt]{ctexart}")

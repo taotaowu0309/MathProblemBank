@@ -1,7 +1,7 @@
 {
   "format_version": 1,
   "profile": "public-math-english-v0.2",
-  "release_version": "0.2.0rc4",
+  "release_version": "0.2.0rc5",
   "python_requires": ">=3.12,<3.13",
   "file_count": 256,
   "files": [
@@ -28,7 +28,7 @@
     {
       "path": "pyproject.toml",
       "bytes": 1148,
-      "sha256": "18996ab6376182faab73fa622cc7a29ec3b3560fcc76efcc6dc3d0dee2db6aeb"
+      "sha256": "9c1ba368a62d82d1bd39978135220f2050666bced9b74dc2d3ee2057e8b0d6fd"
     },
     {
       "path": "requirements-public.txt",
@@ -252,8 +252,8 @@
     },
     {
       "path": "shared/scripts/english_content_sync.py",
-      "bytes": 9416,
-      "sha256": "44a24ac69f74d078decb49e0a98eb6a751de025de66ff6cbcffdcc3f47f3b1c8"
+      "bytes": 9508,
+      "sha256": "f5509705313fc3b3a5ce45b0c083957917a295549f241274d714623bcef4757b"
     },
     {
       "path": "shared/scripts/english_dictionary_service.py",
@@ -277,8 +277,8 @@
     },
     {
       "path": "shared/scripts/english_overview_qt.py",
-      "bytes": 17598,
-      "sha256": "6f2871f991519046172a153a3bcded32d1bbdca24fbd4810369fbe85792d2d1d"
+      "bytes": 17636,
+      "sha256": "4030ee0811beeb2cf6824977d4bd017b9309cf3e87719fe428dcd8432876f01f"
     },
     {
       "path": "shared/scripts/english_starter_pack.py",
@@ -312,8 +312,8 @@
     },
     {
       "path": "shared/scripts/latex_build_pipeline.py",
-      "bytes": 21040,
-      "sha256": "08e990ea762628f9b07d460b47daf494eda1b86ec0a55575e13974e51a8e5099"
+      "bytes": 21113,
+      "sha256": "bc5a69f0bcfc4d7e0943b4f979712898b81458433f3ceeb6208ffc5ba72befda"
     },
     {
       "path": "shared/scripts/latex_document_layout.py",
@@ -492,8 +492,8 @@
     },
     {
       "path": "shared/scripts/platform_runtime.py",
-      "bytes": 4213,
-      "sha256": "c440a14bf7104fcaa110ddfee5e0e61e29f983b4c849d3e1dffa7e74209dc901"
+      "bytes": 4497,
+      "sha256": "f95a6e76ca5ddb692a277f198e95b0ca61d981ea7acb0898a10f6d9ef81ac4fa"
     },
     {
       "path": "shared/scripts/problem_bank_center.py",
@@ -502,8 +502,8 @@
     },
     {
       "path": "shared/scripts/problem_bank_center_qt.py",
-      "bytes": 1290069,
-      "sha256": "65b4d22f585a5d6de6ddf67d5fe37e1c5eb1a4d959867778b5b3aa61014932d8"
+      "bytes": 1290280,
+      "sha256": "b5713bae8207f4e12b8f4c075c7673645700b99afcd0d983920caa3e6b4e42f6"
     },
     {
       "path": "shared/scripts/public_regression_core.py",
@@ -1128,22 +1128,22 @@
     {
       "path": "README.md",
       "bytes": 3789,
-      "sha256": "ca4027ae571c29266b8df071dc29ab764583e8ce200390827a0186499e91b8b6"
+      "sha256": "c7fb4dda46d24488184a31fd92485d9ce2b86c7586b85129ea3472b5da93b187"
     },
     {
       "path": "README.zh-CN.md",
       "bytes": 3789,
-      "sha256": "ca4027ae571c29266b8df071dc29ab764583e8ce200390827a0186499e91b8b6"
+      "sha256": "c7fb4dda46d24488184a31fd92485d9ce2b86c7586b85129ea3472b5da93b187"
     },
     {
       "path": "GETTING_STARTED.md",
       "bytes": 4024,
-      "sha256": "860d8d4921ab1ea34fe97b7a3f7c980db6c44b45364204254ef759dd5c194178"
+      "sha256": "4174efa832764b97f5267b7b9b4e33209f4fe2e91ee49da1afea36b65fdeb799"
     },
     {
       "path": "GETTING_STARTED.zh-CN.md",
       "bytes": 4024,
-      "sha256": "860d8d4921ab1ea34fe97b7a3f7c980db6c44b45364204254ef759dd5c194178"
+      "sha256": "4174efa832764b97f5267b7b9b4e33209f4fe2e91ee49da1afea36b65fdeb799"
     },
     {
       "path": "USER_GUIDE.md",

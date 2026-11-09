@@ -24,6 +24,8 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Callable
 
+from shared.scripts.application_paths import APP_PATHS
+
 
 def sync_english_question_sets(
     english_service: Any,
@@ -40,7 +42,7 @@ def sync_english_question_sets(
             progress(text)
 
     results: list[dict[str, Any]] = []
-    books = (
+    books = () if APP_PATHS.public_release else (
         ("《旋元佑文法解题》", english_service.preview_raydu_grammar_question_bank,
          english_service.import_raydu_grammar_question_bank),
         ("《旋元佑英文阅读》实战题", english_service.preview_raydu_reading_question_bank,

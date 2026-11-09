@@ -19,6 +19,7 @@ from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Callable, Iterable, Sequence
 
+from shared.scripts.platform_runtime import uses_portable_latex_fonts
 from shared.scripts.latex_quality import (
     PdfGeometryFinding,
     QualityFinding,
@@ -110,7 +111,7 @@ def run_latexmk(
     workdir = Path(workdir).resolve()
     main_name = Path(main_tex).name
     command = [latexmk]
-    if sys.platform == "darwin":
+    if uses_portable_latex_fonts():
         # XeTeX otherwise derives the output name from the pretex input file.
         jobname = jobname or Path(main_name).stem
         fonts = Path(__file__).resolve().parents[1] / "templates" / "portable_fonts.tex"
