@@ -1,7 +1,7 @@
 {
   "format_version": 1,
   "profile": "public-math-english-v0.2",
-  "release_version": "0.2.0rc7",
+  "release_version": "0.2.0rc8",
   "python_requires": ">=3.12,<3.13",
   "file_count": 259,
   "files": [
@@ -28,7 +28,7 @@
     {
       "path": "pyproject.toml",
       "bytes": 1148,
-      "sha256": "0512885e9d8f7cc2621b7a96bcd13590f14e49e86969bd06ca2e3de81199cc53"
+      "sha256": "4612e808c69d5f7635455633b43eb6fe2ae56ebe34c5e923efbb7ce930f713aa"
     },
     {
       "path": "requirements-public.txt",
@@ -187,8 +187,8 @@
     },
     {
       "path": "shared/scripts/audiobook_qt.py",
-      "bytes": 40740,
-      "sha256": "7d0fd4f62ba6609ad9f548e132fb192dc6a8bb7fa54f87ae704eaa57fb1e49ee"
+      "bytes": 40802,
+      "sha256": "b46ec902f8f91ef782ec42f9de3a2a39ab9fec28da0b9b33d63a8bcc2fb54e3d"
     },
     {
       "path": "shared/scripts/audiobook_service.py",
@@ -1143,22 +1143,22 @@
     {
       "path": "README.md",
       "bytes": 3789,
-      "sha256": "8cd7fd423c2ccd4d3f9048d57b2f20b2ef7a83782763b73dce086b18d8b6031b"
+      "sha256": "8eec274f0d11edb936fa26fb337fca2f745e9a6b57832e2de94c372ff49305a2"
     },
     {
       "path": "README.zh-CN.md",
       "bytes": 3789,
-      "sha256": "8cd7fd423c2ccd4d3f9048d57b2f20b2ef7a83782763b73dce086b18d8b6031b"
+      "sha256": "8eec274f0d11edb936fa26fb337fca2f745e9a6b57832e2de94c372ff49305a2"
     },
     {
       "path": "GETTING_STARTED.md",
       "bytes": 4024,
-      "sha256": "67eb80225d57eba9224ef9038b73b8c2541fd1a5bc01a38158e8c07bfa1174b3"
+      "sha256": "a62e8877f18e3ab498959181840872409567bd3fbc8af7115b0113fa2f722dc5"
     },
     {
       "path": "GETTING_STARTED.zh-CN.md",
       "bytes": 4024,
-      "sha256": "67eb80225d57eba9224ef9038b73b8c2541fd1a5bc01a38158e8c07bfa1174b3"
+      "sha256": "a62e8877f18e3ab498959181840872409567bd3fbc8af7115b0113fa2f722dc5"
     },
     {
       "path": "USER_GUIDE.md",

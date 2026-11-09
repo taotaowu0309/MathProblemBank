@@ -60,6 +60,7 @@ QListWidget#audiobookList::item {{ padding: 8px 6px; border-radius: 8px; }}
 QListWidget#audiobookList::item:hover {{ background: rgba(1, 126, 218, 18); }}
 QListWidget#audiobookList::item:selected {{ background: rgba(1, 126, 218, 34); color: {ACCENT}; }}
 QTextBrowser#audiobookText {{
+    font-family: "Georgia", "Times New Roman", "Songti SC"; font-size: 15.5pt;
     background: rgba(255, 255, 255, 215); border: 1px solid rgba(255, 255, 255, 230); border-radius: 16px;
     padding: 18px 26px; color: {INK};
 }}
@@ -484,10 +485,8 @@ class AudiobookView(QWidget):
         if self.chapter is None:
             return
         document = QTextDocument(self.reader)
-        base = QFont()
-        base.setFamilies(["Georgia", "Times New Roman", "Songti SC"])
-        base.setPointSizeF(15.5)
-        document.setDefaultFont(base)
+        # The widget's font is the source: Qt copies it onto the document on every FontChange.
+        document.setDefaultFont(self.reader.font())
         cursor = QTextCursor(document)
         block = QTextBlockFormat()
         block.setBottomMargin(14)
