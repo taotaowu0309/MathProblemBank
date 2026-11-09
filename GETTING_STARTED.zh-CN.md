@@ -1,6 +1,6 @@
 # 安装与第一次使用
 
-适用版本：v0.2.0-rc10。发行包包含数学与英语工具源码，不包含学习数据。建议先用少量自己的测试材料走通流程。
+适用版本：v0.2.0-rc11。发行包包含数学与英语工具源码，不包含学习数据。建议先用少量自己的测试材料走通流程。
 
 > 安装只是第一步。本项目的导入、写作、翻译和批改都要由外部高智能 Agent 按项目的工作流提示词完成，模型建议和可直接复制的提示词见 [Agent 提示词](docs/AGENT_PROMPTS.zh-CN.md)。
 
@@ -63,12 +63,24 @@ MATH_PROBLEM_BANK_DATA_ROOT="$PWD/user-data" .venv/bin/python shared/scripts/lau
 | LaTeX/PDF | 安装 TeX Live 或 MacTeX，确保 `xelatex --version`、`latexmk --version` 可执行；中文字体不可用时使用项目的 Fandol 回退 |
 | 扫描件 OCR | `.venv` 中安装 `rapidocr-onnxruntime>=1.3,<2`，按教材健康检查处理所需页 |
 | PDF 辅助 | 可安装 `pypdf>=4,<7`；基础 PDF 操作已使用 PyMuPDF |
-| 网课 | 配置录制权限、音频与 Groq；媒体工具由既有工具链管理，不附带作者的运行时 |
+| 网课 | 安装项目自带的 Chrome 插件并配置 Groq，步骤见下面的“录网课”；媒体工具在程序内安装，不附带作者的运行时 |
 | MinerU | 单独配置自己的解析环境/服务及所需凭据；先用少量页验证，再处理整本书 |
 | 朗读 | Edge TTS 需要网络；系统语音可作为回退，具体声音由系统决定 |
 | 计算与绘图集成 | SymPy/NumPy 随基础依赖安装；Wolfram、Lean 等外部工具需另行安装，基础功能不以其可用为前提 |
 
 程序不会替你配置模型 API。教材解析、转写和朗读也不等于讲义已经写好；写作交给外部 Agent。
+
+### 录网课：安装 Chrome 插件
+
+网课讲义的录课用项目自带的 Chrome 插件，位置是 `shared/browser_extensions/online_course_recorder/`。它录制 YouTube 或 Bilibili 当前标签页的声音和画面，不使用麦克风。
+
+1. 在“网课讲义”页打开“媒体工具与 API”，点“安装 / 检查全部媒体工具”（需要联网下载），再点“设置转写方式”填入自己的 Groq API Key。开始录制前程序会检查 Groq，不可用时会拒绝录制。
+2. 在 Chrome 打开 `chrome://extensions`，打开右上角的开发者模式，点“加载已解压的扩展程序”，选择上面的目录。也可以在“课程管理”里点“打开 Chrome 扩展目录”找到它。
+3. 在“课程管理”里新建并选中一门课，插件会自动同步录制目标。
+4. 打开课程视频，点浏览器工具栏里的插件开始录制，看完后在插件里停止。录制期间不要静音网页，也不要关闭控制中心。
+5. 把这一集交给 Agent：它用 `course intake-task` 读转写和截图，再写讲义，见 [Agent 提示词](docs/AGENT_PROMPTS.zh-CN.md) 的 C 节。
+
+这条链路依赖你的 Chrome、网络和 Groq 账号，第一次使用请先录一小段，确认转写和截图都正常，再录整集。录制内容会发送给 Groq 转写。
 
 ## 4. 完成一次最小任务
 

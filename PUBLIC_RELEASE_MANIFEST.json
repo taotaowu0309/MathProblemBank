@@ -1,7 +1,7 @@
 {
   "format_version": 1,
   "profile": "public-math-english-v0.2",
-  "release_version": "0.2.0rc10",
+  "release_version": "0.2.0rc11",
   "python_requires": ">=3.12,<3.13",
   "file_count": 259,
   "files": [
@@ -28,7 +28,7 @@
     {
       "path": "pyproject.toml",
       "bytes": 1149,
-      "sha256": "c8ab7cd0a21677161af7bc4c6c3e8db3e92b0212e051655407228996d8a55e02"
+      "sha256": "68aedb1aadecc36758adeec41a07be6b1666fb5281d0131bae9cc2dda8b9932c"
     },
     {
       "path": "requirements-public.txt",
@@ -1047,8 +1047,8 @@
     },
     {
       "path": "shared/browser_extensions/online_course_recorder/README.md",
-      "bytes": 4663,
-      "sha256": "a2612df0289e168e681ed060e5dadecaaea6876b5e42ab83732e03bf1ef53cc8"
+      "bytes": 4710,
+      "sha256": "504b3d79a88cdc6a7fe6450e115385f68cedbe26bbd0bc6ee473fc5c0a933071"
     },
     {
       "path": "shared/browser_extensions/online_course_recorder/content_script.js",
@@ -1142,33 +1142,33 @@
     },
     {
       "path": "README.md",
-      "bytes": 4449,
-      "sha256": "e7e0d7855c5a58f98e0d709c350d056cf8214d533d9d180f210ad6be83f44848"
+      "bytes": 4461,
+      "sha256": "e08f4506e429c0cd856a2f2207eedac6733599567ffeda7db1d2c4cd0eb10ac6"
     },
     {
       "path": "README.zh-CN.md",
-      "bytes": 4449,
-      "sha256": "e7e0d7855c5a58f98e0d709c350d056cf8214d533d9d180f210ad6be83f44848"
+      "bytes": 4461,
+      "sha256": "e08f4506e429c0cd856a2f2207eedac6733599567ffeda7db1d2c4cd0eb10ac6"
     },
     {
       "path": "GETTING_STARTED.md",
-      "bytes": 4263,
-      "sha256": "fbef9410bc9ccc8cef652cdfebb8cf4549f26b8f935cf12e594ec9879ab9e7a4"
+      "bytes": 5642,
+      "sha256": "d18fbc4d49480584b44432e92936fb7e8a9fdc950538d98d2777f9994864a526"
     },
     {
       "path": "GETTING_STARTED.zh-CN.md",
-      "bytes": 4263,
-      "sha256": "fbef9410bc9ccc8cef652cdfebb8cf4549f26b8f935cf12e594ec9879ab9e7a4"
+      "bytes": 5642,
+      "sha256": "d18fbc4d49480584b44432e92936fb7e8a9fdc950538d98d2777f9994864a526"
     },
     {
       "path": "USER_GUIDE.md",
-      "bytes": 4571,
-      "sha256": "153ed7f6867c7533ee25eefde0cf141b590fa2087b16b9992c81dc1b643058df"
+      "bytes": 4687,
+      "sha256": "5e3ea153aeea2cbf616b846b4bd767ba957a1cc05ad0b7bbed70d48219a5e183"
     },
     {
       "path": "USER_GUIDE.zh-CN.md",
-      "bytes": 4571,
-      "sha256": "153ed7f6867c7533ee25eefde0cf141b590fa2087b16b9992c81dc1b643058df"
+      "bytes": 4687,
+      "sha256": "5e3ea153aeea2cbf616b846b4bd767ba957a1cc05ad0b7bbed70d48219a5e183"
     },
     {
       "path": "OPEN_SOURCE_RELEASE.md",
@@ -1212,13 +1212,13 @@
     },
     {
       "path": "docs/AGENT_PROMPTS.zh-CN.md",
-      "bytes": 8614,
-      "sha256": "48e20007e301d2630a1f07a5265907e165a7ff05933f29a285e1a00ead8c4892"
+      "bytes": 9191,
+      "sha256": "64531e5164575e8bf2c234d204c879d8d632990e994a692c4366d6ff8c52df2a"
     },
     {
       "path": "docs/PROMPTS.zh-CN.md",
-      "bytes": 2694,
-      "sha256": "44cb6cfbb6b8edb15447a0df44b4ab5a00651c3fe4db06237158a1c44649282c"
+      "bytes": 2839,
+      "sha256": "1e913b28a5758ffcd931ae3d06675eb5548b4cb831f9e58b9dd0a79884b9866c"
     },
     {
       "path": "docs/ARCHITECTURE.zh-CN.md",

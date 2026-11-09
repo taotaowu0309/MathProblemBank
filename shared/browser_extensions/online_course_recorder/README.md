@@ -12,9 +12,10 @@ Chrome cannot provide exactly one tab-audio track, recording is cancelled and
 the newly opened local session is closed instead of creating a silent or
 environment-noise recording.
 
-Before a local recording session is created, the receiver sends a text-only
-Agent API preflight. A blocked or unavailable model route therefore rejects the
-Start action before any course evidence is accumulated. The extension also
+Before a local recording session is created, the receiver checks Groq
+transcription access without uploading media. Missing credentials or network
+failure reject the Start action before any course evidence is accumulated. The
+program calls no language model. The extension also
 rejects a muted web player or volume 0. While the video is playing it measures
 the actual captured tab-audio signal; 15 continuous minutes of source-video time
 without valid captured tab audio stops the recording with an `ERR` badge and
